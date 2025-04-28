@@ -24,7 +24,7 @@ const About = () => {
   return (
     <>
       {/* Hero Section - Updated with new color scheme */}
-      <section className="bg-primary text-white py-5">
+      <section className="bg-info text-white py-5">
         <div className="container">
           <div className="row align-items-center">
             <div className="col-lg-8 mx-auto text-center" data-aos="fade-up">
@@ -32,19 +32,14 @@ const About = () => {
               <p className="lead mb-4">
                 Empowering individuals with AI-driven health analytics for better wellness decisions
               </p>
-              <button 
-                className="btn btn-outline-light btn-sm" 
-                onClick={toggleImageDisplay}
-              >
-                {showImages ? "Switch to Icons" : "Show Profile Images"}
-              </button>
+              
             </div>
           </div>
         </div>
       </section>
 
       {/* Mission Section - Updated styling */}
-      <section className="py-5">
+      <section className="py-5 " style={{ background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)' }}>
         <div className="container">
           <div className="row">
             <div className="col-lg-10 mx-auto">
@@ -92,17 +87,17 @@ const About = () => {
                 <div className="card-body text-center p-4">
                   {showImages ? (
                     <div className="rounded-circle mx-auto mb-3 overflow-hidden" style={{ width: '150px', height: '150px' }}>
-                      <img src="/api/placeholder/150/150" alt="Dr. Sarah Chen" className="img-fluid" />
+                      <img src="/api/placeholder/150/150" alt="sam" className="img-fluid" />
                     </div>
                   ) : (
                     <div className="rounded-circle bg-primary bg-opacity-10 mx-auto mb-3" style={{ width: '100px', height: '100px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <i className="bi bi-person-fill fs-1 text-primary"></i>
                     </div>
                   )}
-                  <h5 className="card-title mb-1">Dr. Sarah Chen</h5>
-                  <p className="text-muted mb-3">Chief Medical Officer</p>
+                  <h5 className="card-title mb-1">sam </h5>
+                  <p className="text-muted mb-3">Research Lead</p>
                   <p className="card-text">
-                    With over 15 years of experience in sleep medicine, Dr. Chen oversees the medical aspects of our sleep disorder analysis algorithm.
+                    lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos. Lorem ipsum dolor sit amet consectetur adipisicing elit. Maiores odit et accusamus totam molestias hic illo incidunt harum, saepe soluta, autem sit quisquam tenetur voluptatum ab similique rerum eos dolorem.
                   </p>
                 </div>
               </div>
@@ -113,17 +108,17 @@ const About = () => {
                 <div className="card-body text-center p-4">
                   {showImages ? (
                     <div className="rounded-circle mx-auto mb-3 overflow-hidden" style={{ width: '150px', height: '150px' }}>
-                      <img src="/api/placeholder/150/150" alt="Alex Rodriguez" className="img-fluid" />
+                      <img src="/api/placeholder/150/150" alt="Amandeep" className="img-fluid" />
                     </div>
                   ) : (
                     <div className="rounded-circle bg-primary bg-opacity-10 mx-auto mb-3" style={{ width: '100px', height: '100px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <i className="bi bi-person-fill fs-1 text-primary"></i>
                     </div>
                   )}
-                  <h5 className="card-title mb-1">Alex Rodriguez</h5>
-                  <p className="text-muted mb-3">AI Research Lead</p>
+                  <h5 className="card-title mb-1">Amandeep </h5>
+                  <p className="text-muted mb-3"> Research Lead</p>
                   <p className="card-text">
-                    Alex leads our AI research team, focusing on developing and refining the machine learning models that power our health analytics platform.
+                    lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos. Lorem ipsum dolor sit amet consectetur adipisicing elit. Maiores odit et accusamus totam molestias hic illo incidunt harum, saepe soluta, autem sit quisquam tenetur voluptatum ab similique rerum eos dolorem.
                   </p>
                 </div>
               </div>
@@ -134,17 +129,17 @@ const About = () => {
                 <div className="card-body text-center p-4">
                   {showImages ? (
                     <div className="rounded-circle mx-auto mb-3 overflow-hidden" style={{ width: '150px', height: '150px' }}>
-                      <img src="/api/placeholder/150/150" alt="Maya Johnson" className="img-fluid" />
+                      <img src="/api/placeholder/150/150" alt="Bharat" className="img-fluid" />
                     </div>
                   ) : (
                     <div className="rounded-circle bg-primary bg-opacity-10 mx-auto mb-3" style={{ width: '100px', height: '100px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <i className="bi bi-person-fill fs-1 text-primary"></i>
                     </div>
                   )}
-                  <h5 className="card-title mb-1">Maya Johnson</h5>
+                  <h5 className="card-title mb-1">Bharat</h5>
                   <p className="text-muted mb-3">User Experience Director</p>
                   <p className="card-text">
-                    Maya ensures our platform is accessible and user-friendly, making complex health data understandable for everyone.
+                    lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos. Lorem ipsum dolor sit amet consectetur adipisicing elit. Maiores odit et accusamus totam molestias hic illo incidunt harum, saepe soluta, autem sit quisquam tenetur voluptatum ab similique rerum eos dolorem.
                   </p>
                 </div>
               </div>
@@ -156,17 +151,17 @@ const About = () => {
                 <div className="card-body text-center p-4">
                   {showImages ? (
                     <div className="rounded-circle mx-auto mb-3 overflow-hidden" style={{ width: '150px', height: '150px' }}>
-                      <img src="/api/placeholder/150/150" alt="Dr. James Wilson" className="img-fluid" />
+                      <img src="/api/placeholder/150/150" alt="pawan" className="img-fluid" />
                     </div>
                   ) : (
                     <div className="rounded-circle bg-primary bg-opacity-10 mx-auto mb-3" style={{ width: '100px', height: '100px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <i className="bi bi-person-fill fs-1 text-primary"></i>
                     </div>
                   )}
-                  <h5 className="card-title mb-1">Dr. James Wilson</h5>
+                  <h5 className="card-title mb-1">Pawan</h5>
                   <p className="text-muted mb-3">Mental Health Specialist</p>
                   <p className="card-text">
-                    Dr. Wilson brings 12 years of clinical psychology experience, specializing in anxiety and depression diagnosis. He helps validate our mental health prediction models and ensures they align with clinical standards.
+                    lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos. Lorem ipsum dolor sit amet consectetur adipisicing elit. Maiores odit et accusamus totam molestias hic illo incidunt harum, saepe soluta, autem sit quisquam tenetur voluptatum ab similique rerum eos dolorem.
                   </p>
                 </div>
               </div>
@@ -177,17 +172,17 @@ const About = () => {
                 <div className="card-body text-center p-4">
                   {showImages ? (
                     <div className="rounded-circle mx-auto mb-3 overflow-hidden" style={{ width: '150px', height: '150px' }}>
-                      <img src="/api/placeholder/150/150" alt="Sophia Lee" className="img-fluid" />
+                      <img src="\dist\ChatGPT Image Apr 1, 2025, 03_33_51 AM.png" alt="Gaurang Srivastav" className="img-fluid" />
                     </div>
                   ) : (
                     <div className="rounded-circle bg-primary bg-opacity-10 mx-auto mb-3" style={{ width: '100px', height: '100px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <i className="bi bi-person-fill fs-1 text-primary"></i>
                     </div>
                   )}
-                  <h5 className="card-title mb-1">Sophia Lee, PhD</h5>
-                  <p className="text-muted mb-3">Nutrition Data Scientist</p>
+                  <h5 className="card-title mb-1">Gaurang Srivastav</h5>
+                  <p className="text-muted mb-3">Site Developer</p>
                   <p className="card-text">
-                    With a background in both nutritional science and data analytics, Sophia develops the algorithms behind our nutritional prediction tools, helping users understand their dietary needs based on health profiles.
+                    lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos. Lorem ipsum dolor sit amet consectetur adipisicing elit. Maiores odit et accusamus totam molestias hic illo incidunt harum, saepe soluta, autem sit quisquam tenetur voluptatum ab similique rerum eos dolorem.
                   </p>
                 </div>
               </div>
@@ -204,7 +199,7 @@ const About = () => {
               {showImages ? (
                 <div className="position-relative">
                   <div className="rounded-circle bg-white shadow-lg mx-auto overflow-hidden" style={{ width: '280px', height: '280px', border: '8px solid #ffffff' }}>
-                    <img src="\public\WhatsApp_Image_2025-03-18_at_13.28.26_cede9a8b.jpg" alt="Gaurang Srivastav" className="img-fluid" />
+                    <img src="\dist\WhatsApp_Image_2025-03-18_at_13.28.26_cede9a8b.jpg" alt="Gaurang Srivastav" className="img-fluid" />
                   </div>
                   <div className="position-absolute top-100 start-50 translate-middle">
                     <span className="badge bg-primary rounded-pill py-2 px-4 fs-6 shadow">Full Stack Developer</span>
@@ -236,7 +231,7 @@ const About = () => {
                       </div>
                       <div>
                         <h6 className="mb-1">Frontend Development</h6>
-                        <p className="text-muted mb-0 small">React, Bootstrap, JavaScript</p>
+                        <p className="text-muted mb-0 small">React, Html, Css, JavaScript</p>
                       </div>
                     </div>
                   </div>
@@ -257,8 +252,8 @@ const About = () => {
                         <i className="bi bi-bar-chart text-primary"></i>
                       </div>
                       <div>
-                        <h6 className="mb-1">Data Science</h6>
-                        <p className="text-muted mb-0 small">Python, TensorFlow, scikit-learn</p>
+                        <h6 className="mb-1">Framework</h6>
+                        <p className="text-muted mb-0 small">Bootstrap, Tailwind CSS, Material UI, Ionic </p>
                       </div>
                     </div>
                   </div>
@@ -269,7 +264,7 @@ const About = () => {
                       </div>
                       <div>
                         <h6 className="mb-1">Security & DevOps</h6>
-                        <p className="text-muted mb-0 small">AWS, Docker, CI/CD</p>
+                        <p className="text-muted mb-0 small">AWS, Docker</p>
                       </div>
                     </div>
                   </div>
@@ -331,17 +326,17 @@ const About = () => {
                   </div>
                   <div className="progress mb-4" style={{ height: '25px' }}>
                     <div className="progress-bar bg-success" role="progressbar" style={{ width: '85%' }} aria-valuenow="85" aria-valuemin="0" aria-valuemax="100">
-                      Health Risk Assessment
+                    Anxiety Prediction Analysis
                     </div>
                   </div>
                   <div className="progress mb-4" style={{ height: '25px' }}>
                     <div className="progress-bar bg-warning" role="progressbar" style={{ width: '75%' }} aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
-                      Lifestyle Correlation
+                    Depression Prediction Analysis
                     </div>
                   </div>
                   <div className="progress" style={{ height: '25px' }}>
                     <div className="progress-bar bg-info" role="progressbar" style={{ width: '95%' }} aria-valuenow="95" aria-valuemin="0" aria-valuemax="100">
-                      Personalized Recommendations
+                    Nutritional Prediction Analysis
                     </div>
                   </div>
                 </div>
@@ -352,7 +347,7 @@ const About = () => {
       </section>
 
       {/* Call to Action - Updated with new styling */}
-      <section className="py-5 bg-primary text-white">
+      <section className="py-5 bg-info text-white">
         <div className="container">
           <div className="row">
             <div className="col-lg-8 mx-auto text-center" data-aos="fade-up">
@@ -364,7 +359,7 @@ const About = () => {
                 <Link to="/sleep-disorder" className="btn btn-light btn-lg me-3 shadow">
                   Start Sleep Analysis
                 </Link>
-                <Link to="/register" className="btn btn-outline-light btn-lg">
+                <Link to="/login" className="btn btn-outline-light btn-lg">
                   Create Account
                 </Link>
               </div>

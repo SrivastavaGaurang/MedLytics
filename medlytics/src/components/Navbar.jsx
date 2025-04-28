@@ -102,7 +102,7 @@ const Navbar = () => {
           ) : (
             <div>
               <Link className="btn btn-outline-light me-2" to="/login">Login</Link>
-              <Link className="btn btn-light" to="/register">Sign Up</Link>
+              
             </div>
           )}
         </div>
