@@ -11,8 +11,8 @@ import './index.css';
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <Auth0Provider
-      domain="life-gallery.us.auth0.com"
-      clientId="UfKSbH15td8Rxho1l6LuHmfRjpybAr6E"
+      domain="gaurang-dev.us.auth0.com"
+    clientId="Be6QIK8pbPkLeuSBGwdcZDxZXJrHxgd3"
       authorizationParams={{
         redirect_uri: window.location.origin,
       }}
