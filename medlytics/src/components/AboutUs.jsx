@@ -172,7 +172,7 @@ const About = () => {
                 <div className="card-body text-center p-4">
                   {showImages ? (
                     <div className="rounded-circle mx-auto mb-3 overflow-hidden" style={{ width: '150px', height: '150px' }}>
-                      <img src="\dist\ChatGPT Image Apr 1, 2025, 03_33_51 AM.png" alt="Gaurang Srivastav" className="img-fluid" />
+                      <img src="https://res.cloudinary.com/dmilgqv8u/image/upload/v1746040208/ChatGPT_Image_Apr_1_2025_03_33_51_AM_xgki5n.png" alt="Gaurang Srivastav" className="img-fluid" />
                     </div>
                   ) : (
                     <div className="rounded-circle bg-primary bg-opacity-10 mx-auto mb-3" style={{ width: '100px', height: '100px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -199,7 +199,7 @@ const About = () => {
               {showImages ? (
                 <div className="position-relative">
                   <div className="rounded-circle bg-white shadow-lg mx-auto overflow-hidden" style={{ width: '280px', height: '280px', border: '8px solid #ffffff' }}>
-                    <img src="\dist\WhatsApp_Image_2025-03-18_at_13.28.26_cede9a8b.jpg" alt="Gaurang Srivastav" className="img-fluid" />
+                    <img src="https://res.cloudinary.com/dmilgqv8u/image/upload/v1746040173/WhatsApp_Image_2025-03-18_at_13.28.26_cede9a8b_xk7i6a.jpg" alt="Gaurang Srivastav" className="img-fluid" />
                   </div>
                   <div className="position-absolute top-100 start-50 translate-middle">
                     <span className="badge bg-primary rounded-pill py-2 px-4 fs-6 shadow">Full Stack Developer</span>
