@@ -51,7 +51,7 @@
 //     right: '0',
 //     width: '60%',
 //     height: '100%',
-//     background: `linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(37, 99, 235, 0.08) 100%)`,
+//     background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(37, 99, 235, 0.08) 100%),
 //     clipPath: 'polygon(25% 0%, 100% 0%, 100% 100%, 0% 100%)',
 //     zIndex: 0,
 //   }
@@ -79,7 +79,7 @@
 
 // const RightPanel = styled(Box)(({ theme }) => ({
 //   flex: '1',
-//   background: `linear-gradient(135deg, ${colors.primary} 0%, ${colors.primaryDark} 100%)`,
+//   background: linear-gradient(135deg, ${colors.primary} 0%, ${colors.primaryDark} 100%),
 //   padding: theme.spacing(6),
 //   display: 'flex',
 //   flexDirection: 'column',
@@ -210,7 +210,7 @@
 //   fontWeight: 500,
 //   textTransform: 'none',
 //   fontSize: '14px',
-//   border: `1px solid ${colors.border}`,
+//   border: 1px solid ${colors.border},
 //   marginBottom: '12px',
 //   boxShadow: '0 2px 5px rgba(0, 0, 0, 0.05)',
 //   justifyContent: 'flex-start',
@@ -262,8 +262,8 @@
 //       <div
 //         role="tabpanel"
 //         hidden={value !== index}
-//         id={`auth-tabpanel-${index}`}
-//         aria-labelledby={`auth-tab-${index}`}
+//         id={auth-tabpanel-${index}}
+//         aria-labelledby={auth-tab-${index}}
 //         {...other}
 //         style={{ display: value === index ? 'block' : 'none' }}
 //       >
@@ -398,7 +398,7 @@
 
 //   const handleSocialLogin = (provider) => {
 //     setError('');
-//     console.log(`Initiating ${provider} login flow`);
+//     console.log(Initiating ${provider} login flow);
 //     // Implement social login logic here
 //   };
 

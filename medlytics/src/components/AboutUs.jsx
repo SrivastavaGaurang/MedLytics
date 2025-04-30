@@ -108,14 +108,14 @@ const About = () => {
                 <div className="card-body text-center p-4">
                   {showImages ? (
                     <div className="rounded-circle mx-auto mb-3 overflow-hidden" style={{ width: '150px', height: '150px' }}>
-                      <img src="/api/placeholder/150/150" alt="Amandeep" className="img-fluid" />
+                      <img src="/api/placeholder/150/150" alt="Aman Deep" className="img-fluid" />
                     </div>
                   ) : (
                     <div className="rounded-circle bg-primary bg-opacity-10 mx-auto mb-3" style={{ width: '100px', height: '100px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <i className="bi bi-person-fill fs-1 text-primary"></i>
                     </div>
                   )}
-                  <h5 className="card-title mb-1">Amandeep </h5>
+                  <h5 className="card-title mb-1">Aman Deep </h5>
                   <p className="text-muted mb-3"> Research Lead</p>
                   <p className="card-text">
                     lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos. Lorem ipsum dolor sit amet consectetur adipisicing elit. Maiores odit et accusamus totam molestias hic illo incidunt harum, saepe soluta, autem sit quisquam tenetur voluptatum ab similique rerum eos dolorem.
