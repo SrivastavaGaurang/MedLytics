@@ -1,31 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useAuth0 } from '@auth0/auth0-react';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    // Check if token exists in localStorage
-    const token = localStorage.getItem('token');
-    setIsLoggedIn(!!token);
-  }, []);
+  const { isAuthenticated, user, logout, loginWithRedirect, isLoading } = useAuth0();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
   const handleLogout = () => {
-    // Clear localStorage
-    localStorage.removeItem('token');
-    localStorage.removeItem('userId');
-
-    // Update state
-    setIsLoggedIn(false);
-
-    // Redirect to home page
-    navigate('/', { replace: true });
+    logout({ returnTo: window.location.origin });
   };
 
   return (
@@ -51,26 +37,10 @@ const Navbar = () => {
               Services
             </Link>
             <ul className={`dropdown-menu ${isMenuOpen ? 'active' : ''}`} aria-labelledby="navbarDropdown">
-              <li>
-                <Link className="dropdown-item" to="/sleep-disorder" onClick={toggleMenu}>
-                  Sleep Disorder
-                </Link>
-              </li>
-              <li>
-                <Link className="dropdown-item" to="/anxiety-prediction" onClick={toggleMenu}>
-                  Anxiety Prediction
-                </Link>
-              </li>
-              <li>
-                <Link className="dropdown-item" to="/depression-prediction" onClick={toggleMenu}>
-                  Depression Prediction
-                </Link>
-              </li>
-              <li>
-                <Link className="dropdown-item" to="/nutritional-prediction" onClick={toggleMenu}>
-                  Nutritional Prediction
-                </Link>
-              </li>
+              <li><Link className="dropdown-item" to="/sleep-disorder" onClick={toggleMenu}>Sleep Disorder</Link></li>
+              <li><Link className="dropdown-item" to="/anxiety-prediction" onClick={toggleMenu}>Anxiety Prediction</Link></li>
+              <li><Link className="dropdown-item" to="/depression-prediction" onClick={toggleMenu}>Depression Prediction</Link></li>
+              <li><Link className="dropdown-item" to="/nutritional-prediction" onClick={toggleMenu}>Nutritional Prediction</Link></li>
             </ul>
           </li>
 
@@ -79,18 +49,19 @@ const Navbar = () => {
           <li><Link to="/contact" onClick={toggleMenu}><button className="btn-outline">Contact Us</button></Link></li>
         </ul>
 
-        {/* Login & Sign Up Buttons */}
+        {/* Auth Buttons */}
         <div className="auth-buttons">
-          {isLoggedIn ? (
+          {!isLoading && isAuthenticated && user ? (
             <div className="dropdown">
               <button
-                className="btn btn-light dropdown-toggle"
+                className="btn btn-light dropdown-toggle d-flex align-items-center"
                 type="button"
                 id="userDropdown"
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
               >
-                My Account
+                <img src={user.picture} alt={user.name} className="rounded-circle me-2" width="30" height="30" />
+                {user.name}
               </button>
               <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                 <li><Link className="dropdown-item" to="/dashboard">Dashboard</Link></li>
@@ -100,10 +71,11 @@ const Navbar = () => {
               </ul>
             </div>
           ) : (
-            <div>
-              <Link className="btn btn-outline-light me-2" to="/login">Login</Link>
-              
-            </div>
+            !isLoading && (
+              <button className="btn btn-outline-light me-2" onClick={() => loginWithRedirect()}>
+                Login
+              </button>
+            )
           )}
         </div>
       </div>

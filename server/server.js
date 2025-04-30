@@ -1,56 +1,56 @@
+// server.js - Main entry point for the MedLytics application
 import express from 'express';
-import bodyParser from 'body-parser';
+import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import mongoose from 'mongoose';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
 
-// Import routes
+// Import route files
 import authRoutes from './routes/auth.js';
-import blogRoutes from './routes/blog.js';
-import predictionRoutes from './routes/predictions.js';
-import userRoutes from './routes/users.js';
-import sleepRoutes from './routes/sleepAnalysis.js';
+import sleepRoutes from './routes/sleep.js';
+// Import other medical analysis routes here as needed
+// import diabetesRoutes from './routes/diabetes.js';
+// import heartRoutes from './routes/heart.js';
+// import mentalHealthRoutes from './routes/mentalHealth.js';
 
+// Load environment variables
 dotenv.config();
 
+// Initialize express
 const app = express();
-const PORT = process.env.PORT || 5000;
 
 // Middleware
+app.use(express.json());
 app.use(cors());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
 
-// MongoDB connection
-mongoose
-  .connect(process.env.MONGO_URI || 'mongodb://localhost:27017/medlytics', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => console.log('MongoDB connected successfully'))
-  .catch((err) => console.error('MongoDB connection error:', err));
+// Connect to MongoDB
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log('MongoDB connected'))
+  .catch(err => {
+    console.error('MongoDB connection error:', err);
+    process.exit(1);
+  });
 
-// Routes
+// Use routes
 app.use('/api/auth', authRoutes);
-app.use('/api/posts', blogRoutes);
-app.use('/api/predictions', predictionRoutes);
-app.use('/api/users', userRoutes);
 app.use('/api/sleep', sleepRoutes);
+// Use other routes
+// app.use('/api/diabetes', diabetesRoutes);
+// app.use('/api/heart', heartRoutes);
+// app.use('/api/mental-health', mentalHealthRoutes);
 
-// Basic route
+// Default route
 app.get('/', (req, res) => {
-  res.send('Welcome to Medlytics Backend!');
+  res.send('MedLytics API is running');
 });
 
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ message: 'Something went wrong!' });
+  res.status(500).json({ message: 'Something went wrong on the server' });
 });
 
 // Start server
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
-
-export default app; // For testing
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`MedLytics server running on port ${PORT}`));

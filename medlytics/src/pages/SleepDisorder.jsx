@@ -1,6 +1,8 @@
 // src/pages/SleepDisorder.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { analyzeSleep } from '../services/sleepService';
+import { useAuth0 } from '@auth0/auth0-react';
 
 const SleepDisorder = () => {
   const navigate = useNavigate();
@@ -8,9 +10,9 @@ const SleepDisorder = () => {
     age: '',
     gender: '',
     sleepDuration: '',
-    qualityOfSleep: '',
-    physicalActivity: '',
-    stressLevel: '',
+    qualityOfSleep: 5, // Default to a mid value (1–10)
+    physicalActivity: 50, // Default to mid (0–100)
+    stressLevel: 5,
     bmi: '',
     bloodPressure: {
       systolic: '',
@@ -19,6 +21,7 @@ const SleepDisorder = () => {
     heartRate: '',
     dailySteps: ''
   });
+  
   
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -38,8 +41,10 @@ const SleepDisorder = () => {
     } else {
       setFormData({
         ...formData,
-        [name]: value
-      });
+        [name]: ['qualityOfSleep', 'physicalActivity', 'stressLevel'].includes(name) 
+          ? Number(value)
+          : value
+      });      
     }
   };
   
@@ -64,45 +69,62 @@ const SleepDisorder = () => {
     }
   };
   
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setLoading(true);
+  //   setError(null);
     
-    try {
-      const token = localStorage.getItem('token');
+  //   try {
+  //     const token = localStorage.getItem('token');
       
-      if (!token) {
-        // If user is not logged in, save form data to localStorage and redirect to login
-        localStorage.setItem('sleepFormData', JSON.stringify(formData));
-        navigate('/login', { state: { from: '/sleep-disorder', message: 'Please log in to see your sleep analysis results' } });
-        return;
-      }
+  //     if (!token) {
+  //       // If user is not logged in, save form data to localStorage and redirect to login
+  //       localStorage.setItem('sleepFormData', JSON.stringify(formData));
+  //       navigate('/login', { state: { from: '/sleep-disorder', message: 'Please log in to see your sleep analysis results' } });
+  //       return;
+  //     }
       
-      const response = await fetch('http://localhost:5000/api/sleep/analyze', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-auth-token': token
-        },
-        body: JSON.stringify(formData)
-      });
+  //     const response = await fetch('http://localhost:5000/api/sleep/analyze', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         'x-auth-token': token
+  //       },
+  //       body: JSON.stringify(formData)
+  //     });
       
-      const data = await response.json();
+  //     const data = await response.json();
       
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to analyze sleep data');
-      }
+  //     if (!response.ok) {
+  //       throw new Error(data.message || 'Failed to analyze sleep data');
+  //     }
       
-      // Save analysis result ID and redirect to results page
-      navigate(`/sleep-results/${data._id}`);
-    } catch (err) {
-      console.error('Error submitting form:', err);
-      setError(err.message || 'An error occurred while analyzing your data');
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     // Save analysis result ID and redirect to results page
+  //     navigate(`/sleep-results/${data._id}`);
+  //   } catch (err) {
+  //     console.error('Error submitting form:', err);
+  //     setError(err.message || 'An error occurred while analyzing your data');
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  
+// const { getAccessTokenSilently } = useAuth0();
+const {user} = useAuth0()
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  setError(null);
+  const authId = user.sub;
+
+  e.preventDefault();
+  console.log('Submitting sleep form data:', formData);
+  const payload = { ...formData, authId };
+  const data = await analyzeSleep(payload);
+  navigate(`/sleep-results/${data._id}`);
+};
   
   // Render form based on current step
   const renderStep = () => {
