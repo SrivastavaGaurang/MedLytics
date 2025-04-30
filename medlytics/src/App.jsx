@@ -20,7 +20,8 @@ import NutritionalPrediction from './pages/NutritionalPrediction';
 import Dashboard from './pages/Dashboard';
 import NotFound from './pages/NotFound';
 import Contact from './components/contact';
-import Login from './components/account/Login';
+import SleepResult from './pages/SleepResults';
+// import Login from './components/account/Login';
 
 function App() {
   return (
@@ -35,7 +36,7 @@ function App() {
         <Route path="/blog" element={<Blog />} /> {/* ✅ This renders your blog list */}
         <Route path="/blog/:id" element={<BlogDetail />} />
         <Route path="/add-blog" element={<AddBlog />} /> {/* Optional */}
-        <Route path="/create-blog" element={<CreateBlog />} />
+        {/* <Route path="/create-blog" element={<CreateBlog />} /> */}
         <Route path="/edit-blog/:id" element={<EditBlog />} />
         <Route path="/blog-list/:id" element={<BlogList/>} />
         <Route path="/blog/:id" element={<BlogDetail />} />
@@ -52,7 +53,8 @@ function App() {
         <Route path="/depression-prediction" element={<DepressionPrediction />} />
         <Route path="/nutritional-prediction" element={<NutritionalPrediction />} />
         <Route path="/contact" element={<Contact />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/sleep-results/:id" element={<SleepResult />} />
+        {/* <Route path="/login" element={<Login />} /> */}
         {/* Add more routes as needed */}
       </Routes>
       <Footer />
