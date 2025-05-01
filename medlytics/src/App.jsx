@@ -7,11 +7,11 @@ import Home from './components/Home';
 import AboutUs from './components/AboutUs';
 import Services from './components/Services';
 import Doctors from './components/Doctors';
-import BlogList from './components/blogs/BlogList'; // ✅ new
+import BlogList from './components/blogs/BlogForm'; // ✅ new
 import BlogDetail from './components/blogs/BlogDetail'; // ✅ new
-import AddBlog from './components/blogs/AddBlog'; // ✅ new
-import Blog from './components/blogs/Blog'; // ✅ Updated path for Blog
-import CreateBlog from "./components/blogs/CreateBlog";
+import AddBlog from './components/blogs/BlogManagement'; // ✅ new
+import Blog from './components/blogs/MedBlog'; // ✅ Updated path for Blog
+import CreateBlog from "./components/blogs/BlogDashboard";
 import EditBlog from "./components/blogs/EditBlog";
 import SleepDisorder from './pages/SleepDisorder';
 import AnxietyPrediction from './pages/AnxietyPrediction';

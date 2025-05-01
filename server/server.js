@@ -9,6 +9,7 @@ import bcrypt from 'bcryptjs';
 // Import route files
 import authRoutes from './routes/auth.js';
 import sleepRoutes from './routes/sleep.js';
+import blogRoutes from './routes/blogs.js'; // Import the blog routes
 // Import other medical analysis routes here as needed
 // import diabetesRoutes from './routes/diabetes.js';
 // import heartRoutes from './routes/heart.js';
@@ -35,6 +36,7 @@ mongoose.connect(process.env.MONGO_URI)
 // Use routes
 app.use('/api/auth', authRoutes);
 app.use('/api/sleep', sleepRoutes);
+app.use('/api/blogs', blogRoutes); // Add the blog routes
 // Use other routes
 // app.use('/api/diabetes', diabetesRoutes);
 // app.use('/api/heart', heartRoutes);
