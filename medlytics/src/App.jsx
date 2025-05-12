@@ -16,7 +16,7 @@ import EditBlog from "./components/blogs/EditBlog";
 import SleepDisorder from './pages/SleepDisorder';
 import AnxietyPrediction from './pages/AnxietyPrediction';
 import DepressionPrediction from './pages/DepressionPrediction';
-import NutritionalPrediction from './pages/NutritionalPrediction';
+import NutritionalPrediction from './pages/BMIPrediction';
 import Dashboard from './pages/Dashboard';
 import NotFound from './pages/NotFound';
 import Contact from './components/contact';
