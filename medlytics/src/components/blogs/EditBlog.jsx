@@ -12,8 +12,10 @@ import {
   CloseButton,
   Spinner
 } from "react-bootstrap";
-import ReactQuill from 'react-quill';
+import ReactQuill from "react-quill";
+// Fixed CSS import
 import "react-quill/dist/quill.snow.css";
+
 
 const EditBlog = () => {
   const { id } = useParams();

@@ -19,7 +19,7 @@
     "aos": "^2.3.4",
     "axios": "^1.9.0",
     "body-parser": "^2.2.0",
-    "bootstrap": "^5.3.3",
+    "bootstrap": "^5.3.6",
     "chart.js": "^4.4.9",
     "cors": "^2.8.5",
     "date-fns": "^4.1.0",
@@ -35,7 +35,7 @@
     "react-chatbot-kit": "^2.2.2",
     "react-dom": "^18.3.1",
     "react-quill": "^2.0.0",
-    "react-router-dom": "^7.2.0",
+    "react-router-dom": "^7.6.0",
     "react-slick": "^0.30.3",
     "recharts": "^2.15.3",
     "slick-carousel": "^1.8.1"

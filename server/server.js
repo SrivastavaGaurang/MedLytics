@@ -3,17 +3,16 @@ import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import morgan from 'morgan';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 
-// Import route files
+// Route Imports
 import authRoutes from './routes/auth.js';
 import sleepRoutes from './routes/sleep.js';
-import blogRoutes from './routes/blogs.js'; // Import the blog routes
-// Import other medical analysis routes here as needed
-// import diabetesRoutes from './routes/diabetes.js';
-// import heartRoutes from './routes/heart.js';
-// import mentalHealthRoutes from './routes/mentalHealth.js';
+import blogRoutes from './routes/blogs.js';
+import userRoutes from './routes/userRoutes.js';
+import anxietyRoutes from './routes/anxietyRoutes.js';
 
 // Load environment variables
 dotenv.config();
@@ -22,37 +21,48 @@ dotenv.config();
 const app = express();
 
 // Middleware
-app.use(express.json());
 app.use(cors());
+app.use(express.json());
+app.use(morgan('dev'));
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('MongoDB connected'))
-  .catch(err => {
-    console.error('MongoDB connection error:', err);
-    process.exit(1);
-  });
-
-// Use routes
+// Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
 app.use('/api/sleep', sleepRoutes);
-app.use('/api/blogs', blogRoutes); // Add the blog routes
-// Use other routes
-// app.use('/api/diabetes', diabetesRoutes);
-// app.use('/api/heart', heartRoutes);
-// app.use('/api/mental-health', mentalHealthRoutes);
+app.use('/api/anxiety', anxietyRoutes);
+app.use('/api/blogs', blogRoutes);
 
-// Default route
+// Health check route
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', message: 'Server is running' });
+});
+
+// Basic route
 app.get('/', (req, res) => {
-  res.send('MedLytics API is running');
+  res.send('MedLytics API is running!');
 });
 
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ message: 'Something went wrong on the server' });
+  res.status(500).json({
+    message: err.message || 'Something went wrong on the server',
+    error: process.env.NODE_ENV === 'production' ? {} : err
+  });
 });
 
-// Start server
+// Connect to MongoDB and start server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`MedLytics server running on port ${PORT}`));
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/medlytics')
+  .then(() => {
+    console.log('MongoDB connected');
+    app.listen(PORT, () => {
+      console.log(`MedLytics server running on port ${PORT}`);
+    });
+  })
+  .catch(err => {
+    console.error('MongoDB connection error:', err);
+    process.exit(1);
+  });
+
+export default app;
