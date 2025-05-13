@@ -1,8 +1,9 @@
-// routes/anxietyRoutes.js - Updated version
+// routes/anxietyRoutes.js - Fixed version
 import express from 'express';
 import { expressjwt } from 'express-jwt';
 import jwksRsa from 'jwks-rsa';
 import AnxietyAnalysis from '../models/AnxietyAnalysis.js';
+import User from '../models/User.js';
 
 const router = express.Router();
 
@@ -39,6 +40,21 @@ router.post('/analyze', async (req, res) => {
       return res.status(400).json({ message: 'Auth ID is required' });
     }
 
+    // Try to find existing user
+    let user = await User.findOne({ authId });
+
+    // If not found, create a new user (similar to sleep.js)
+    if (!user) {
+      user = new User({
+        authId,
+        name: 'Anonymous', // Optional: replace with name from Auth0 if passed later
+        email: `${authId}@auth0.com`, // Fake/placeholder email
+        password: 'Auth0User' // Dummy, since Auth0 manages auth
+      });
+
+      await user.save();
+    }
+
     // Analyze anxiety based on provided data
     const anxietySeverity = determineAnxietySeverity(phq_score, anxiousness, suicidal);
     const anxietyType = determineAnxietyType(phq_score, anxiousness, epworth_score);
@@ -47,6 +63,7 @@ router.post('/analyze', async (req, res) => {
 
     // Create new anxiety analysis record
     const newAnalysis = new AnxietyAnalysis({
+      user: user._id, // Added this line to link to user
       authId,
       school_year,
       age,
@@ -71,7 +88,7 @@ router.post('/analyze', async (req, res) => {
     res.status(201).json(savedAnalysis);
   } catch (err) {
     console.error('Error analyzing anxiety data:', err);
-    res.status(500).json({ message: 'Server error processing anxiety data' });
+    res.status(500).json({ message: 'Server error processing anxiety data', error: err.message });
   }
 });
 
