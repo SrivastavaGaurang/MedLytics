@@ -23,22 +23,23 @@ const checkJwt = expressjwt({
   algorithms: ['RS256']
 });
 
-// @route   POST api/depression/analyze
+// @route   POST api/depression/predict
 // @desc    Submit depression data for analysis
 // @access  Public (authId required)
 router.post(
-  '/analyze',
+  '/predict',
   [
     check('authId', 'Auth ID is required').notEmpty(),
-    check('school_year', 'School year is required').isNumeric(),
     check('age', 'Age is required').isNumeric(),
     check('gender', 'Gender is required').isIn(['male', 'female', 'other']),
-    check('bmi', 'BMI is required').isNumeric(),
-    check('who_bmi', 'WHO BMI category is required').isIn(['Underweight', 'Normal', 'Overweight', 'Obese']),
-    check('phq_score', 'PHQ score is required').isNumeric(),
-    check('depressiveness', 'Depressiveness status is required').isBoolean(),
-    check('suicidal', 'Suicidal status is required').isBoolean(),
-    check('gad_score', 'GAD score is required').isNumeric()
+    check('maritalStatus', 'Marital status is required').isIn(['single', 'married', 'divorced', 'widowed']),
+    check('employmentStatus', 'Employment status is required').isIn(['employed', 'unemployed', 'student', 'retired']),
+    check('stressLevel', 'Stress level is required').isNumeric(),
+    check('sleepQuality', 'Sleep quality is required').isNumeric(),
+    check('socialSupport', 'Social support is required').isNumeric(),
+    check('physicalActivity', 'Physical activity is required').isNumeric(),
+    check('dietQuality', 'Diet quality is required').isNumeric(),
+    check('geneticHistory', 'Genetic history is required').isBoolean()
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -47,7 +48,20 @@ router.post(
     }
 
     try {
-      const { authId, school_year, age, gender, bmi, who_bmi, phq_score, depressiveness, suicidal, gad_score } = req.body;
+      const { 
+        authId, 
+        age, 
+        gender, 
+        maritalStatus, 
+        employmentStatus, 
+        stressLevel, 
+        sleepQuality, 
+        socialSupport, 
+        physicalActivity, 
+        dietQuality, 
+        geneticHistory, 
+        medicalConditions 
+      } = req.body;
 
       // Try to find existing user
       let user = await User.findOne({ authId });
@@ -66,29 +80,32 @@ router.post(
 
       // Analyze depression based on provided data
       const result = analyzeDepression({
-        school_year,
         age,
         gender,
-        bmi,
-        who_bmi,
-        phq_score,
-        depressiveness,
-        suicidal,
-        gad_score
+        maritalStatus,
+        employmentStatus,
+        stressLevel,
+        sleepQuality,
+        socialSupport,
+        physicalActivity,
+        dietQuality,
+        geneticHistory,
+        medicalConditions
       });
 
       const depressionAnalysis = new DepressionAnalysis({
         user: user._id,
-        authId,
-        school_year,
         age,
         gender,
-        bmi,
-        who_bmi,
-        phq_score,
-        depressiveness,
-        suicidal,
-        gad_score,
+        maritalStatus,
+        employmentStatus,
+        stressLevel,
+        sleepQuality,
+        socialSupport,
+        physicalActivity,
+        dietQuality,
+        geneticHistory,
+        medicalConditions,
         result
       });
 
@@ -144,130 +161,104 @@ router.get('/history', checkJwt, async (req, res) => {
   }
 });
 
-// Depression analysis algorithm (simulating the Python model logic)
+// Depression analysis algorithm
 function analyzeDepression(data) {
-  // Determine depression severity based on PHQ-9 score
-  let depressionSeverity;
-  if (data.phq_score >= 20 || data.suicidal) {
-    depressionSeverity = 'Severe';
-  } else if (data.phq_score >= 15) {
-    depressionSeverity = 'Moderate';
-  } else if (data.phq_score >= 5) {
-    depressionSeverity = 'Mild';
-  } else {
-    depressionSeverity = 'Minimal';
-  }
+  // Calculate risk level based on parameters
+  let riskPoints = 0;
+  let possibleDepressionTypes = [];
+  let recommendations = [];
 
-  // Determine depression type based on symptoms
-  let depressionType, depressionTypeDescription;
-  if (data.phq_score >= 15 && data.depressiveness && data.gad_score >= 10) {
-    depressionType = 'Major Depressive Disorder with Anxiety';
-    depressionTypeDescription = 'Depression with significant anxiety components requiring comprehensive treatment.';
-  } else if (data.phq_score >= 15 && data.depressiveness) {
-    depressionType = 'Major Depressive Disorder';
-    depressionTypeDescription = 'Severe depression that significantly impacts daily functioning.';
-  } else if (data.phq_score >= 10 && data.gad_score >= 15) {
-    depressionType = 'Anxiety with Depressive Features';
-    depressionTypeDescription = 'Primary anxiety disorder with secondary depression symptoms.';
-  } else if (data.phq_score >= 10) {
-    depressionType = 'Moderate Depression';
-    depressionTypeDescription = 'Depression symptoms that cause noticeable impairment in functioning.';
-  } else {
-    depressionType = 'Mild Depressive Symptoms';
-    depressionTypeDescription = 'Mild symptoms that may not meet clinical threshold for a disorder.';
-  }
-
-  // Determine key factors
-  const keyFactors = [];
+  // Risk factors analysis
+  if (data.stressLevel > 7) riskPoints += 2;
+  if (data.sleepQuality < 4) riskPoints += 2;
+  if (data.socialSupport < 4) riskPoints += 2;
+  if (data.physicalActivity < 30) riskPoints += 1;
+  if (data.dietQuality < 4) riskPoints += 1;
+  if (data.geneticHistory) riskPoints += 2;
   
-  if (data.phq_score >= 10) {
-    keyFactors.push({
-      name: 'Depressed Mood',
-      impact: data.phq_score >= 15 ? 'High' : 'Medium'
-    });
-  }
+  // Age and gender factors
+  if (data.age < 25 || data.age > 65) riskPoints += 1;
+  if (data.gender === 'female') riskPoints += 1; // Statistically higher rates
   
-  if (data.depressiveness) {
-    keyFactors.push({
-      name: 'Persistent Sadness',
-      impact: 'High'
-    });
-  }
+  // Marital and employment status
+  if (data.maritalStatus === 'divorced' || data.maritalStatus === 'widowed') riskPoints += 1;
+  if (data.employmentStatus === 'unemployed') riskPoints += 2;
   
-  if (data.suicidal) {
-    keyFactors.push({
-      name: 'Suicidal Ideation',
-      impact: 'High'
-    });
-  }
-  
-  if (data.gad_score >= 10) {
-    keyFactors.push({
-      name: 'Anxiety',
-      impact: data.gad_score >= 15 ? 'High' : 'Medium'
-    });
-  }
-  
-  if (data.bmi < 18.5 || data.bmi >= 30) {
-    keyFactors.push({
-      name: 'Physical Health',
-      impact: 'Medium'
-    });
+  // Medical conditions impact
+  if (data.medicalConditions && data.medicalConditions.length > 0) {
+    const highRiskConditions = [
+      'hypothyroidism', 'chronic pain', 'fibromyalgia', 'chronic fatigue', 
+      'autoimmune', 'cancer', 'heart disease', 'diabetes', 'parkinsons', 'alzheimers'
+    ];
+    
+    const hasHighRiskCondition = data.medicalConditions.some(condition => 
+      highRiskConditions.some(highRisk => 
+        condition.toLowerCase().includes(highRisk.toLowerCase())
+      )
+    );
+    
+    if (hasHighRiskCondition) riskPoints += 2;
+    if (data.medicalConditions.length >= 2) riskPoints += 1;
   }
 
   // Determine risk level
   let riskLevel = 'low';
-  if (data.suicidal || data.phq_score >= 20) {
+  if (riskPoints >= 8) {
     riskLevel = 'high';
-  } else if (data.phq_score >= 15 || (data.phq_score >= 10 && data.depressiveness)) {
+  } else if (riskPoints >= 4) {
     riskLevel = 'moderate';
   }
 
-  // Generate recommendations
-  const recommendations = [];
-  
-  // Base recommendations
-  recommendations.push('Practice self-care activities that bring you joy and relaxation');
+  // Determine depression types
+  if (riskPoints >= 8) {
+    possibleDepressionTypes.push('Major Depressive Disorder');
+    if (data.stressLevel > 7) {
+      possibleDepressionTypes.push('Stress-Induced Depression');
+    }
+  } else if (riskPoints >= 4) {
+    possibleDepressionTypes.push('Mild to Moderate Depression');
+    if (data.socialSupport < 4) {
+      possibleDepressionTypes.push('Social Isolation-Related Depression');
+    }
+  } else {
+    possibleDepressionTypes.push('Minimal Depression Risk');
+  }
+
+  // Add specific recommendations
+  recommendations.push('Practice regular self-care activities that bring you joy and relaxation');
   recommendations.push('Maintain a consistent sleep schedule with 7-9 hours of sleep each night');
   
-  // Severity-based recommendations
-  if (depressionSeverity === 'Severe') {
-    recommendations.push('Seek immediate professional help from a mental health specialist');
-    recommendations.push('Consider both therapy and medication options, which work best in combination for severe depression');
-    recommendations.push('Establish a safety plan with trusted individuals and emergency contacts');
-  } else if (depressionSeverity === 'Moderate') {
-    recommendations.push('Consult with a mental health professional for a comprehensive evaluation');
-    recommendations.push('Engage in regular physical activity - even short walks can improve mood');
-    recommendations.push('Practice mindfulness meditation to reduce rumination and negative thoughts');
-  } else if (depressionSeverity === 'Mild') {
-    recommendations.push('Consider talking to a counselor or therapist about your feelings');
-    recommendations.push('Establish a daily routine with meaningful activities');
-    recommendations.push('Connect regularly with supportive friends and family');
+  if (data.stressLevel > 6) {
+    recommendations.push('Incorporate stress management techniques such as meditation, deep breathing, or yoga');
   }
   
-  // Factor-specific recommendations
-  if (keyFactors.some(f => f.name === 'Anxiety')) {
-    recommendations.push('Practice deep breathing exercises when feeling overwhelmed');
-    recommendations.push('Limit caffeine and alcohol which can worsen anxiety symptoms');
+  if (data.sleepQuality < 6) {
+    recommendations.push('Improve sleep hygiene by limiting screen time before bed and creating a restful environment');
   }
   
-  if (keyFactors.some(f => f.name === 'Physical Health')) {
-    recommendations.push('Consult with a healthcare provider about a balanced nutrition plan');
-    recommendations.push('Set small, achievable fitness goals to improve overall wellbeing');
+  if (data.socialSupport < 6) {
+    recommendations.push('Connect regularly with supportive friends and family, or consider joining support groups');
   }
   
-  if (keyFactors.some(f => f.name === 'Suicidal Ideation')) {
-    recommendations.push('Remove access to means of self-harm and ensure regular check-ins with mental health professionals');
-    recommendations.push('Contact the National Suicide Prevention Lifeline at 988 if experiencing a crisis');
+  if (data.physicalActivity < 50) {
+    recommendations.push('Gradually increase physical activity - aim for at least 150 minutes of moderate exercise per week');
+  }
+  
+  if (data.dietQuality < 6) {
+    recommendations.push('Focus on a balanced diet rich in vegetables, fruits, whole grains, and omega-3 fatty acids');
+  }
+  
+  if (riskLevel === 'high') {
+    recommendations.push('Consider seeking professional help from a mental health specialist');
+    recommendations.push('Explore therapy options such as cognitive behavioral therapy (CBT) which is effective for depression');
+  } else if (riskLevel === 'moderate') {
+    recommendations.push('Consider talking to a healthcare provider about your mental health concerns');
   }
 
   return {
-    depressionSeverity,
-    depressionType,
-    depressionTypeDescription,
-    keyFactors,
     riskLevel,
-    recommendations: [...new Set(recommendations)] // Remove duplicates
+    possibleDepressionTypes,
+    recommendations
   };
 }
 

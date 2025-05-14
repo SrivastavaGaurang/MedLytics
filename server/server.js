@@ -14,6 +14,10 @@ import blogRoutes from './routes/blogs.js';
 import userRoutes from './routes/userRoutes.js';
 import anxietyRoutes from './routes/anxietyRoutes.js';
 import depressionRoutes from './routes/depressionRoutes.js';
+
+import bmiRoutes from './routes/bmiRoutes.js';
+
+
 // Load environment variables
 dotenv.config();
 
@@ -32,6 +36,7 @@ app.use('/api/sleep', sleepRoutes);
 app.use('/api/anxiety', anxietyRoutes);
 app.use('/api/depression', depressionRoutes);
 app.use('/api/blogs', blogRoutes);
+app.use('/api/bmi', bmiRoutes);
 
 // Health check route
 app.get('/health', (req, res) => {

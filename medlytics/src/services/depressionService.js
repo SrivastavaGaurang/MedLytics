@@ -4,8 +4,13 @@ import axios from 'axios';
 
 // Submit depression analysis data - doesn't require token
 export const analyzeDepression = async (formData) => {
-    const response = await axios.post('http://localhost:5000/api/depression/predict', formData);
-    return response.data;
+    try {
+        const response = await axios.post('http://localhost:5000/api/depression/predict', formData);
+        return response.data;
+    } catch (error) {
+        console.error('Error submitting depression analysis:', error);
+        throw error;
+    }
 };  
 
 // Get depression result by ID - doesn't require token for now

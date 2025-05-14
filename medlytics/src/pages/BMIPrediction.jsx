@@ -1,227 +1,417 @@
+// src/pages/BMIPrediction.jsx
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { analyzeBMI } from '../services/bmiService';
+import { useAuth0 } from '@auth0/auth0-react';
 
-const NutritionalPrediction = () => {
+const BMIPrediction = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    gender: 'Male',
-    age: 30,
-    sleep_duration: 7.0,
-    quality_of_sleep: 7,
-    physical_activity: 60,
-    stress_level: 5,
-    heart_rate: 75,
-    daily_steps: 8000,
-    systolic: 120,
-    diastolic: 80
+    gender: '',
+    age: '',
+    sleepDuration: '',
+    qualityOfSleep: 5, // Default to mid value (1-10)
+    physicalActivityLevel: 50, // Default to mid value (0-100)
+    stressLevel: 5, // Default to mid value (1-10)
+    heartRate: '',
+    dailySteps: '',
+    bloodPressure: {
+      systolic: '',
+      diastolic: ''
+    }
   });
-
-  const [prediction, setPrediction] = useState(null);
+  
+  const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
-
-  const handleChange = (name, value) => {
-    setFormData({
-      ...formData,
-      [name]: value
-    });
+  const [error, setError] = useState(null);
+  
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    
+    if (name === 'systolic' || name === 'diastolic') {
+      setFormData({
+        ...formData,
+        bloodPressure: {
+          ...formData.bloodPressure,
+          [name]: value
+        }
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: ['qualityOfSleep', 'physicalActivityLevel', 'stressLevel'].includes(name) 
+          ? Number(value)
+          : value
+      });      
+    }
   };
-
-  const handleNumericChange = (name, value) => {
-    setFormData({
-      ...formData,
-      [name]: parseFloat(value) || 0
-    });
+  
+  const nextStep = () => {
+    setStep(step + 1);
   };
+  
+  const prevStep = () => {
+    setStep(step - 1);
+  };
+  
+  const { user } = useAuth0();
 
-  const handleSubmit = () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     setLoading(true);
+    setError(null);
+    const authId = user?.sub || 'anonymous';
 
-    // Here you would connect to your backend API
-    // For now, we'll simulate a response
-    setTimeout(() => {
-      const bmiCategories = ['Underweight', 'Normal', 'Overweight', 'Obese'];
-      const predictedCategory = bmiCategories[Math.floor(Math.random() * bmiCategories.length)];
-      
-      setPrediction(predictedCategory);
+    try {
+      console.log('Submitting BMI prediction form data:', formData);
+      const payload = { ...formData, authId };
+      const data = await analyzeBMI(payload);
+      navigate(`/bmi-results/${data._id}`);
+    } catch (err) {
+      console.error('Error submitting form:', err);
+      setError(err.message || 'An error occurred while analyzing your data');
+    } finally {
       setLoading(false);
-    }, 1500);
+    }
   };
-
+  
+  // Render form based on current step
+  const renderStep = () => {
+    switch (step) {
+      case 1:
+        return (
+          <>
+            <h3 className="mb-4">Personal Information</h3>
+            <div className="mb-3">
+              <label htmlFor="age" className="form-label">Age</label>
+              <input
+                type="number"
+                className="form-control"
+                id="age"
+                name="age"
+                value={formData.age}
+                onChange={handleChange}
+                required
+                min="18"
+                max="100"
+              />
+            </div>
+            
+            <div className="mb-3">
+              <label htmlFor="gender" className="form-label">Gender</label>
+              <select
+                className="form-select"
+                id="gender"
+                name="gender"
+                value={formData.gender}
+                onChange={handleChange}
+                required
+              >
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+              </select>
+            </div>
+            
+            <div className="d-grid mt-4">
+              <button 
+                type="button" 
+                className="btn btn-primary" 
+                onClick={nextStep}
+              >
+                Next
+              </button>
+            </div>
+          </>
+        );
+        
+      case 2:
+        return (
+          <>
+            <h3 className="mb-4">Sleep Information</h3>
+            <div className="mb-3">
+              <label htmlFor="sleepDuration" className="form-label">
+                Average Sleep Duration (hours per night)
+              </label>
+              <input
+                type="number"
+                className="form-control"
+                id="sleepDuration"
+                name="sleepDuration"
+                value={formData.sleepDuration}
+                onChange={handleChange}
+                required
+                min="1"
+                max="12"
+                step="0.1"
+              />
+            </div>
+            
+            <div className="mb-3">
+              <label htmlFor="qualityOfSleep" className="form-label">
+                Quality of Sleep (1-10)
+              </label>
+              <input
+                type="range"
+                className="form-range"
+                id="qualityOfSleep"
+                name="qualityOfSleep"
+                min="1"
+                max="10"
+                value={formData.qualityOfSleep}
+                onChange={handleChange}
+                required
+              />
+              <div className="d-flex justify-content-between">
+                <small>Poor (1)</small>
+                <small>Excellent (10)</small>
+              </div>
+            </div>
+            
+            <div className="d-flex justify-content-between mt-4">
+              <button 
+                type="button" 
+                className="btn btn-outline-secondary" 
+                onClick={prevStep}
+              >
+                Back
+              </button>
+              <button 
+                type="button" 
+                className="btn btn-primary" 
+                onClick={nextStep}
+              >
+                Next
+              </button>
+            </div>
+          </>
+        );
+        
+      case 3:
+        return (
+          <>
+            <h3 className="mb-4">Health & Lifestyle</h3>
+            <div className="mb-3">
+              <label htmlFor="physicalActivityLevel" className="form-label">
+                Physical Activity Level (0-100)
+              </label>
+              <input
+                type="range"
+                className="form-range"
+                id="physicalActivityLevel"
+                name="physicalActivityLevel"
+                min="0"
+                max="100"
+                value={formData.physicalActivityLevel}
+                onChange={handleChange}
+                required
+              />
+              <div className="d-flex justify-content-between">
+                <small>Sedentary (0)</small>
+                <small>Very Active (100)</small>
+              </div>
+            </div>
+            
+            <div className="mb-3">
+              <label htmlFor="stressLevel" className="form-label">
+                Stress Level (1-10)
+              </label>
+              <input
+                type="range"
+                className="form-range"
+                id="stressLevel"
+                name="stressLevel"
+                min="1"
+                max="10"
+                value={formData.stressLevel}
+                onChange={handleChange}
+                required
+              />
+              <div className="d-flex justify-content-between">
+                <small>Low (1)</small>
+                <small>High (10)</small>
+              </div>
+            </div>
+            
+            <div className="mb-3">
+              <label htmlFor="dailySteps" className="form-label">
+                Average Daily Steps
+              </label>
+              <input
+                type="number"
+                className="form-control"
+                id="dailySteps"
+                name="dailySteps"
+                value={formData.dailySteps}
+                onChange={handleChange}
+                required
+                min="100"
+                max="30000"
+              />
+            </div>
+            
+            <div className="d-flex justify-content-between mt-4">
+              <button 
+                type="button" 
+                className="btn btn-outline-secondary" 
+                onClick={prevStep}
+              >
+                Back
+              </button>
+              <button 
+                type="button" 
+                className="btn btn-primary" 
+                onClick={nextStep}
+              >
+                Next
+              </button>
+            </div>
+          </>
+        );
+        
+      case 4:
+        return (
+          <>
+            <h3 className="mb-4">Vital Signs</h3>
+            <div className="row mb-3">
+              <div className="col-md-6">
+                <label htmlFor="systolic" className="form-label">
+                  Systolic Blood Pressure (mmHg)
+                </label>
+                <input
+                  type="number"
+                  className="form-control"
+                  id="systolic"
+                  name="systolic"
+                  value={formData.bloodPressure.systolic}
+                  onChange={handleChange}
+                  required
+                  min="70"
+                  max="200"
+                />
+              </div>
+              <div className="col-md-6">
+                <label htmlFor="diastolic" className="form-label">
+                  Diastolic Blood Pressure (mmHg)
+                </label>
+                <input
+                  type="number"
+                  className="form-control"
+                  id="diastolic"
+                  name="diastolic"
+                  value={formData.bloodPressure.diastolic}
+                  onChange={handleChange}
+                  required
+                  min="40"
+                  max="120"
+                />
+              </div>
+            </div>
+              
+            <div className="mb-4">
+              <label htmlFor="heartRate" className="form-label">
+                Resting Heart Rate (bpm)
+              </label>
+              <input
+                type="number"
+                className="form-control"
+                id="heartRate"
+                name="heartRate"
+                value={formData.heartRate}
+                onChange={handleChange}
+                required
+                min="40"
+                max="200"
+              />
+            </div>
+              
+            <div className="d-flex justify-content-between mt-4">
+              <button 
+                type="button" 
+                className="btn btn-outline-secondary" 
+                onClick={prevStep}
+              >
+                Back
+              </button>
+              <button 
+                type="submit" 
+                className="btn btn-success"
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    Analyzing...
+                  </>
+                ) : 'Predict BMI Category'}
+              </button>
+            </div>
+          </>
+        );
+          
+      default:
+        return null;
+    }
+  };
+    
   return (
     <div className="container py-5">
       <div className="row">
         <div className="col-lg-8 mx-auto">
           <div className="card shadow">
-            <div className="card-header bg-success text-white">
+            <div className="card-header bg-primary text-white">
               <h2 className="mb-0">BMI Category Prediction</h2>
             </div>
-            <div className="card-body">
-              <p className="lead mb-4">
-                Enter your health information below to get a prediction of your BMI category.
-              </p>
-
-              <div>
-                <div className="row mb-3">
-                  <div className="col-md-6">
-                    <label htmlFor="gender" className="form-label">Gender</label>
-                    <select 
-                      className="form-select" 
-                      id="gender"
-                      value={formData.gender}
-                      onChange={(e) => handleChange('gender', e.target.value)}
-                    >
-                      <option value="Male">Male</option>
-                      <option value="Female">Female</option>
-                    </select>
-                  </div>
-                  <div className="col-md-6">
-                    <label htmlFor="age" className="form-label">Age</label>
-                    <input 
-                      type="number" 
-                      className="form-control" 
-                      id="age"
-                      min="18"
-                      max="100"
-                      value={formData.age}
-                      onChange={(e) => handleNumericChange('age', e.target.value)}
-                    />
-                  </div>
+            <div className="card-body p-4">
+              <div className="mb-4">
+                <div className="progress" style={{ height: '8px' }}>
+                  <div 
+                    className="progress-bar" 
+                    role="progressbar" 
+                    style={{ width: `${(step / 4) * 100}%` }}
+                    aria-valuenow={step} 
+                    aria-valuemin="1" 
+                    aria-valuemax="4"
+                  ></div>
                 </div>
-
-                <div className="row mb-3">
-                  <div className="col-md-6">
-                    <label htmlFor="sleep_duration" className="form-label">Sleep Duration (hours)</label>
-                    <input 
-                      type="number" 
-                      step="0.1" 
-                      className="form-control" 
-                      id="sleep_duration"
-                      min="0"
-                      max="24"
-                      value={formData.sleep_duration}
-                      onChange={(e) => handleNumericChange('sleep_duration', e.target.value)}
-                    />
-                  </div>
-                  <div className="col-md-6">
-                    <label htmlFor="quality_of_sleep" className="form-label">Quality of Sleep (1-10)</label>
-                    <input 
-                      type="number" 
-                      className="form-control" 
-                      id="quality_of_sleep"
-                      min="1"
-                      max="10"
-                      value={formData.quality_of_sleep}
-                      onChange={(e) => handleNumericChange('quality_of_sleep', e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div className="row mb-3">
-                  <div className="col-md-6">
-                    <label htmlFor="physical_activity" className="form-label">Physical Activity Level (min/day)</label>
-                    <input 
-                      type="number" 
-                      className="form-control" 
-                      id="physical_activity"
-                      min="0"
-                      max="300"
-                      value={formData.physical_activity}
-                      onChange={(e) => handleNumericChange('physical_activity', e.target.value)}
-                    />
-                  </div>
-                  <div className="col-md-6">
-                    <label htmlFor="stress_level" className="form-label">Stress Level (1-10)</label>
-                    <input 
-                      type="number" 
-                      className="form-control" 
-                      id="stress_level"
-                      min="1"
-                      max="10"
-                      value={formData.stress_level}
-                      onChange={(e) => handleNumericChange('stress_level', e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div className="row mb-3">
-                  <div className="col-md-6">
-                    <label htmlFor="heart_rate" className="form-label">Heart Rate (bpm)</label>
-                    <input 
-                      type="number" 
-                      className="form-control" 
-                      id="heart_rate"
-                      min="40"
-                      max="200"
-                      value={formData.heart_rate}
-                      onChange={(e) => handleNumericChange('heart_rate', e.target.value)}
-                    />
-                  </div>
-                  <div className="col-md-6">
-                    <label htmlFor="daily_steps" className="form-label">Daily Steps</label>
-                    <input 
-                      type="number" 
-                      className="form-control" 
-                      id="daily_steps"
-                      min="0"
-                      max="50000"
-                      value={formData.daily_steps}
-                      onChange={(e) => handleNumericChange('daily_steps', e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div className="row mb-4">
-                  <div className="col-md-6">
-                    <label htmlFor="systolic" className="form-label">Systolic Blood Pressure (mmHg)</label>
-                    <input 
-                      type="number" 
-                      className="form-control" 
-                      id="systolic"
-                      min="80"
-                      max="200"
-                      value={formData.systolic}
-                      onChange={(e) => handleNumericChange('systolic', e.target.value)}
-                    />
-                  </div>
-                  <div className="col-md-6">
-                    <label htmlFor="diastolic" className="form-label">Diastolic Blood Pressure (mmHg)</label>
-                    <input 
-                      type="number" 
-                      className="form-control" 
-                      id="diastolic"
-                      min="40"
-                      max="130"
-                      value={formData.diastolic}
-                      onChange={(e) => handleNumericChange('diastolic', e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div className="d-grid gap-2">
-                  <button 
-                    className="btn btn-success btn-lg"
-                    disabled={loading}
-                    onClick={handleSubmit}
-                  >
-                    {loading ? 'Processing...' : 'Predict BMI Category'}
-                  </button>
+                <div className="d-flex justify-content-between mt-1">
+                  <span className={step >= 1 ? 'text-primary' : 'text-muted'}>Personal</span>
+                  <span className={step >= 2 ? 'text-primary' : 'text-muted'}>Sleep</span>
+                  <span className={step >= 3 ? 'text-primary' : 'text-muted'}>Lifestyle</span>
+                  <span className={step >= 4 ? 'text-primary' : 'text-muted'}>Vitals</span>
                 </div>
               </div>
-
-              {prediction && (
-                <div className="mt-4">
-                  <div className="alert alert-info">
-                    <h4 className="alert-heading">Prediction Result</h4>
-                    <p className="mb-0">
-                      Based on the information provided, your predicted BMI category is: 
-                      <strong> {prediction}</strong>
-                    </p>
-                    <hr />
-                    <p className="mb-0 small">
-                      Note: This is only a prediction based on lifestyle factors and not a direct measurement. 
-                      Please consult with a healthcare professional for proper evaluation.
-                    </p>
-                  </div>
+              
+              {error && (
+                <div className="alert alert-danger" role="alert">
+                  {error}
                 </div>
               )}
+              
+              <form onSubmit={handleSubmit}>
+                {renderStep()}
+              </form>
+            </div>
+          </div>
+          
+          <div className="card mt-4 shadow-sm">
+            <div className="card-body">
+              <h5 className="card-title">Why BMI Prediction Matters</h5>
+              <p className="card-text">
+                Your BMI category is an important indicator of your overall health. By analyzing various 
+                lifestyle factors, sleep patterns, and vital signs, we can predict your BMI category to help 
+                you understand your current health status.
+              </p>
+              <p className="card-text">
+                Our AI-powered analysis uses machine learning to predict your BMI category based on the 
+                information you provide. This can help identify potential health risks and provide 
+                personalized recommendations for improvement.
+              </p>
+              <p className="card-text text-muted small">
+                <strong>Note:</strong> This tool is for informational purposes only and does not replace 
+                professional medical advice. Always consult with a healthcare provider for proper diagnosis 
+                and treatment.
+              </p>
             </div>
           </div>
         </div>
@@ -229,5 +419,5 @@ const NutritionalPrediction = () => {
     </div>
   );
 };
-
-export default NutritionalPrediction;
+  
+export default BMIPrediction;
