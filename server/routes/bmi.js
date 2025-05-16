@@ -1,9 +1,11 @@
-const express = require('express');
+// routes/bmi.js - Converted to ES Module format
+import express from 'express';
+import { check, validationResult } from 'express-validator';
+import auth from '../middleware/auth.js';
+import BMIAnalysis from '../models/BMIAnalysis.js';
+import User from '../models/User.js';
+
 const router = express.Router();
-const { check, validationResult } = require('express-validator');
-const auth = require('../../middleware/auth');
-const BMIAnalysis = require('../../models/BMIAnalysis');
-const User = require('../../models/User');
 
 // @route   POST api/bmi
 // @desc    Create or update a BMI analysis
@@ -126,7 +128,8 @@ router.delete('/:id', auth, async (req, res) => {
       return res.status(401).json({ msg: 'User not authorized' });
     }
     
-    await bmiAnalysis.remove();
+    // Updated from .remove() to .deleteOne() as .remove() is deprecated
+    await bmiAnalysis.deleteOne();
     res.json({ msg: 'BMI analysis removed' });
   } catch (err) {
     console.error(err.message);
@@ -137,4 +140,4 @@ router.delete('/:id', auth, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

@@ -10,13 +10,13 @@ import bcrypt from 'bcryptjs';
 // Route Imports
 import authRoutes from './routes/auth.js';
 import sleepRoutes from './routes/sleep.js';
+// Import depression.js instead of depressionRoutes.js
+import depressionRoutes from './routes/depression.js';
 import blogRoutes from './routes/blogs.js';
 import userRoutes from './routes/userRoutes.js';
 import anxietyRoutes from './routes/anxietyRoutes.js';
-import depressionRoutes from './routes/depressionRoutes.js';
-
-import bmiRoutes from './routes/bmiRoutes.js';
-
+// Import bmi.js instead of bmiRoutes.js - also note this might need ES module conversion
+import bmiRoutes from './routes/bmi.js';
 
 // Load environment variables
 dotenv.config();
