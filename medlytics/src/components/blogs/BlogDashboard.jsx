@@ -1,446 +1,352 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { 
-  Container, 
-  Row, 
-  Col, 
-  Card, 
-  Button, 
-  Table,
-  Spinner,
-  Badge,
-  ProgressBar
-} from "react-bootstrap";
-import { 
-  getAllBlogs, 
-  getRecentBlogs, 
-  getAllCategories,
-  getAllTags 
-} from "../../services/blogService";
+// components/blogs/BlogDashboard.jsx
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { createBlog } from '../../services/blogService';
+import { useAuth0 } from '@auth0/auth0-react';
+import { FaSave, FaTimes, FaPlus, FaImage, FaEye, FaEdit } from 'react-icons/fa';
+import ReactMarkdown from 'react-markdown';
 
 const BlogDashboard = () => {
   const navigate = useNavigate();
+  const { user, isAuthenticated, loginWithRedirect } = useAuth0();
   
-  // State
-  const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState({
-    totalBlogs: 0,
-    totalCategories: 0,
-    totalTags: 0,
-    featuredBlogs: 0,
-    categoryDistribution: [],
-    latestBlogs: []
+  const [formData, setFormData] = useState({
+    title: '',
+    content: '',
+    summary: '',
+    image: 'https://via.placeholder.com/800x400?text=Medical+Blog+Image',
+    author: user?.name || 'MedLytics Team',
+    tags: []
   });
+  const [tagInput, setTagInput] = useState('');
+  const [error, setError] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [previewMode, setPreviewMode] = useState(false);
 
-  // Fetch data on component mount
-  useEffect(() => {
-    const fetchDashboardData = async () => {
-      setLoading(true);
-      try {
-        // Fetch all required data
-        const [blogs, categories, tags, recentBlogs] = await Promise.all([
-          getAllBlogs(),
-          getAllCategories(),
-          getAllTags(),
-          getRecentBlogs(5)
-        ]);
-        
-        // Calculate category distribution
-        const categoryCount = {};
-        blogs.forEach(blog => {
-          if (categoryCount[blog.category]) {
-            categoryCount[blog.category]++;
-          } else {
-            categoryCount[blog.category] = 1;
-          }
-        });
-        
-        const categoryDistribution = Object.keys(categoryCount).map(category => ({
-          name: category,
-          count: categoryCount[category],
-          percentage: Math.round((categoryCount[category] / blogs.length) * 100)
-        })).sort((a, b) => b.count - a.count);
-        
-        // Set stats
-        setStats({
-          totalBlogs: blogs.length,
-          totalCategories: categories.length,
-          totalTags: tags.length,
-          featuredBlogs: blogs.filter(blog => blog.featured).length,
-          categoryDistribution,
-          latestBlogs: recentBlogs
-        });
-      } catch (error) {
-        console.error("Error fetching dashboard data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    fetchDashboardData();
-  }, []);
+  // Redirect to login if not authenticated
+  React.useEffect(() => {
+    if (!isAuthenticated) {
+      loginWithRedirect({
+        appState: { returnTo: window.location.pathname }
+      });
+    }
+  }, [isAuthenticated, loginWithRedirect]);
 
-  // Format date
-  const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'short', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString(undefined, options);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  // Calculate time since posting
-  const getTimeSince = (dateString) => {
-    const now = new Date();
-    const postDate = new Date(dateString);
-    const diffTime = Math.abs(now - postDate);
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    
-    if (diffDays === 0) {
-      const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
-      if (diffHours === 0) {
-        const diffMinutes = Math.floor(diffTime / (1000 * 60));
-        return `${diffMinutes} minute${diffMinutes !== 1 ? 's' : ''} ago`;
-      }
-      return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
-    } else if (diffDays < 7) {
-      return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
-    } else if (diffDays < 30) {
-      const diffWeeks = Math.floor(diffDays / 7);
-      return `${diffWeeks} week${diffWeeks !== 1 ? 's' : ''} ago`;
-    } else {
-      return formatDate(dateString);
+  const handleTagInput = (e) => {
+    setTagInput(e.target.value);
+  };
+
+  const addTag = () => {
+    if (tagInput.trim() !== '' && !formData.tags.includes(tagInput.trim())) {
+      setFormData(prev => ({
+        ...prev,
+        tags: [...prev.tags, tagInput.trim()]
+      }));
+      setTagInput('');
     }
   };
 
-  if (loading) {
+  const removeTag = (tagToRemove) => {
+    setFormData(prev => ({
+      ...prev,
+      tags: prev.tags.filter(tag => tag !== tagToRemove)
+    }));
+  };
+
+  const handleTagKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addTag();
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    // Validation
+    if (!formData.title.trim()) {
+      setError('Title is required');
+      return;
+    }
+    
+    if (!formData.content.trim()) {
+      setError('Content is required');
+      return;
+    }
+    
+    try {
+      setSubmitting(true);
+      setError(null);
+      
+      // If no summary is provided, create one from the first 150 characters of content
+      const blogToSubmit = {
+        ...formData,
+        summary: formData.summary.trim() || formData.content.substring(0, 150) + '...'
+      };
+      
+      const newBlog = await createBlog(blogToSubmit);
+      setSubmitting(false);
+      
+      // Redirect to the new blog post
+      navigate(`/blog/${newBlog._id}`);
+    } catch (err) {
+      setError('Failed to create blog post. Please try again.');
+      setSubmitting(false);
+      console.error('Error creating blog:', err);
+    }
+  };
+
+  const togglePreview = () => {
+    setPreviewMode(!previewMode);
+  };
+
+  const suggestedTags = [
+    'Healthcare', 'Medical Research', 'Wellness', 'Patient Care',
+    'Mental Health', 'Nutrition', 'Disease Prevention', 'Technology',
+    'COVID-19', 'Cardiology', 'Pediatrics', 'Surgery', 'Public Health'
+  ];
+
+  // If not authenticated, show loading
+  if (!isAuthenticated) {
     return (
-      <Container className="text-center my-5 py-5">
-        <Spinner animation="border" variant="primary" />
-        <p className="mt-3 text-muted">Loading dashboard...</p>
-      </Container>
+      <div className="text-center my-5">
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Container fluid className="my-5">
-      <Row className="mb-4">
-        <Col>
-          <h1 className="mb-0">Blog Dashboard</h1>
-          <p className="text-muted">Overview of your medical blog</p>
-        </Col>
-        <Col xs="auto">
-          <div className="d-flex gap-2">
-            <Button 
-              variant="outline-primary" 
-              as={Link} 
-              to="/blog/manage"
-              className="d-flex align-items-center"
-            >
-              <i className="bi bi-list-ul me-2"></i>
-              Manage Blogs
-            </Button>
-            <Button 
-              variant="primary" 
-              onClick={() => navigate("/blog/new")}
-              className="d-flex align-items-center"
-            >
-              <i className="bi bi-plus-circle me-2"></i>
-              New Article
-            </Button>
+    <div className="blog-dashboard-container py-5">
+      <div className="container">
+        <div className="row mb-4">
+          <div className="col">
+            <h1 className="mb-3">Create New Article</h1>
+            <p className="text-muted">Share your medical knowledge and insights with our community</p>
           </div>
-        </Col>
-      </Row>
+        </div>
 
-      {/* Stats Overview */}
-      <Row className="mb-4">
-        <Col md={3} className="mb-4 mb-md-0">
-          <Card className="h-100 shadow-sm">
-            <Card.Body className="d-flex flex-column align-items-center text-center p-4">
-              <div className="stat-icon mb-3 bg-primary bg-opacity-10 p-3 rounded">
-                <i className="bi bi-file-earmark-text text-primary fs-3"></i>
-              </div>
-              <h2 className="mb-1">{stats.totalBlogs}</h2>
-              <p className="text-muted mb-0">Total Articles</p>
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col md={3} className="mb-4 mb-md-0">
-          <Card className="h-100 shadow-sm">
-            <Card.Body className="d-flex flex-column align-items-center text-center p-4">
-              <div className="stat-icon mb-3 bg-success bg-opacity-10 p-3 rounded">
-                <i className="bi bi-folder text-success fs-3"></i>
-              </div>
-              <h2 className="mb-1">{stats.totalCategories}</h2>
-              <p className="text-muted mb-0">Categories</p>
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col md={3} className="mb-4 mb-md-0">
-          <Card className="h-100 shadow-sm">
-            <Card.Body className="d-flex flex-column align-items-center text-center p-4">
-              <div className="stat-icon mb-3 bg-info bg-opacity-10 p-3 rounded">
-                <i className="bi bi-tags text-info fs-3"></i>
-              </div>
-              <h2 className="mb-1">{stats.totalTags}</h2>
-              <p className="text-muted mb-0">Tags</p>
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col md={3}>
-          <Card className="h-100 shadow-sm">
-            <Card.Body className="d-flex flex-column align-items-center text-center p-4">
-              <div className="stat-icon mb-3 bg-warning bg-opacity-10 p-3 rounded">
-                <i className="bi bi-star text-warning fs-3"></i>
-              </div>
-              <h2 className="mb-1">{stats.featuredBlogs}</h2>
-              <p className="text-muted mb-0">Featured Articles</p>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
+        {error && (
+          <div className="alert alert-danger" role="alert">
+            {error}
+          </div>
+        )}
 
-      <Row>
-        {/* Latest Articles */}
-        <Col lg={8} className="mb-4">
-          <Card className="shadow-sm h-100">
-            <Card.Header className="bg-white py-3">
-              <div className="d-flex justify-content-between align-items-center">
-                <h5 className="mb-0">Latest Articles</h5>
-                <Button 
-                  variant="link" 
-                  className="text-decoration-none p-0"
-                  as={Link}
-                  to="/blog/manage"
-                >
-                  View All
-                </Button>
-              </div>
-            </Card.Header>
-            <Card.Body className="p-0">
-              <div className="table-responsive">
-                <Table hover className="align-middle mb-0">
-                  <thead className="bg-light">
-                    <tr>
-                      <th style={{ width: "50%" }}>Title</th>
-                      <th style={{ width: "20%" }}>Author</th>
-                      <th style={{ width: "15%" }}>Category</th>
-                      <th style={{ width: "15%" }}>Published</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {stats.latestBlogs.map(blog => (
-                      <tr key={blog._id}>
-                        <td>
-                          <div className="d-flex align-items-center">
-                            <div 
-                              className="blog-thumbnail me-3"
-                              style={{ 
-                                width: "50px", 
-                                height: "50px", 
-                                backgroundImage: `url(${blog.image})`,
-                                backgroundSize: "cover",
-                                backgroundPosition: "center",
-                                borderRadius: "4px"
-                              }}
-                            ></div>
-                            <div>
-                              <Link 
-                                to={`/blog/${blog._id}`} 
-                                className="text-decoration-none"
-                              >
-                                {blog.title}
-                              </Link>
-                              {blog.featured && (
-                                <Badge bg="warning" text="dark" className="ms-2">Featured</Badge>
-                              )}
-                            </div>
-                          </div>
-                        </td>
-                        <td>{blog.author}</td>
-                        <td>
-                          <Badge bg="info" className="text-white">
-                            {blog.category}
-                          </Badge>
-                        </td>
-                        <td>
-                          <span title={formatDate(blog.date)}>
-                            {getTimeSince(blog.date)}
-                          </span>
-                        </td>
-                      </tr>
+        <div className="row">
+          <div className="col-lg-12">
+            {/* Preview Toggle */}
+            <div className="d-flex justify-content-end mb-3">
+              <button 
+                className={`btn ${previewMode ? 'btn-primary' : 'btn-outline-primary'}`}
+                onClick={togglePreview}
+              >
+                {previewMode ? <><FaEdit className="me-2" /> Edit</> : <><FaEye className="me-2" /> Preview</>}
+              </button>
+            </div>
+
+            {/* Preview Mode */}
+            {previewMode ? (
+              <div className="preview-container border rounded p-4 mb-4">
+                <h2 className="preview-title mb-3">{formData.title || 'Untitled Article'}</h2>
+                
+                {formData.tags.length > 0 && (
+                  <div className="mb-3">
+                    {formData.tags.map((tag, idx) => (
+                      <span key={idx} className="badge bg-primary-subtle text-primary me-2">
+                        {tag}
+                      </span>
                     ))}
-                    {stats.latestBlogs.length === 0 && (
-                      <tr>
-                        <td colSpan={4} className="text-center py-4">
-                          <i className="bi bi-journal-x fs-3 mb-3 d-block text-muted"></i>
-                          <p className="mb-0">No blog posts available.</p>
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </Table>
-              </div>
-            </Card.Body>
-            <Card.Footer className="bg-white">
-              <Button 
-                variant="outline-primary" 
-                className="w-100"
-                as={Link}
-                to="/blog/new"
-              >
-                <i className="bi bi-plus-circle me-2"></i>
-                Create New Article
-              </Button>
-            </Card.Footer>
-          </Card>
-        </Col>
-
-        {/* Category Distribution */}
-        <Col lg={4} className="mb-4">
-          <Card className="shadow-sm h-100">
-            <Card.Header className="bg-white py-3">
-              <h5 className="mb-0">Category Distribution</h5>
-            </Card.Header>
-            <Card.Body>
-              {stats.categoryDistribution.length > 0 ? (
-                <div>
-                  {stats.categoryDistribution.map((category, index) => (
-                    <div key={category.name} className="mb-3">
-                      <div className="d-flex justify-content-between mb-1">
-                        <div className="d-flex align-items-center">
-                          <Badge 
-                            bg="info" 
-                            className="me-2"
-                          >
-                            {category.name}
-                          </Badge>
-                          <span>{category.count} article{category.count !== 1 ? 's' : ''}</span>
-                        </div>
-                        <span className="fw-bold">{category.percentage}%</span>
-                      </div>
-                      <ProgressBar 
-                        now={category.percentage} 
-                        variant={
-                          index === 0 ? "primary" :
-                          index === 1 ? "success" :
-                          index === 2 ? "info" :
-                          index === 3 ? "warning" : "secondary"
-                        }
-                        className="mb-2"
-                        style={{ height: "8px" }}
-                      />
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-4">
-                  <i className="bi bi-pie-chart fs-3 mb-3 d-block text-muted"></i>
-                  <p className="mb-0">No category data available.</p>
-                </div>
-              )}
-            </Card.Body>
-            <Card.Footer className="bg-white">
-              <Button 
-                variant="outline-secondary" 
-                className="w-100"
-                as={Link}
-                to="/blog/manage"
-              >
-                <i className="bi bi-list-ul me-2"></i>
-                Manage Categories
-              </Button>
-            </Card.Footer>
-          </Card>
-        </Col>
-      </Row>
-
-      {/* Activity Timeline and Popular Tags */}
-      <Row>
-        {/* Popular Tags */}
-        <Col lg={6} className="mb-4">
-          <Card className="shadow-sm h-100">
-            <Card.Header className="bg-white py-3">
-              <h5 className="mb-0">Popular Tags</h5>
-            </Card.Header>
-            <Card.Body>
-              <div className="d-flex flex-wrap gap-2">
-                {stats.latestBlogs.flatMap(blog => blog.tags || [])
-                  .filter((tag, index, self) => self.indexOf(tag) === index)
-                  .slice(0, 15)
-                  .map(tag => (
-                    <Badge 
-                      key={tag} 
-                      bg="light" 
-                      text="dark" 
-                      className="py-2 px-3 fs-6"
-                      style={{ border: '1px solid #dee2e6' }}
-                    >
-                      #{tag}
-                    </Badge>
-                  ))}
-                {stats.latestBlogs.flatMap(blog => blog.tags || []).length === 0 && (
-                  <div className="text-center w-100 py-4">
-                    <i className="bi bi-tags fs-3 mb-3 d-block text-muted"></i>
-                    <p className="mb-0">No tags available.</p>
                   </div>
                 )}
+                
+                <div className="text-muted small mb-3">
+                  By {formData.author} • {new Date().toLocaleDateString()}
+                </div>
+                
+                {formData.image && (
+                  <div className="preview-image mb-4">
+                    <img 
+                      src={formData.image} 
+                      className="img-fluid rounded" 
+                      alt={formData.title} 
+                      style={{ maxHeight: '400px', width: '100%', objectFit: 'cover' }}
+                    />
+                  </div>
+                )}
+                
+                <div className="preview-content">
+                  <ReactMarkdown>{formData.content || 'No content to preview'}</ReactMarkdown>
+                </div>
               </div>
-            </Card.Body>
-          </Card>
-        </Col>
-
-        {/* Quick Actions */}
-        <Col lg={6} className="mb-4">
-          <Card className="shadow-sm h-100">
-            <Card.Header className="bg-white py-3">
-              <h5 className="mb-0">Quick Actions</h5>
-            </Card.Header>
-            <Card.Body>
-              <Row>
-                <Col sm={6} className="mb-3">
-                  <Button 
-                    variant="outline-primary" 
-                    className="w-100 py-3 d-flex flex-column align-items-center"
-                    as={Link}
-                    to="/blog/new"
-                  >
-                    <i className="bi bi-file-earmark-plus fs-3 mb-2"></i>
-                    <span>Create Article</span>
-                  </Button>
-                </Col>
-                <Col sm={6} className="mb-3">
-                  <Button 
-                    variant="outline-success" 
-                    className="w-100 py-3 d-flex flex-column align-items-center"
-                    as={Link}
-                    to="/blog/manage"
-                  >
-                    <i className="bi bi-list-check fs-3 mb-2"></i>
-                    <span>Manage Content</span>
-                  </Button>
-                </Col>
-                <Col sm={6} className="mb-3 mb-sm-0">
-                  <Button 
-                    variant="outline-info" 
-                    className="w-100 py-3 d-flex flex-column align-items-center"
-                  >
-                    <i className="bi bi-graph-up fs-3 mb-2"></i>
-                    <span>View Analytics</span>
-                  </Button>
-                </Col>
-                <Col sm={6}>
-                  <Button 
-                    variant="outline-secondary" 
-                    className="w-100 py-3 d-flex flex-column align-items-center"
-                  >
-                    <i className="bi bi-gear fs-3 mb-2"></i>
-                    <span>Blog Settings</span>
-                  </Button>
-                </Col>
-              </Row>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-    </Container>
+            ) : (
+              <form onSubmit={handleSubmit}>
+                <div className="card border-0 shadow-sm mb-4">
+                  <div className="card-body">
+                    <div className="mb-3">
+                      <label htmlFor="title" className="form-label">Title <span className="text-danger">*</span></label>
+                      <input
+                        type="text"
+                        className="form-control form-control-lg"
+                        id="title"
+                        name="title"
+                        placeholder="Enter article title"
+                        value={formData.title}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+                    
+                    <div className="mb-3">
+                      <label htmlFor="summary" className="form-label">Summary</label>
+                      <textarea
+                        className="form-control"
+                        id="summary"
+                        name="summary"
+                        placeholder="Brief summary of your article (optional, will use first 150 characters of content if left empty)"
+                        value={formData.summary}
+                        onChange={handleChange}
+                        rows="2"
+                      />
+                    </div>
+                    
+                    <div className="mb-3">
+                      <label htmlFor="image" className="form-label">Featured Image URL</label>
+                      <div className="input-group">
+                        <span className="input-group-text"><FaImage /></span>
+                        <input
+                          type="text"
+                          className="form-control"
+                          id="image"
+                          name="image"
+                          placeholder="Enter image URL"
+                          value={formData.image}
+                          onChange={handleChange}
+                        />
+                      </div>
+                      <div className="form-text">Leave default for a placeholder image</div>
+                    </div>
+                    
+                    <div className="mb-3">
+                      <label htmlFor="author" className="form-label">Author</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="author"
+                        name="author"
+                        value={formData.author}
+                        onChange={handleChange}
+                      />
+                    </div>
+                    
+                    <div className="mb-3">
+                      <label htmlFor="tags" className="form-label">Tags</label>
+                      <div className="input-group">
+                        <input
+                          type="text"
+                          className="form-control"
+                          id="tags"
+                          placeholder="Add a tag"
+                          value={tagInput}
+                          onChange={handleTagInput}
+                          onKeyPress={handleTagKeyPress}
+                        />
+                        <button 
+                          type="button" 
+                          className="btn btn-outline-primary"
+                          onClick={addTag}
+                        >
+                          <FaPlus />
+                        </button>
+                      </div>
+                      
+                      {/* Tag suggestions */}
+                      <div className="suggested-tags my-2">
+                        <small className="text-muted">Suggested: </small>
+                        {suggestedTags.slice(0, 5).map((tag, idx) => (
+                          <button
+                            key={idx}
+                            type="button"
+                            className="btn btn-sm btn-outline-secondary me-1 mb-1"
+                            onClick={() => {
+                              if (!formData.tags.includes(tag)) {
+                                setFormData(prev => ({
+                                  ...prev,
+                                  tags: [...prev.tags, tag]
+                                }));
+                              }
+                            }}
+                          >
+                            {tag}
+                          </button>
+                        ))}
+                      </div>
+                      
+                      {/* Tags display */}
+                      {formData.tags.length > 0 && (
+                        <div className="selected-tags mt-2">
+                          {formData.tags.map((tag, idx) => (
+                            <span key={idx} className="badge bg-primary me-1 mb-1">
+                              {tag} <FaTimes className="ms-1 clickable" onClick={() => removeTag(tag)} />
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="mb-3">
+                      <label htmlFor="content" className="form-label">Content <span className="text-danger">*</span></label>
+                      <div className="form-text mb-2">Supports Markdown formatting</div>
+                      <textarea
+                        className="form-control"
+                        id="content"
+                        name="content"
+                        placeholder="Write your article content here..."
+                        value={formData.content}
+                        onChange={handleChange}
+                        rows="15"
+                        required
+                      />
+                    </div>
+                    
+                    <div className="d-flex justify-content-between mt-4">
+                      <button
+                        type="button"
+                        className="btn btn-outline-secondary"
+                        onClick={() => navigate('/blog')}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        className="btn btn-primary px-4"
+                        disabled={submitting}
+                      >
+                        {submitting ? (
+                          <>
+                            <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            Saving...
+                          </>
+                        ) : (
+                          <>
+                            <FaSave className="me-2" /> Publish Article
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

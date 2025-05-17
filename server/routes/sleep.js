@@ -1,6 +1,7 @@
-// Updated sleep.js backend route 
+// Fixed sleep.js backend route with proper JWT imports
 import express from 'express';
 import { check, validationResult } from 'express-validator';
+import auth from '../middleware/auth.js'; // Import the auth middleware
 
 // Import models
 import SleepAnalysis from '../models/SleepAnalysis.js';
@@ -112,7 +113,7 @@ router.get('/results/:id', async (req, res) => {
 // @route   GET api/sleep/history
 // @desc    Get sleep analysis history for a user
 // @access  Private
-router.get('/history', async (req, res) => {
+router.get('/history', auth, async (req, res) => {
   try {
     const userId = req.user.id;
     const analyses = await SleepAnalysis.find({ user: userId }).sort({ date: -1 });

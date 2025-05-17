@@ -4,18 +4,16 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import morgan from 'morgan';
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcryptjs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 // Route Imports
 import authRoutes from './routes/auth.js';
 import sleepRoutes from './routes/sleep.js';
-// Import depression.js instead of depressionRoutes.js
 import depressionRoutes from './routes/depression.js';
 import blogRoutes from './routes/blogs.js';
 import userRoutes from './routes/userRoutes.js';
 import anxietyRoutes from './routes/anxietyRoutes.js';
-// Import bmi.js instead of bmiRoutes.js - also note this might need ES module conversion
 import bmiRoutes from './routes/bmi.js';
 
 // Load environment variables
@@ -29,7 +27,7 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan('dev'));
 
-// Routes
+// API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/sleep', sleepRoutes);
@@ -47,6 +45,16 @@ app.get('/health', (req, res) => {
 app.get('/', (req, res) => {
   res.send('MedLytics API is running!');
 });
+
+// Serve static assets in production
+if (process.env.NODE_ENV === 'production') {
+  const __dirname = path.dirname(fileURLToPath(import.meta.url));
+  app.use(express.static(path.join(__dirname, '../client/build')));
+
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, '../client/build', 'index.html'));
+  });
+}
 
 // Error handling middleware
 app.use((err, req, res, next) => {

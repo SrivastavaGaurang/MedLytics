@@ -1,431 +1,391 @@
-import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { 
-  Container, 
-  Row, 
-  Col, 
-  Form, 
-  Button, 
-  Card,
-  Alert,
-  Badge,
-  CloseButton,
-  Spinner
-} from "react-bootstrap";
-import ReactQuill from "react-quill";
-// Fixed CSS import
-import "react-quill/dist/quill.snow.css";
-
+// components/blogs/EditBlog.jsx
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { getBlogById, updateBlog } from '../../services/blogService';
+import { useAuth0 } from '@auth0/auth0-react';
+import { FaSave, FaTimes, FaArrowLeft, FaImage, FaEye, FaEdit } from 'react-icons/fa';
+import ReactMarkdown from 'react-markdown';
 
 const EditBlog = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { isAuthenticated, loginWithRedirect } = useAuth0();
   
-  // Form state
-  const [title, setTitle] = useState("");
-  const [summary, setSummary] = useState("");
-  const [category, setCategory] = useState("");
-  const [content, setContent] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
-  const [author, setAuthor] = useState("");
-  const [authorTitle, setAuthorTitle] = useState("");
-  const [featured, setFeatured] = useState(false);
-  const [tags, setTags] = useState([]);
-  const [currentTag, setCurrentTag] = useState("");
-  
-  // UI state
+  const [formData, setFormData] = useState({
+    title: '',
+    content: '',
+    summary: '',
+    image: '',
+    author: '',
+    tags: []
+  });
+  const [originalBlog, setOriginalBlog] = useState(null);
+  const [tagInput, setTagInput] = useState('');
+  const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [validated, setValidated] = useState(false);
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertVariant, setAlertVariant] = useState("danger");
-  const [alertMessage, setAlertMessage] = useState("");
-  
-  // Available categories
-  const categories = ["Cardiology", "Mental Health", "Nutrition", "Endocrinology", "Sleep Medicine", "General Health"];
-  
-  // Rich text editor modules and formats
-  const modules = {
-    toolbar: [
-      [{ 'header': [1, 2, 3, false] }],
-      ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-      [{'list': 'ordered'}, {'list': 'bullet'}, {'indent': '-1'}, {'indent': '+1'}],
-      ['link', 'image'],
-      ['clean']
-    ],
-  };
-  
-  const formats = [
-    'header',
-    'bold', 'italic', 'underline', 'strike', 'blockquote',
-    'list', 'bullet', 'indent',
-    'link', 'image'
-  ];
-  
-  // Load blog data on component mount
+  const [submitting, setSubmitting] = useState(false);
+  const [previewMode, setPreviewMode] = useState(false);
+
+  // Redirect to login if not authenticated
   useEffect(() => {
-    // In a real app, this would be an API call
+    if (!isAuthenticated) {
+      loginWithRedirect({
+        appState: { returnTo: window.location.pathname }
+      });
+    }
+  }, [isAuthenticated, loginWithRedirect]);
+
+  // Fetch blog data
+  useEffect(() => {
     const fetchBlog = async () => {
       try {
-        // For demo, we'll simulate fetching the blog by ID
-        // This would normally be an API call like:
-        // const response = await axios.get(`/api/blogs/${id}`);
-        // const blog = response.data;
-        
-        // Mock data - simulating blog retrieval
-        const blogsData = [
-          {
-            _id: "1",
-            title: "Understanding Blood Pressure: What Your Numbers Mean",
-            content: "High blood pressure is often called the silent killer because it usually has no warning signs or symptoms, and many people do not know they have it. Understanding your blood pressure readings is an important part of maintaining cardiovascular health.\n\nBlood pressure is the force of blood pushing against the walls of arteries as the heart pumps blood. It is measured using two numbers: The first number, called systolic blood pressure, represents the pressure in your blood vessels when your heart beats. The second number, called diastolic blood pressure, represents the pressure in your blood vessels when your heart rests between beats.\n\nNormal blood pressure is less than 120/80 mm Hg. If your results fall into this category, stick with heart-healthy habits like following a balanced diet and getting regular exercise. Elevated blood pressure is when readings consistently range from 120-129 systolic and less than 80 mm Hg diastolic. People with elevated blood pressure are likely to develop high blood pressure unless steps are taken to control it.",
-            summary: "Learn how to interpret your blood pressure readings and what they mean for your overall health.",
-            image: "https://via.placeholder.com/600x350?text=Blood+Pressure",
-            date: "2025-04-15T12:00:00.000Z",
-            author: "Dr. Sarah Chen",
-            authorTitle: "Cardiologist",
-            authorImage: "https://via.placeholder.com/50x50",
-            category: "Cardiology",
-            featured: true,
-            tags: ["Blood Pressure", "Heart Health", "Prevention"]
-          },
-          {
-            _id: "2",
-            title: "Mindfulness Meditation for Stress Reduction",
-            content: "Mindfulness meditation is a mental training practice that teaches you to slow down racing thoughts, let go of negativity, and calm both your mind and body. It combines meditation with the practice of mindfulness, which is being intensely aware of what you're sensing and feeling in the moment, without interpretation or judgment.\n\nPracticing mindfulness meditation involves breathing methods, guided imagery, and other practices to relax the body and mind and help reduce stress. Spending too much time planning, problem-solving, daydreaming, or thinking negative or random thoughts can be draining. It can also make you more likely to experience stress, anxiety and symptoms of depression. Practicing mindfulness exercises can help you direct your attention away from this kind of thinking and engage with the world around you.",
-            summary: "Discover how mindfulness meditation techniques can help manage stress and improve mental wellbeing.",
-            image: "https://via.placeholder.com/600x350?text=Meditation",
-            date: "2025-04-10T12:00:00.000Z",
-            author: "Dr. Michael Rivera",
-            authorTitle: "Psychiatrist",
-            authorImage: "https://via.placeholder.com/50x50",
-            category: "Mental Health",
-            featured: true,
-            tags: ["Meditation", "Stress Management", "Mental Health"]
-          },
-          // Other blog objects...
-        ];
-        
-        const blog = blogsData.find(blog => blog._id === id);
-        
-        if (!blog) {
-          throw new Error("Blog not found");
-        }
-        
-        // Set form state with blog data
-        setTitle(blog.title);
-        setSummary(blog.summary);
-        setCategory(blog.category);
-        setImageUrl(blog.image);
-        setAuthor(blog.author);
-        setAuthorTitle(blog.authorTitle || "");
-        setFeatured(blog.featured);
-        setTags(blog.tags || []);
-        
-        // Set content directly with the plain text or HTML content
-        setContent(blog.content);
-        
-      } catch (error) {
-        console.error("Error fetching blog:", error);
-        setAlertVariant("danger");
-        setAlertMessage("Failed to load article. Please try again.");
-        setShowAlert(true);
-      } finally {
+        const data = await getBlogById(id);
+        setFormData({
+          title: data.title,
+          content: data.content,
+          summary: data.summary || '',
+          image: data.image || 'https://via.placeholder.com/800x400?text=Medical+Blog+Image',
+          author: data.author,
+          tags: data.tags || []
+        });
+        setOriginalBlog(data);
         setLoading(false);
+      } catch (err) {
+        setError('Failed to load blog. It may have been removed or is unavailable.');
+        setLoading(false);
+        console.error('Error fetching blog:', err);
       }
     };
-    
-    fetchBlog();
-  }, [id]);
-  
-  // Handle tag input
-  const handleTagKeyPress = (e) => {
-    if (e.key === "Enter" && currentTag.trim() !== "") {
-      e.preventDefault();
-      if (!tags.includes(currentTag.trim())) {
-        setTags([...tags, currentTag.trim()]);
-        setCurrentTag("");
-      }
+
+    if (isAuthenticated) {
+      fetchBlog();
     }
+  }, [id, isAuthenticated]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
-  
+
+  const handleTagInput = (e) => {
+    setTagInput(e.target.value);
+  };
+
   const addTag = () => {
-    if (currentTag.trim() !== "" && !tags.includes(currentTag.trim())) {
-      setTags([...tags, currentTag.trim()]);
-      setCurrentTag("");
+    if (tagInput.trim() !== '' && !formData.tags.includes(tagInput.trim())) {
+      setFormData(prev => ({
+        ...prev,
+        tags: [...prev.tags, tagInput.trim()]
+      }));
+      setTagInput('');
     }
   };
-  
+
   const removeTag = (tagToRemove) => {
-    setTags(tags.filter(tag => tag !== tagToRemove));
+    setFormData(prev => ({
+      ...prev,
+      tags: prev.tags.filter(tag => tag !== tagToRemove)
+    }));
   };
-  
-  // Handle form submission
-  const handleSubmit = (e) => {
+
+  const handleTagKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addTag();
+    }
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
-    const form = e.currentTarget;
-    if (form.checkValidity() === false) {
-      e.stopPropagation();
-      setValidated(true);
+    // Validation
+    if (!formData.title.trim()) {
+      setError('Title is required');
       return;
     }
     
-    // Prepare updated blog data
-    const updatedBlogData = {
-      _id: id,
-      title,
-      summary,
-      content,
-      image: imageUrl || "https://via.placeholder.com/600x350?text=Blog+Image",
-      date: new Date().toISOString(), // Update date to now, or keep original date
-      author,
-      authorTitle,
-      category,
-      featured,
-      tags
-    };
+    if (!formData.content.trim()) {
+      setError('Content is required');
+      return;
+    }
     
-    // In a real app, this would be an API call to update the blog
-    console.log("Updated blog data:", updatedBlogData);
-    
-    // Show success message
-    setAlertVariant("success");
-    setAlertMessage("Article updated successfully!");
-    setShowAlert(true);
-    
-    // Redirect back to main page after a short delay
-    setTimeout(() => {
-      navigate("/");
-    }, 1500);
+    try {
+      setSubmitting(true);
+      setError(null);
+      
+      // If no summary is provided, create one from the first 150 characters of content
+      const blogToSubmit = {
+        ...formData,
+        summary: formData.summary.trim() || formData.content.substring(0, 150) + '...'
+      };
+      
+      await updateBlog(id, blogToSubmit);
+      setSubmitting(false);
+      
+      // Redirect to the blog post
+      navigate(`/blog/${id}`);
+    } catch (err) {
+      setError('Failed to update blog post. Please try again.');
+      setSubmitting(false);
+      console.error('Error updating blog:', err);
+    }
   };
-  
-  if (loading) {
+
+  const togglePreview = () => {
+    setPreviewMode(!previewMode);
+  };
+
+  const suggestedTags = [
+    'Healthcare', 'Medical Research', 'Wellness', 'Patient Care',
+    'Mental Health', 'Nutrition', 'Disease Prevention', 'Technology',
+    'COVID-19', 'Cardiology', 'Pediatrics', 'Surgery', 'Public Health'
+  ];
+
+  // If not authenticated or loading, show loading spinner
+  if (!isAuthenticated || loading) {
     return (
-      <Container className="py-5 text-center">
-        <Spinner animation="border" variant="primary" />
-        <p className="mt-3">Loading article data...</p>
-      </Container>
+      <div className="text-center my-5">
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
     );
   }
-  
+
   return (
-    <Container className="py-5">
-      {showAlert && (
-        <Alert 
-          variant={alertVariant} 
-          className="mb-4" 
-          dismissible
-          onClose={() => setShowAlert(false)}
-        >
-          {alertMessage}
-        </Alert>
-      )}
-      
-      <Row className="mb-4">
-        <Col>
-          <h1 className="page-title">Edit Article</h1>
-          <p className="text-muted">Update article details and content.</p>
-        </Col>
-        <Col xs="auto">
-          <Button 
-            variant="outline-secondary" 
-            onClick={() => navigate(-1)}
+    <div className="edit-blog-container py-5">
+      <div className="container">
+        <div className="mb-4">
+          <button 
+            className="btn btn-outline-secondary"
+            onClick={() => navigate(`/blog/${id}`)}
           >
-            <i className="bi bi-arrow-left me-1"></i>
-            Back
-          </Button>
-        </Col>
-      </Row>
-      
-      <Form noValidate validated={validated} onSubmit={handleSubmit}>
-        <Row>
-          <Col lg={8}>
-            <Card className="mb-4 shadow-sm">
-              <Card.Body>
-                <h5 className="card-title mb-3">Article Content</h5>
-                
-                <Form.Group className="mb-3" controlId="blogTitle">
-                  <Form.Label>Article Title *</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Enter title"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    required
-                  />
-                  <Form.Control.Feedback type="invalid">
-                    Please provide a title.
-                  </Form.Control.Feedback>
-                </Form.Group>
-                
-                <Form.Group className="mb-3" controlId="blogSummary">
-                  <Form.Label>Summary *</Form.Label>
-                  <Form.Control
-                    as="textarea"
-                    rows={2}
-                    placeholder="Brief summary of the article"
-                    value={summary}
-                    onChange={(e) => setSummary(e.target.value)}
-                    required
-                  />
-                  <Form.Control.Feedback type="invalid">
-                    Please provide a summary.
-                  </Form.Control.Feedback>
-                </Form.Group>
-                
-                <Form.Group className="mb-3" controlId="blogContent">
-                  <Form.Label>Content *</Form.Label>
-                  <div className="editor-wrapper border rounded">
-                    <ReactQuill
-                      theme="snow"
-                      value={content}
-                      onChange={setContent}
-                      modules={modules}
-                      formats={formats}
-                      className="quill-editor"
-                      style={{ height: '300px', marginBottom: '50px' }}
-                    />
-                  </div>
-                  {validated && content.trim() === '' && (
-                    <div className="text-danger mt-2 small">
-                      Please add some content to your article.
-                    </div>
-                  )}
-                  <Form.Control 
-                    type="hidden" 
-                    required
-                    isInvalid={content.trim() === ''}
-                    value={content}
-                  />
-                </Form.Group>
-              </Card.Body>
-            </Card>
-          </Col>
-          
-          <Col lg={4}>
-            <Card className="mb-4 shadow-sm">
-              <Card.Body>
-                <h5 className="card-title mb-3">Article Details</h5>
-                
-                <Form.Group className="mb-3" controlId="blogCategory">
-                  <Form.Label>Category *</Form.Label>
-                  <Form.Select 
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
-                    required
-                  >
-                    <option value="">Select a category</option>
-                    {categories.map((cat) => (
-                      <option key={cat} value={cat}>{cat}</option>
-                    ))}
-                  </Form.Select>
-                  <Form.Control.Feedback type="invalid">
-                    Please select a category.
-                  </Form.Control.Feedback>
-                </Form.Group>
-                
-                <Form.Group className="mb-3" controlId="blogImageUrl">
-                  <Form.Label>Featured Image URL</Form.Label>
-                  <Form.Control
-                    type="url"
-                    placeholder="https://example.com/image.jpg"
-                    value={imageUrl}
-                    onChange={(e) => setImageUrl(e.target.value)}
-                  />
-                  <Form.Text className="text-muted">
-                    Leave blank to use a placeholder image.
-                  </Form.Text>
-                </Form.Group>
-                
-                <Form.Group className="mb-3" controlId="blogTags">
-                  <Form.Label>Tags</Form.Label>
-                  <div className="d-flex mb-2">
-                    <Form.Control
-                      type="text"
-                      placeholder="Add tags"
-                      value={currentTag}
-                      onChange={(e) => setCurrentTag(e.target.value)}
-                      onKeyPress={handleTagKeyPress}
-                    />
-                    <Button 
-                      variant="outline-secondary" 
-                      onClick={addTag}
-                      className="ms-2"
-                    >
-                      Add
-                    </Button>
-                  </div>
-                  <div className="tags-container">
-                    {tags.map((tag, index) => (
-                      <Badge 
-                        key={index} 
-                        bg="light" 
-                        text="dark" 
-                        className="me-2 mb-2 p-2 d-inline-flex align-items-center"
-                      >
-                        {tag}
-                        <CloseButton 
-                          onClick={() => removeTag(tag)} 
-                          className="ms-1 p-0" 
-                          style={{ fontSize: '0.65rem' }}
-                        />
-                      </Badge>
-                    ))}
-                  </div>
-                </Form.Group>
-                
-                <Form.Group className="mb-3" controlId="blogFeatured">
-                  <Form.Check
-                    type="checkbox"
-                    label="Feature this article"
-                    checked={featured}
-                    onChange={(e) => setFeatured(e.target.checked)}
-                  />
-                </Form.Group>
-              </Card.Body>
-            </Card>
-            
-            <Card className="mb-4 shadow-sm">
-              <Card.Body>
-                <h5 className="card-title mb-3">Author Information</h5>
-                
-                <Form.Group className="mb-3" controlId="blogAuthor">
-                  <Form.Label>Author Name *</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Enter author name"
-                    value={author}
-                    onChange={(e) => setAuthor(e.target.value)}
-                    required
-                  />
-                  <Form.Control.Feedback type="invalid">
-                    Please provide an author name.
-                  </Form.Control.Feedback>
-                </Form.Group>
-                
-                <Form.Group className="mb-3" controlId="blogAuthorTitle">
-                  <Form.Label>Author Title/Specialty</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="e.g., Cardiologist, Registered Dietitian"
-                    value={authorTitle}
-                    onChange={(e) => setAuthorTitle(e.target.value)}
-                  />
-                </Form.Group>
-              </Card.Body>
-            </Card>
-            
-            <div className="d-grid gap-2">
-              <Button variant="primary" type="submit" size="lg">
-                Update Article
-              </Button>
-              <Button variant="outline-secondary" onClick={() => navigate("/")}>
-                Cancel
-              </Button>
+            <FaArrowLeft className="me-2" /> Back to Article
+          </button>
+        </div>
+        
+        <div className="row mb-4">
+          <div className="col">
+            <h1 className="mb-3">Edit Article</h1>
+            {originalBlog && <p className="text-muted">Editing: {originalBlog.title}</p>}
+          </div>
+        </div>
+
+        {error && (
+          <div className="alert alert-danger" role="alert">
+            {error}
+          </div>
+        )}
+
+        <div className="row">
+          <div className="col-lg-12">
+            {/* Preview Toggle */}
+            <div className="d-flex justify-content-end mb-3">
+              <button 
+                className={`btn ${previewMode ? 'btn-primary' : 'btn-outline-primary'}`}
+                onClick={togglePreview}
+              >
+                {previewMode ? <><FaEdit className="me-2" /> Edit</> : <><FaEye className="me-2" /> Preview</>}
+              </button>
             </div>
-          </Col>
-        </Row>
-      </Form>
-    </Container>
+
+            {/* Preview Mode */}
+            {previewMode ? (
+              <div className="preview-container border rounded p-4 mb-4">
+                <h2 className="preview-title mb-3">{formData.title || 'Untitled Article'}</h2>
+                
+                {formData.tags.length > 0 && (
+                  <div className="mb-3">
+                    {formData.tags.map((tag, idx) => (
+                      <span key={idx} className="badge bg-primary-subtle text-primary me-2">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                
+                <div className="text-muted small mb-3">
+                  By {formData.author} • {originalBlog ? new Date(originalBlog.date).toLocaleDateString() : new Date().toLocaleDateString()}
+                </div>
+                
+                {formData.image && (
+                  <div className="preview-image mb-4">
+                    <img 
+                      src={formData.image} 
+                      className="img-fluid rounded" 
+                      alt={formData.title} 
+                      style={{ maxHeight: '400px', width: '100%', objectFit: 'cover' }}
+                    />
+                  </div>
+                )}
+                
+                <div className="preview-content">
+                  <ReactMarkdown>{formData.content || 'No content to preview'}</ReactMarkdown>
+                </div>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit}>
+                <div className="card border-0 shadow-sm mb-4">
+                  <div className="card-body">
+                    <div className="mb-3">
+                      <label htmlFor="title" className="form-label">Title <span className="text-danger">*</span></label>
+                      <input
+                        type="text"
+                        className="form-control form-control-lg"
+                        id="title"
+                        name="title"
+                        placeholder="Enter article title"
+                        value={formData.title}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+                    
+                    <div className="mb-3">
+                      <label htmlFor="summary" className="form-label">Summary</label>
+                      <textarea
+                        className="form-control"
+                        id="summary"
+                        name="summary"
+                        placeholder="Brief summary of your article (optional, will use first 150 characters of content if left empty)"
+                        value={formData.summary}
+                        onChange={handleChange}
+                        rows="2"
+                      />
+                    </div>
+                    
+                    <div className="mb-3">
+                      <label htmlFor="image" className="form-label">Featured Image URL</label>
+                      <div className="input-group">
+                        <span className="input-group-text"><FaImage /></span>
+                        <input
+                          type="text"
+                          className="form-control"
+                          id="image"
+                          name="image"
+                          placeholder="Enter image URL"
+                          value={formData.image}
+                          onChange={handleChange}
+                        />
+                      </div>
+                      <div className="form-text">Leave default for a placeholder image</div>
+                    </div>
+                    
+                    <div className="mb-3">
+                      <label htmlFor="author" className="form-label">Author</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="author"
+                        name="author"
+                        value={formData.author}
+                        onChange={handleChange}
+                      />
+                    </div>
+                    
+                    <div className="mb-3">
+                      <label htmlFor="tags" className="form-label">Tags</label>
+                      <div className="input-group">
+                        <input
+                          type="text"
+                          className="form-control"
+                          id="tags"
+                          placeholder="Add a tag"
+                          value={tagInput}
+                          onChange={handleTagInput}
+                          onKeyPress={handleTagKeyPress}
+                        />
+                        <button 
+                          type="button" 
+                          className="btn btn-outline-primary"
+                          onClick={addTag}
+                        >
+                          <FaPlus />
+                        </button>
+                      </div>
+                      
+                      {/* Tag suggestions */}
+                      <div className="suggested-tags my-2">
+                        <small className="text-muted">Suggested: </small>
+                        {suggestedTags.slice(0, 5).map((tag, idx) => (
+                          <button
+                            key={idx}
+                            type="button"
+                            className="btn btn-sm btn-outline-secondary me-1 mb-1"
+                            onClick={() => {
+                              if (!formData.tags.includes(tag)) {
+                                setFormData(prev => ({
+                                  ...prev,
+                                  tags: [...prev.tags, tag]
+                                }));
+                              }
+                            }}
+                          >
+                            {tag}
+                          </button>
+                        ))}
+                      </div>
+                      
+                      {/* Tags display */}
+                      {formData.tags.length > 0 && (
+                        <div className="selected-tags mt-2">
+                          {formData.tags.map((tag, idx) => (
+                            <span key={idx} className="badge bg-primary me-1 mb-1">
+                              {tag} <FaTimes className="ms-1 clickable" onClick={() => removeTag(tag)} />
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="mb-3">
+                      <label htmlFor="content" className="form-label">Content <span className="text-danger">*</span></label>
+                      <div className="form-text mb-2">Supports Markdown formatting</div>
+                      <textarea
+                        className="form-control"
+                        id="content"
+                        name="content"
+                        placeholder="Write your article content here..."
+                        value={formData.content}
+                        onChange={handleChange}
+                        rows="15"
+                        required
+                      />
+                    </div>
+                    
+                    <div className="d-flex justify-content-between mt-4">
+                      <button
+                        type="button"
+                        className="btn btn-outline-secondary"
+                        onClick={() => navigate(`/blog/${id}`)}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        className="btn btn-primary px-4"
+                        disabled={submitting}
+                      >
+                        {submitting ? (
+                          <>
+                            <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            Saving...
+                          </>
+                        ) : (
+                          <>
+                            <FaSave className="me-2" /> Update Article
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

@@ -22,6 +22,7 @@ const SleepHistory = () => {
       try {
         setLoading(true);
         const data = await getSleepHistory(getAccessTokenSilently);
+        // Assume data is sorted by date in descending order (newest first)
         setHistory(data);
       } catch (err) {
         console.error('Error fetching sleep history:', err);
@@ -46,6 +47,25 @@ const SleepHistory = () => {
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
     return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
+  // Calculate progress - assuming array is sorted with newest entries first
+  const calculateSleepChange = () => {
+    if (history.length < 2) return null;
+    
+    // For accurate comparison, we need oldest entry vs newest entry
+    const oldestEntry = history[history.length - 1];
+    const newestEntry = history[0];
+    
+    const durationChange = (newestEntry.sleepDuration - oldestEntry.sleepDuration).toFixed(1);
+    const qualityChange = (newestEntry.qualityOfSleep - oldestEntry.qualityOfSleep).toFixed(1);
+    
+    return {
+      durationChange,
+      qualityChange,
+      durationImproved: durationChange > 0,
+      qualityImproved: qualityChange > 0
+    };
   };
 
   if (!isAuthenticated) {
@@ -91,6 +111,8 @@ const SleepHistory = () => {
       </div>
     );
   }
+
+  const progressData = calculateSleepChange();
 
   return (
     <div className="container py-5">
@@ -188,7 +210,7 @@ const SleepHistory = () => {
                       {(history.reduce((sum, item) => sum + Number(item.qualityOfSleep), 0) / history.length).toFixed(1)}/10
                     </h3>
                     <div className="text-center text-muted">
-                      Target: 7/10
+                      Target: {'>'} 7/10
                     </div>
                   </div>
                 </div>
@@ -232,24 +254,18 @@ const SleepHistory = () => {
                     <h5 className="card-title mb-0">Your Progress</h5>
                   </div>
                   <div className="card-body">
-                    {history.length >= 2 ? (
+                    {progressData ? (
                       <div>
                         <p>Sleep duration change: 
-                          <span className={
-                            history[0].sleepDuration > history[history.length-1].sleepDuration 
-                              ? 'text-danger' 
-                              : 'text-success'
-                          }>
-                            {' '}{(history[0].sleepDuration - history[history.length-1].sleepDuration).toFixed(1)} hrs
+                          <span className={progressData.durationImproved ? 'text-success' : 'text-danger'}>
+                            {' '}{progressData.durationChange > 0 ? '+' : ''}{progressData.durationChange} hrs
+                            {' '}<i className={`fas fa-arrow-${progressData.durationImproved ? 'up' : 'down'}`}></i>
                           </span>
                         </p>
                         <p>Sleep quality change: 
-                          <span className={
-                            history[0].qualityOfSleep > history[history.length-1].qualityOfSleep 
-                              ? 'text-danger' 
-                              : 'text-success'
-                          }>
-                            {' '}{(history[0].qualityOfSleep - history[history.length-1].qualityOfSleep).toFixed(1)} points
+                          <span className={progressData.qualityImproved ? 'text-success' : 'text-danger'}>
+                            {' '}{progressData.qualityChange > 0 ? '+' : ''}{progressData.qualityChange} points
+                            {' '}<i className={`fas fa-arrow-${progressData.qualityImproved ? 'up' : 'down'}`}></i>
                           </span>
                         </p>
                       </div>

@@ -1,12 +1,17 @@
 // routes/userRoutes.js
 import express from 'express';
-import { expressjwt } from 'express-jwt'; // Fixed this line
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import { check, validationResult } from 'express-validator';
+import { expressjwt } from 'express-jwt';
 import jwksRsa from 'jwks-rsa';
+
+import User from '../models/User.js';
 
 const router = express.Router();
 
-// Setup Auth0 authentication middleware (similar to anxietyRoutes)
-const checkJwt = expressjwt({ // Fixed this line
+// ✅ Auth0 middleware (for protected routes)
+const checkJwt = expressjwt({
   secret: jwksRsa.expressJwtSecret({
     cache: true,
     rateLimit: true,
@@ -18,10 +23,59 @@ const checkJwt = expressjwt({ // Fixed this line
   algorithms: ['RS256']
 });
 
-// Route to get user profile
+// ✅ Public route - Register new user (local JWT)
+router.post(
+  '/',
+  [
+    check('name', 'Name is required').not().isEmpty(),
+    check('email', 'Please include a valid email').isEmail(),
+    check('password', 'Please enter a password with 6 or more characters').isLength({ min: 6 })
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { name, email, password } = req.body;
+
+    try {
+      let user = await User.findOne({ email });
+      if (user) {
+        return res.status(400).json({ errors: [{ msg: 'User already exists' }] });
+      }
+
+      user = new User({ name, email, password });
+
+      const salt = await bcrypt.genSalt(10);
+      user.password = await bcrypt.hash(password, salt);
+
+      await user.save();
+
+      const payload = {
+        user: {
+          id: user.id
+        }
+      };
+
+      jwt.sign(
+        payload,
+        process.env.JWT_SECRET,
+        { expiresIn: '5 days' },
+        (err, token) => {
+          if (err) throw err;
+          res.json({ token });
+        }
+      );
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server error');
+    }
+  }
+);
+
+// ✅ Protected route - Get user profile (Auth0)
 router.get('/profile', checkJwt, (req, res) => {
-  // Would typically fetch from database
-  // For now, return mock data based on the authenticated user
   res.json({
     id: req.user.sub,
     name: 'Test User',
@@ -30,11 +84,10 @@ router.get('/profile', checkJwt, (req, res) => {
   });
 });
 
-// Route to update user profile
+// ✅ Protected route - Update user profile (Auth0)
 router.put('/profile', checkJwt, (req, res) => {
   const { name, email } = req.body;
-  
-  // Would typically update the database
+
   res.json({
     id: req.user.sub,
     name,

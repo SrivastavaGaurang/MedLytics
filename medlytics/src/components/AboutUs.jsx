@@ -87,14 +87,14 @@ const About = () => {
                 <div className="card-body text-center p-4">
                   {showImages ? (
                     <div className="rounded-circle mx-auto mb-3 overflow-hidden" style={{ width: '150px', height: '150px' }}>
-                      <img src="/api/placeholder/150/150" alt="sam" className="img-fluid" />
+                      <img src="https://res.cloudinary.com/dmilgqv8u/image/upload/v1747418069/WhatsApp_Image_2025-05-16_at_23.01.31_58ea47ee_mya8h1.jpg" alt="sam" className="img-fluid" />
                     </div>
                   ) : (
                     <div className="rounded-circle bg-primary bg-opacity-10 mx-auto mb-3" style={{ width: '100px', height: '100px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <i className="bi bi-person-fill fs-1 text-primary"></i>
                     </div>
                   )}
-                  <h5 className="card-title mb-1">sam </h5>
+                  <h5 className="card-title mb-1">satyam </h5>
                   <p className="text-muted mb-3">Research Lead</p>
                   <p className="card-text">
                     lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos. Lorem ipsum dolor sit amet consectetur adipisicing elit. Maiores odit et accusamus totam molestias hic illo incidunt harum, saepe soluta, autem sit quisquam tenetur voluptatum ab similique rerum eos dolorem.
@@ -108,7 +108,7 @@ const About = () => {
                 <div className="card-body text-center p-4">
                   {showImages ? (
                     <div className="rounded-circle mx-auto mb-3 overflow-hidden" style={{ width: '150px', height: '150px' }}>
-                      <img src="/api/placeholder/150/150" alt="Aman Deep" className="img-fluid" />
+                      <img src="https://res.cloudinary.com/dmilgqv8u/image/upload/v1747418070/WhatsApp_Image_2025-05-16_at_10.13.36_686ea2b8_d9cnch.jpg" alt="Aman Deep" className="img-fluid" />
                     </div>
                   ) : (
                     <div className="rounded-circle bg-primary bg-opacity-10 mx-auto mb-3" style={{ width: '100px', height: '100px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -129,7 +129,7 @@ const About = () => {
                 <div className="card-body text-center p-4">
                   {showImages ? (
                     <div className="rounded-circle mx-auto mb-3 overflow-hidden" style={{ width: '150px', height: '150px' }}>
-                      <img src="/api/placeholder/150/150" alt="Bharat" className="img-fluid" />
+                      <img src="https://res.cloudinary.com/dmilgqv8u/image/upload/v1747418069/WhatsApp_Image_2025-05-16_at_21.11.54_6873b369_rt2xla.jpg" alt="Bharat" className="img-fluid" />
                     </div>
                   ) : (
                     <div className="rounded-circle bg-primary bg-opacity-10 mx-auto mb-3" style={{ width: '100px', height: '100px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

@@ -1,717 +1,515 @@
-import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { 
-  Container, 
-  Row, 
-  Col, 
-  Button, 
-  Card,
-  Badge,
-  Spinner,
-  Image,
-  Modal,
-  Form,
-  Alert
-} from "react-bootstrap";
-import "./MedBlog.css";
+// components/blogs/MedBlog.jsx
+import React, { useState, useEffect } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
+import { useAuth0 } from '@auth0/auth0-react';
+import { getAllBlogs, deleteBlog, getBlogsByTag } from '../../services/blogService';
+import { FaPlus, FaEdit, FaTrash, FaSearch, FaTags, FaClock, FaCalendarAlt, FaBookmark, FaFilter } from 'react-icons/fa';
 
 const MedBlog = () => {
-  const navigate = useNavigate();
   const [blogs, setBlogs] = useState([]);
-  const [featuredBlogs, setFeaturedBlogs] = useState([]);
-  const [recentBlogs, setRecentBlogs] = useState([]);
-  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeCategory, setActiveCategory] = useState("All");
-  
-  // Auth state (in a real app, this would come from your auth context/service)
-  const [isAdmin, setIsAdmin] = useState(false);
-  
-  // Modal states
-  const [showLoginModal, setShowLoginModal] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [blogToDelete, setBlogToDelete] = useState(null);
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertMessage, setAlertMessage] = useState("");
-  const [alertVariant, setAlertVariant] = useState("success");
-  
-  // Login form state
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [loginError, setLoginError] = useState("");
+  const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterTag, setFilterTag] = useState('');
+  const [sortBy, setSortBy] = useState('newest');
+  const [allTags, setAllTags] = useState([]);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [bookmarkedBlogs, setBookmarkedBlogs] = useState([]);
+  const [showBookmarked, setShowBookmarked] = useState(false);
+  const { isAuthenticated, user } = useAuth0();
 
+  // Fetch all blogs on component mount and handle query params
   useEffect(() => {
-    fetchBlogs();
-  }, []);
+    const tagFromUrl = searchParams.get('tag');
+    if (tagFromUrl) {
+      setFilterTag(tagFromUrl);
+      fetchBlogsByTag(tagFromUrl);
+    } else {
+      fetchBlogs();
+    }
 
-  // Fetch blogs from API or use mock data
+    // Load bookmarked blogs from localStorage
+    const savedBookmarks = localStorage.getItem('bookmarkedBlogs');
+    if (savedBookmarks) {
+      setBookmarkedBlogs(JSON.parse(savedBookmarks));
+    }
+  }, [searchParams]);
+
+  // Function to fetch all blogs
   const fetchBlogs = async () => {
     try {
-      // Mock data for demonstration
-      const blogsData = [
-        {
-          _id: "1",
-          title: "Understanding Blood Pressure: What Your Numbers Mean",
-          content: "High blood pressure is often called the silent killer because it usually has no warning signs or symptoms, and many people do not know they have it. Understanding your blood pressure readings is an important part of maintaining cardiovascular health.\n\nBlood pressure is the force of blood pushing against the walls of arteries as the heart pumps blood. It is measured using two numbers: The first number, called systolic blood pressure, represents the pressure in your blood vessels when your heart beats. The second number, called diastolic blood pressure, represents the pressure in your blood vessels when your heart rests between beats.\n\nNormal blood pressure is less than 120/80 mm Hg. If your results fall into this category, stick with heart-healthy habits like following a balanced diet and getting regular exercise. Elevated blood pressure is when readings consistently range from 120-129 systolic and less than 80 mm Hg diastolic. People with elevated blood pressure are likely to develop high blood pressure unless steps are taken to control it.",
-          summary: "Learn how to interpret your blood pressure readings and what they mean for your overall health.",
-          image: "https://via.placeholder.com/600x350?text=Blood+Pressure",
-          date: "2025-04-15T12:00:00.000Z",
-          author: "Dr. Sarah Chen",
-          authorTitle: "Cardiologist",
-          authorImage: "https://via.placeholder.com/50x50",
-          category: "Cardiology",
-          featured: true,
-          tags: ["Blood Pressure", "Heart Health", "Prevention"]
-        },
-        // Other blog entries remain the same
-        {
-          _id: "2",
-          title: "Mindfulness Meditation for Stress Reduction",
-          content: "Mindfulness meditation is a mental training practice that teaches you to slow down racing thoughts, let go of negativity, and calm both your mind and body. It combines meditation with the practice of mindfulness, which is being intensely aware of what you're sensing and feeling in the moment, without interpretation or judgment.\n\nPracticing mindfulness meditation involves breathing methods, guided imagery, and other practices to relax the body and mind and help reduce stress. Spending too much time planning, problem-solving, daydreaming, or thinking negative or random thoughts can be draining. It can also make you more likely to experience stress, anxiety and symptoms of depression. Practicing mindfulness exercises can help you direct your attention away from this kind of thinking and engage with the world around you.",
-          summary: "Discover how mindfulness meditation techniques can help manage stress and improve mental wellbeing.",
-          image: "https://via.placeholder.com/600x350?text=Meditation",
-          date: "2025-04-10T12:00:00.000Z",
-          author: "Dr. Michael Rivera",
-          authorTitle: "Psychiatrist",
-          authorImage: "https://via.placeholder.com/50x50",
-          category: "Mental Health",
-          featured: true,
-          tags: ["Meditation", "Stress Management", "Mental Health"]
-        },
-        {
-          _id: "3",
-          title: "Nutrition Basics: Building a Balanced Diet",
-          content: "A balanced diet is essential for maintaining good health and preventing chronic diseases. The key components of a balanced diet include proteins, carbohydrates, fats, vitamins, minerals, and water.\n\nProteins are the building blocks of the body and are essential for growth, repair, and maintenance of body tissues. Good sources of protein include lean meat, fish, poultry, eggs, dairy products, legumes, nuts, and seeds.\n\nCarbohydrates are the body's main source of energy. They are found in foods like grains, fruits, vegetables, and legumes. Choose complex carbohydrates like whole grains over simple carbohydrates like refined sugar for sustained energy and better nutrition.\n\nFats are essential for many bodily functions, including vitamin absorption, brain health, and hormone production. Focus on healthy fats found in avocados, nuts, seeds, and olive oil, while limiting saturated and trans fats.",
-          summary: "Learn the fundamentals of nutrition and how to create a balanced diet that supports your health goals.",
-          image: "https://via.placeholder.com/600x350?text=Nutrition",
-          date: "2025-04-05T12:00:00.000Z",
-          author: "Emma Johnson",
-          authorTitle: "Registered Dietitian",
-          authorImage: "https://via.placeholder.com/50x50",
-          category: "Nutrition",
-          featured: false,
-          tags: ["Nutrition", "Diet", "Healthy Eating"]
-        },
-        {
-          _id: "4",
-          title: "Exercise Guidelines for Heart Health",
-          content: "Regular physical activity is one of the most important things you can do for your heart health. The American Heart Association recommends at least 150 minutes per week of moderate-intensity aerobic activity or 75 minutes per week of vigorous aerobic activity, or a combination of both, preferably spread throughout the week.\n\nAerobic exercises, such as walking, jogging, swimming, or cycling, are ideal for improving cardiovascular health. These activities increase your heart rate and breathing, which helps strengthen your heart and improve its efficiency.\n\nStrength training is also beneficial for heart health. The AHA recommends moderate- to high-intensity muscle-strengthening activity (such as resistance or weights) at least twice per week. Strength training helps reduce body fat, increase lean muscle mass, and burn calories more efficiently.",
-          summary: "Understand the recommended exercise guidelines for maintaining optimal heart health and preventing cardiovascular disease.",
-          image: "https://via.placeholder.com/600x350?text=Exercise",
-          date: "2025-03-28T12:00:00.000Z",
-          author: "Dr. James Wilson",
-          authorTitle: "Sports Medicine Specialist",
-          authorImage: "https://via.placeholder.com/50x50",
-          category: "Cardiology",
-          featured: false,
-          tags: ["Exercise", "Heart Health", "Physical Activity"]
-        },
-        {
-          _id: "5",
-          title: "Understanding Diabetes: Types, Symptoms, and Management",
-          content: "Diabetes is a chronic health condition that affects how your body turns food into energy. Most of the food you eat is broken down into sugar (glucose) and released into your bloodstream. When your blood sugar goes up, it signals your pancreas to release insulin, which acts like a key to let the blood sugar into your body's cells for use as energy.\n\nThere are three main types of diabetes: Type 1, Type 2, and gestational diabetes. Type 1 diabetes is an autoimmune disease where the body attacks the cells in the pancreas that make insulin, so the body cannot produce insulin. People with Type 1 diabetes need to take insulin every day. Type 2 diabetes occurs when the body becomes resistant to insulin or doesn't make enough insulin. Type 2 diabetes is often linked to lifestyle factors such as obesity and lack of physical activity. Gestational diabetes develops in pregnant women who have never had diabetes.",
-          summary: "Learn about the different types of diabetes, their symptoms, and effective strategies for management.",
-          image: "https://via.placeholder.com/600x350?text=Diabetes",
-          date: "2025-03-20T12:00:00.000Z",
-          author: "Dr. Lisa Patel",
-          authorTitle: "Endocrinologist",
-          authorImage: "https://via.placeholder.com/50x50",
-          category: "Endocrinology",
-          featured: false,
-          tags: ["Diabetes", "Blood Sugar", "Chronic Disease"]
-        },
-        {
-          _id: "6",
-          title: "Sleep Hygiene: Tips for Better Rest",
-          content: "Sleep hygiene refers to healthy sleep habits that can improve your ability to fall asleep and stay asleep. Good sleep hygiene is important for both physical and mental health, helping to improve productivity, quality of life, and preventing various chronic health conditions.\n\nOne of the most important sleep hygiene practices is maintaining a consistent sleep schedule. Try to go to bed and wake up at the same time every day, even on weekends. This helps regulate your body's internal clock and can help you fall asleep and stay asleep for the night.\n\nCreating a restful environment is also crucial. Your bedroom should be cool, quiet, and dark. Consider using earplugs, an eye mask, or a white noise machine if needed. Make sure your mattress and pillows are comfortable and supportive.",
-          summary: "Discover practical sleep hygiene practices that can help improve your sleep quality and overall health.",
-          image: "https://via.placeholder.com/600x350?text=Sleep+Hygiene",
-          date: "2025-03-15T12:00:00.000Z",
-          author: "Dr. Robert Thompson",
-          authorTitle: "Sleep Specialist",
-          authorImage: "https://via.placeholder.com/50x50",
-          category: "Sleep Medicine",
-          featured: false,
-          tags: ["Sleep", "Rest", "Health Tips"]
-        },
-      ];
+      setLoading(true);
+      const data = await getAllBlogs();
+      setBlogs(data);
       
-      setBlogs(blogsData);
+      // Extract all unique tags
+      const tags = data.flatMap(blog => blog.tags || []).filter(Boolean);
+      setAllTags([...new Set(tags)]);
       
-      // Extract categories from blogs
-      const categoryList = ["All", ...new Set(blogsData.map(blog => blog.category))];
-      setCategories(categoryList);
-      
-      // Set featured blogs
-      const featured = blogsData.filter(blog => blog.featured);
-      setFeaturedBlogs(featured);
-      
-      // Set recent blogs
-      const sorted = [...blogsData].sort((a, b) => new Date(b.date) - new Date(a.date));
-      setRecentBlogs(sorted);
-    } catch (error) {
-      console.error("Error fetching blogs:", error);
-      showNotification("Failed to load blogs. Please try again later.", "danger");
-    } finally {
       setLoading(false);
+    } catch (err) {
+      setError('Failed to load blogs. Please try again later.');
+      setLoading(false);
+      console.error('Error fetching blogs:', err);
     }
+  };
+
+  // Function to fetch blogs by tag
+  const fetchBlogsByTag = async (tag) => {
+    try {
+      setLoading(true);
+      const data = await getBlogsByTag(tag);
+      setBlogs(data);
+      setLoading(false);
+    } catch (err) {
+      setError(`Failed to load blogs with tag "${tag}". Please try again.`);
+      setLoading(false);
+      console.error('Error fetching blogs by tag:', err);
+    }
+  };
+
+  // Handle blog deletion
+  const handleDelete = async (id) => {
+    if (window.confirm('Are you sure you want to delete this blog post? This action cannot be undone.')) {
+      try {
+        await deleteBlog(id);
+        setBlogs(blogs.filter(blog => blog._id !== id));
+        
+        // Also remove from bookmarks if present
+        if (bookmarkedBlogs.includes(id)) {
+          const updatedBookmarks = bookmarkedBlogs.filter(bookmarkId => bookmarkId !== id);
+          setBookmarkedBlogs(updatedBookmarks);
+          localStorage.setItem('bookmarkedBlogs', JSON.stringify(updatedBookmarks));
+        }
+      } catch (err) {
+        setError('Failed to delete blog. Please try again.');
+        console.error('Error deleting blog:', err);
+      }
+    }
+  };
+
+  // Handle filter by tag
+  const handleTagFilter = (tag) => {
+    setFilterTag(tag);
+    if (tag) {
+      setSearchParams({ tag });
+    } else {
+      setSearchParams({});
+    }
+  };
+
+  // Handle sorting blogs
+  const handleSort = (sortOption) => {
+    setSortBy(sortOption);
+    
+    // Create a sorted copy of the blogs array
+    const sortedBlogs = [...blogs];
+    
+    switch (sortOption) {
+      case 'newest':
+        sortedBlogs.sort((a, b) => new Date(b.date) - new Date(a.date));
+        break;
+      case 'oldest':
+        sortedBlogs.sort((a, b) => new Date(a.date) - new Date(b.date));
+        break;
+      case 'az':
+        sortedBlogs.sort((a, b) => a.title.localeCompare(b.title));
+        break;
+      case 'za':
+        sortedBlogs.sort((a, b) => b.title.localeCompare(a.title));
+        break;
+      default:
+        break;
+    }
+    
+    setBlogs(sortedBlogs);
+  };
+
+  // Toggle bookmark for a blog
+  const toggleBookmark = (blogId) => {
+    let updatedBookmarks;
+    
+    if (bookmarkedBlogs.includes(blogId)) {
+      updatedBookmarks = bookmarkedBlogs.filter(id => id !== blogId);
+    } else {
+      updatedBookmarks = [...bookmarkedBlogs, blogId];
+    }
+    
+    setBookmarkedBlogs(updatedBookmarks);
+    localStorage.setItem('bookmarkedBlogs', JSON.stringify(updatedBookmarks));
+  };
+  
+  // Toggle showing only bookmarked blogs
+  const toggleShowBookmarked = () => {
+    setShowBookmarked(!showBookmarked);
   };
 
   // Format date
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString(undefined, options);
+    return new Date(dateString).toLocaleDateString('en-US', options);
   };
 
-  // Calculate reading time
-  const calculateReadingTime = (content) => {
+  // Calculate read time based on content length (rough estimate)
+  const calculateReadTime = (content) => {
     const wordsPerMinute = 200;
-    const wordCount = content.split(/\s+/).length;
-    const readingTime = Math.ceil(wordCount / wordsPerMinute);
-    return readingTime;
+    const words = content.split(/\s+/).length;
+    const minutes = Math.ceil(words / wordsPerMinute);
+    return minutes < 1 ? '< 1 min read' : `${minutes} min read`;
   };
 
-  // Handle login
-  const handleLogin = (e) => {
-    e.preventDefault();
-    setLoginError("");
-    
-    // Simple mock login for demo purposes
-    // In a real app, this would be an API call
-    if (username === "admin" && password === "password") {
-      setIsAdmin(true);
-      setShowLoginModal(false);
-      showNotification("Successfully logged in as admin", "success");
-    } else {
-      setLoginError("Invalid username or password");
-    }
+  // Check if user is admin (for demo purposes)
+  const isAdmin = isAuthenticated && user && user.email === "admin@medlytics.com";
+
+  // Apply all filters to get final list of blogs to display
+  const getFilteredBlogs = () => {
+    return blogs.filter(blog => {
+      // Filter by search term
+      const matchesSearchTerm = blog.title?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                              blog.content?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                              blog.author?.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      // Filter by tag
+      const matchesTag = !filterTag || (blog.tags && blog.tags.includes(filterTag));
+      
+      // Filter by bookmarks
+      const matchesBookmark = !showBookmarked || (bookmarkedBlogs.includes(blog._id));
+      
+      return matchesSearchTerm && matchesTag && matchesBookmark;
+    });
   };
 
-  // Handle logout
-  const handleLogout = () => {
-    setIsAdmin(false);
-    showNotification("Successfully logged out", "info");
-  };
-
-  // Handle blog deletion
-  const confirmDelete = (blogId) => {
-    const blog = blogs.find(b => b._id === blogId);
-    setBlogToDelete(blog);
-    setShowDeleteModal(true);
-  };
-
-  const handleDelete = () => {
-    // In a real app, this would be an API call
-    const updatedBlogs = blogs.filter(blog => blog._id !== blogToDelete._id);
-    setBlogs(updatedBlogs);
-    
-    // Update featured and recent blogs
-    const featured = updatedBlogs.filter(blog => blog.featured);
-    setFeaturedBlogs(featured);
-    
-    const sorted = [...updatedBlogs].sort((a, b) => new Date(b.date) - new Date(a.date));
-    setRecentBlogs(sorted);
-    
-    setShowDeleteModal(false);
-    showNotification(`"${blogToDelete.title}" has been deleted.`, "success");
-  };
-
-  // Navigate to edit page
-  const handleEdit = (blogId) => {
-    navigate(`/blog/edit/${blogId}`);
-  };
-
-  // Show notification
-  const showNotification = (message, variant) => {
-    setAlertMessage(message);
-    setAlertVariant(variant);
-    setShowAlert(true);
-    
-    // Auto-hide alert after 3 seconds
-    setTimeout(() => {
-      setShowAlert(false);
-    }, 3000);
-  };
-
-  // Filter blogs by category
-  const filteredBlogs = activeCategory === "All" 
-    ? recentBlogs 
-    : recentBlogs.filter(blog => blog.category === activeCategory);
-
-  if (loading) {
-    return (
-      <Container className="text-center my-5 py-5">
-        <Spinner animation="border" variant="primary" />
-        <p className="mt-3 text-muted">Loading articles...</p>
-      </Container>
-    );
-  }
+  const filteredBlogs = getFilteredBlogs();
 
   return (
-    <div className="medblog-container">
-      {/* Alert Notification */}
-      {showAlert && (
-        <Alert 
-          variant={alertVariant} 
-          className="position-fixed top-0 start-50 translate-middle-x mt-3 z-index-1000"
-          style={{ zIndex: 1050 }}
-        >
-          {alertMessage}
-        </Alert>
-      )}
-      
-      {/* Hero Section */}
-      <div className="blog-hero">
-        <Container>
-          <Row className="align-items-center">
-            <Col lg={6} className="mb-4 mb-lg-0">
-              <div className="hero-content">
-                <h1 className="display-4 fw-bold mb-3">MedLytics Health Blog</h1>
-                <p className="lead mb-4">Evidence-based insights and expert medical advice to help you make informed health decisions.</p>
-                <div className="search-box">
-                  <input 
-                    type="text" 
-                    className="form-control form-control-lg" 
-                    placeholder="Search health topics..." 
+    <div className="med-blog-container py-5">
+      <div className="container">
+        {/* Hero Section */}
+        <div className="row mb-5">
+          <div className="col-lg-8 mx-auto text-center">
+            <h1 className="display-4 mb-3">Medical Blog</h1>
+            <p className="lead text-muted mb-4">
+              Latest insights, research, and advice from healthcare professionals for better understanding of medical conditions and health management.
+            </p>
+            <div className="d-flex justify-content-center gap-3">
+              {isAuthenticated && (
+                <Link to="/admin/blog/create" className="btn btn-primary">
+                  <FaPlus className="me-2" /> New Article
+                </Link>
+              )}
+              <button 
+                className={`btn ${showBookmarked ? 'btn-success' : 'btn-outline-secondary'}`}
+                onClick={toggleShowBookmarked}
+              >
+                <FaBookmark className="me-2" /> {showBookmarked ? 'Showing Bookmarks' : 'Show Bookmarks'}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Search, Filter, and Sort Row */}
+        <div className="card shadow-sm mb-5">
+          <div className="card-body p-4">
+            <div className="row g-3">
+              {/* Search */}
+              <div className="col-md-5">
+                <div className="input-group">
+                  <span className="input-group-text bg-white">
+                    <FaSearch />
+                  </span>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Search articles by title, content, or author..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                   />
-                  <Button variant="primary" className="search-btn">
-                    <i className="bi bi-search"></i>
-                  </Button>
                 </div>
               </div>
-            </Col>
-            <Col lg={6}>
-              <div className="hero-image">
-                <img 
-                  src="https://via.placeholder.com/600x400?text=MedLytics+Blog" 
-                  alt="MedLytics Health Blog" 
-                  className="img-fluid rounded shadow" 
-                />
+              
+              {/* Tag Filter */}
+              <div className="col-md-4">
+                <div className="input-group">
+                  <span className="input-group-text bg-white">
+                    <FaTags />
+                  </span>
+                  <select 
+                    className="form-select"
+                    value={filterTag}
+                    onChange={(e) => handleTagFilter(e.target.value)}
+                  >
+                    <option value="">All Categories</option>
+                    {allTags.map((tag, index) => (
+                      <option key={index} value={tag}>{tag}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
-            </Col>
-          </Row>
-        </Container>
-      </div>
-
-      {/* Admin navigation bar - Only visible when admin is logged in */}
-      {isAdmin && (
-        <div className="admin-navbar py-2 bg-dark text-white">
-          <Container>
-            <Row className="align-items-center">
-              <Col xs={6}>
-                <span className="admin-badge bg-warning text-dark px-2 py-1 rounded">Admin Mode</span>
-              </Col>
-              <Col xs={6} className="text-end">
-                <Button 
-                  variant="success" 
-                  size="sm" 
-                  className="me-2"
-                  onClick={() => navigate('/blog/create')}
-                >
-                  <i className="bi bi-plus-lg me-1"></i>
-                  New Article
-                </Button>
-                <Button 
-                  variant="outline-light" 
-                  size="sm"
-                  onClick={handleLogout}
-                >
-                  <i className="bi bi-box-arrow-right me-1"></i>
-                  Logout
-                </Button>
-              </Col>
-            </Row>
-          </Container>
-        </div>
-      )}
-
-      {/* Featured Posts */}
-      {featuredBlogs.length > 0 && (
-        <section className="featured-posts py-5">
-          <Container>
-            <div className="section-header mb-4">
-              <h2 className="section-title">Featured Articles</h2>
-              <p className="section-subtitle">Expert insights on important health topics</p>
+              
+              {/* Sort By */}
+              <div className="col-md-3">
+                <div className="input-group">
+                  <span className="input-group-text bg-white">
+                    <FaFilter />
+                  </span>
+                  <select 
+                    className="form-select"
+                    value={sortBy}
+                    onChange={(e) => handleSort(e.target.value)}
+                  >
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="az">A-Z</option>
+                    <option value="za">Z-A</option>
+                  </select>
+                </div>
+              </div>
             </div>
-            
-            <Row>
-              {featuredBlogs.map((blog, index) => (
-                <Col key={blog._id} lg={index === 0 ? 8 : 4} className="mb-4">
-                  <Link to={`/blog/${blog._id}`} className="blog-card-link">
-                    <Card className={`featured-card h-100 ${index === 0 ? 'featured-main' : ''}`}>
-                      <div 
-                        className="featured-card-img"
-                        style={{ 
-                          backgroundImage: `url(${blog.image})` 
-                        }}
-                      >
-                        <Badge bg="primary" className="category-badge">
-                          {blog.category}
-                        </Badge>
+          </div>
+        </div>
+
+        {/* Error Message */}
+        {error && (
+          <div className="alert alert-danger" role="alert">
+            {error}
+          </div>
+        )}
+        
+        {/* Loading State */}
+        {loading ? (
+          <div className="text-center my-5">
+            <div className="spinner-border text-primary" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+            <p className="mt-3 text-muted">Loading articles...</p>
+          </div>
+        ) : (
+          <>
+            {/* Results count */}
+            <div className="d-flex justify-content-between align-items-center mb-4">
+              <p className="text-muted mb-0">
+                {filteredBlogs.length === 0 
+                  ? 'No articles found' 
+                  : `Showing ${filteredBlogs.length} article${filteredBlogs.length !== 1 ? 's' : ''}`}
+                {filterTag && ` in "${filterTag}"`}
+                {showBookmarked && ' from your bookmarks'}
+              </p>
+              
+              {filterTag && (
+                <button 
+                  className="btn btn-sm btn-outline-secondary"
+                  onClick={() => handleTagFilter('')}
+                >
+                  Clear Filter
+                </button>
+              )}
+            </div>
+
+            {/* Featured Article (first blog) */}
+            {filteredBlogs.length > 0 && (
+              <div className="featured-article mb-5">
+                <div className="card border-0 shadow-sm">
+                  <div className="row g-0">
+                    <div className="col-lg-6">
+                      <img 
+                        src={filteredBlogs[0].image || "https://via.placeholder.com/800x600?text=Medical+Blog"} 
+                        className="img-fluid rounded-start h-100"
+                        alt={filteredBlogs[0].title}
+                        style={{ objectFit: "cover" }}
+                      />
+                    </div>
+                    <div className="col-lg-6">
+                      <div className="card-body p-4 h-100 d-flex flex-column">
+                        <div>
+                          {filteredBlogs[0].tags && filteredBlogs[0].tags.map((tag, idx) => (
+                            <span 
+                              key={idx} 
+                              className="badge bg-primary-subtle text-primary me-2 mb-2 clickable"
+                              onClick={() => handleTagFilter(tag)}
+                              style={{ cursor: 'pointer' }}
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                          <h2 className="card-title h3 mt-3">{filteredBlogs[0].title}</h2>
+                          <div className="d-flex flex-wrap gap-3 text-muted small mb-3">
+                            <div>
+                              <FaUser className="me-1" /> {filteredBlogs[0].author}
+                            </div>
+                            <div>
+                              <FaCalendarAlt className="me-1" /> {formatDate(filteredBlogs[0].date)}
+                            </div>
+                            <div>
+                              <FaClock className="me-1" /> {calculateReadTime(filteredBlogs[0].content)}
+                            </div>
+                          </div>
+                          <p className="card-text">
+                            {filteredBlogs[0].summary || filteredBlogs[0].content.substring(0, 200)}...
+                          </p>
+                        </div>
+                        <div className="mt-auto d-flex justify-content-between align-items-center">
+                          <Link to={`/blog/${filteredBlogs[0]._id}`} className="btn btn-primary">
+                            Read Full Article
+                          </Link>
+                          
+                          <button 
+                            className={`btn btn-sm ${bookmarkedBlogs.includes(filteredBlogs[0]._id) ? 'btn-warning' : 'btn-outline-secondary'}`}
+                            onClick={() => toggleBookmark(filteredBlogs[0]._id)}
+                            aria-label={bookmarkedBlogs.includes(filteredBlogs[0]._id) ? "Remove bookmark" : "Add bookmark"}
+                          >
+                            <FaBookmark />
+                          </button>
+                        </div>
                         
-                        {/* Admin Actions - Only visible for admin */}
                         {isAdmin && (
-                          <div className="admin-actions">
-                            <Button 
-                              variant="warning" 
-                              size="sm" 
-                              className="me-1"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                handleEdit(blog._id);
-                              }}
+                          <div className="mt-3">
+                            <Link to={`/admin/blog/edit/${filteredBlogs[0]._id}`} className="btn btn-sm btn-outline-secondary me-2">
+                              <FaEdit className="me-1" /> Edit
+                            </Link>
+                            <button 
+                              className="btn btn-sm btn-outline-danger"
+                              onClick={() => handleDelete(filteredBlogs[0]._id)}
                             >
-                              <i className="bi bi-pencil"></i>
-                            </Button>
-                            <Button 
-                              variant="danger" 
-                              size="sm"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                confirmDelete(blog._id);
-                              }}
-                            >
-                              <i className="bi bi-trash"></i>
-                            </Button>
+                              <FaTrash className="me-1" /> Delete
+                            </button>
                           </div>
                         )}
                       </div>
-                      <Card.Body>
-                        <Card.Title className="blog-title">{blog.title}</Card.Title>
-                        <Card.Text className="blog-excerpt">
-                          {blog.summary}
-                        </Card.Text>
-                        <div className="blog-meta">
-                          <div className="meta-item">
-                            <i className="bi bi-calendar3"></i>
-                            <span>{formatDate(blog.date)}</span>
-                          </div>
-                          <div className="meta-item">
-                            <i className="bi bi-clock"></i>
-                            <span>{calculateReadingTime(blog.content)} min read</span>
-                          </div>
-                        </div>
-                      </Card.Body>
-                    </Card>
-                  </Link>
-                </Col>
-              ))}
-            </Row>
-          </Container>
-        </section>
-      )}
-
-      {/* Categories and Recent Posts */}
-      <section className="recent-posts py-5 bg-light">
-        <Container>
-          <Row>
-            <Col lg={8}>
-              <div className="section-header mb-4">
-                <h2 className="section-title">Recent Articles</h2>
-                <p className="section-subtitle">Stay updated with the latest health information</p>
-              </div>
-              
-              {/* Category Pills */}
-              <div className="category-filter mb-4">
-                {categories.map(category => (
-                  <Button
-                    key={category}
-                    variant={activeCategory === category ? "primary" : "outline-secondary"}
-                    className="rounded-pill me-2 mb-2"
-                    onClick={() => setActiveCategory(category)}
-                  >
-                    {category}
-                  </Button>
-                ))}
-              </div>
-              
-              {/* Blog List */}
-              <div className="blog-list">
-                {filteredBlogs.map(blog => (
-                  <Card key={blog._id} className="blog-list-card mb-4">
-                    <Row className="g-0">
-                      <Col md={4}>
-                        <div 
-                          className="blog-list-img"
-                          style={{ backgroundImage: `url(${blog.image})` }}
-                        >
-                          <Badge bg="primary" className="category-badge-sm">
-                            {blog.category}
-                          </Badge>
-                          
-                          {/* Admin Actions - Only visible for admin */}
-                          {isAdmin && (
-                            <div className="admin-actions">
-                              <Button 
-                                variant="warning" 
-                                size="sm" 
-                                className="me-1"
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  handleEdit(blog._id);
-                                }}
-                              >
-                                <i className="bi bi-pencil"></i>
-                              </Button>
-                              <Button 
-                                variant="danger" 
-                                size="sm"
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  confirmDelete(blog._id);
-                                }}
-                              >
-                                <i className="bi bi-trash"></i>
-                              </Button>
-                            </div>
-                          )}
-                        </div>
-                      </Col>
-                      <Col md={8}>
-                        <Card.Body>
-                          <Card.Title className="blog-title mb-2">
-                            <Link to={`/blog/${blog._id}`} className="blog-title-link">
-                              {blog.title}
-                            </Link>
-                          </Card.Title>
-                          <Card.Text className="blog-excerpt mb-3">
-                            {blog.summary}
-                          </Card.Text>
-                          <div className="blog-meta d-flex justify-content-between align-items-center">
-                            <div className="d-flex align-items-center">
-                              {blog.authorImage && (
-                                <Image 
-                                  src={blog.authorImage} 
-                                  roundedCircle 
-                                  width={30} 
-                                  height={30} 
-                                  className="me-2" 
-                                />
-                              )}
-                              <span className="author-name">{blog.author}</span>
-                            </div>
-                            <div className="meta-info">
-                              <span className="me-3">
-                                <i className="bi bi-calendar3 me-1"></i>
-                                {formatDate(blog.date)}
-                              </span>
-                              <span>
-                                <i className="bi bi-clock me-1"></i>
-                                {calculateReadingTime(blog.content)} min read
-                              </span>
-                            </div>
-                          </div>
-                        </Card.Body>
-                      </Col>
-                    </Row>
-                  </Card>
-                ))}
-              </div>
-              
-              {/* Pagination */}
-              <div className="pagination-container d-flex justify-content-center mt-5">
-                <Button variant="outline-secondary" className="rounded-circle pagination-btn me-2">
-                  <i className="bi bi-chevron-left"></i>
-                </Button>
-                <Button variant="primary" className="rounded-circle pagination-btn me-2">1</Button>
-                <Button variant="outline-secondary" className="rounded-circle pagination-btn me-2">2</Button>
-                <Button variant="outline-secondary" className="rounded-circle pagination-btn me-2">3</Button>
-                <Button variant="outline-secondary" className="rounded-circle pagination-btn">
-                  <i className="bi bi-chevron-right"></i>
-                </Button>
-              </div>
-            </Col>
-            
-            {/* Sidebar */}
-            <Col lg={4} className="mt-5 mt-lg-0">
-              <div className="blog-sidebar">
-                {/* About Section */}
-                <div className="sidebar-widget about-widget mb-4">
-                  <h4 className="widget-title">About MedLytics</h4>
-                  <p>MedLytics provides evidence-based health information written and reviewed by medical professionals to help you make informed decisions about your health.</p>
-                  <Link to="/about">
-                    <Button variant="outline-primary" size="sm">Learn More</Button>
-                  </Link>
-                </div>
-                
-                {/* Admin Login - Only visible if not logged in */}
-                {!isAdmin && (
-                  <div className="sidebar-widget login-widget mb-4">
-                    <h4 className="widget-title">Admin Access</h4>
-                    <Button 
-                      variant="outline-secondary" 
-                      size="sm" 
-                      onClick={() => setShowLoginModal(true)}
-                    >
-                      <i className="bi bi-lock me-1"></i>
-                      Staff Login
-                    </Button>
-                  </div>
-                )}
-                
-                {/* Categories Widget */}
-                <div className="sidebar-widget categories-widget mb-4">
-                  <h4 className="widget-title">Categories</h4>
-                  <ul className="category-list">
-                    {categories.filter(cat => cat !== "All").map(category => (
-                      <li key={category} className="category-item">
-                        <Link 
-                          to="#" 
-                          className="category-link"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            setActiveCategory(category);
-                          }}
-                        >
-                          {category}
-                          <span className="category-count">
-                            {recentBlogs.filter(blog => blog.category === category).length}
-                          </span>
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                
-                {/* Newsletter Widget */}
-                <div className="sidebar-widget newsletter-widget mb-4">
-                  <h4 className="widget-title">Newsletter</h4>
-                  <p>Stay updated with our latest health articles and tips.</p>
-                  <div className="newsletter-form">
-                    <input 
-                      type="email" 
-                      className="form-control mb-2" 
-                      placeholder="Your email address" 
-                    />
-                    <Button variant="primary" className="w-100">Subscribe</Button>
-                  </div>
-                </div>
-                
-                {/* Tags Widget */}
-                <div className="sidebar-widget tags-widget">
-                  <h4 className="widget-title">Popular Tags</h4>
-                  <div className="tags-cloud">
-                    {Array.from(new Set(recentBlogs.flatMap(blog => blog.tags || []))).map(tag => (
-                      <Badge 
-                        key={tag} 
-                        bg="light" 
-                        text="dark" 
-                        className="tag-badge"
-                      >
-                        {tag}
-                      </Badge>
-                    ))}
+                    </div>
                   </div>
                 </div>
               </div>
-            </Col>
-          </Row>
-        </Container>
-      </section>
-      
-      {/* CTA Section */}
-      <section className="cta-section py-5">
-        <Container>
-          <div className="cta-container text-center p-5 rounded">
-            <Row className="justify-content-center">
-              <Col lg={8}>
-                <h2 className="cta-title mb-3">Have a Medical Question?</h2>
-                <p className="cta-text mb-4">Our team of medical professionals is here to help answer your health-related questions.</p>
-                <Link to="/contact">
-                  <Button variant="light" size="lg" className="rounded-pill px-4">
-                    Contact Our Experts
-                  </Button>
-                </Link>
-              </Col>
-            </Row>
-          </div>
-        </Container>
-      </section>
-      
-      {/* Admin Controls - only show when not logged in */}
-      {!isAdmin && (
-        <Container className="my-4">
-          <div className="admin-controls text-center">
-            <Button 
-              variant="outline-secondary"
-              onClick={() => setShowLoginModal(true)}
-            >
-              <i className="bi bi-lock me-1"></i>
-              Admin Login
-            </Button>
-          </div>
-        </Container>
-      )}
-      
-      {/* Admin Login Modal */}
-      <Modal show={showLoginModal} onHide={() => setShowLoginModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Admin Login</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {loginError && (
-            <Alert variant="danger">{loginError}</Alert>
-          )}
-          <Form onSubmit={handleLogin}>
-            <Form.Group className="mb-3">
-              <Form.Label>Username</Form.Label>
-              <Form.Control 
-                type="text" 
-                placeholder="Enter username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Password</Form.Label>
-              <Form.Control 
-                type="password" 
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </Form.Group>
-            <div className="d-grid">
-              <Button variant="primary" type="submit">
-                Login
-              </Button>
-            </div>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-                      <small className="text-muted w-100 text-center">
-            For demo purposes: Username is "admin" and password is "password"
-            </small>
-          </Modal.Footer>
-        </Modal>
-        
-        {/* Delete Confirmation Modal */}
-        <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
-          <Modal.Header closeButton>
-            <Modal.Title>Confirm Deletion</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            {blogToDelete && (
-              <>
-                <p>Are you sure you want to delete the following article?</p>
-                <p className="fw-bold">{blogToDelete.title}</p>
-                <p className="text-danger">This action cannot be undone.</p>
-              </>
             )}
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
-              Cancel
-            </Button>
-            <Button variant="danger" onClick={handleDelete}>
-              Delete
-            </Button>
-          </Modal.Footer>
-        </Modal>
+            
+            {/* Blog Grid */}
+            <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+              {filteredBlogs.slice(1).map((blog) => (
+                <div className="col" key={blog._id}>
+                  <div className="card h-100 border-0 shadow-sm hover-effect">
+                    <img 
+                      src={blog.image || "https://via.placeholder.com/400x200?text=Medical+Blog"}
+                      className="card-img-top"
+                      alt={blog.title}
+                      style={{ height: "200px", objectFit: "cover" }}
+                    />
+                    <div className="card-body">
+                      <div className="mb-2">
+                        {blog.tags && blog.tags.map((tag, idx) => (
+                          <span 
+                            key={idx} 
+                            className="badge bg-primary-subtle text-primary me-1 mb-1"
+                            onClick={() => handleTagFilter(tag)}
+                            style={{ cursor: 'pointer' }}
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                      <h5 className="card-title">{blog.title}</h5>
+                      <div className="d-flex flex-wrap gap-2 text-muted small mb-2">
+                        <span>
+                          <FaUser className="me-1" /> {blog.author}
+                        </span>
+                        <span>•</span>
+                        <span>
+                          <FaCalendarAlt className="me-1" /> {formatDate(blog.date)}
+                        </span>
+                        <span>•</span>
+                        <span>
+                          <FaClock className="me-1" /> {calculateReadTime(blog.content)}
+                        </span>
+                      </div>
+                      <p className="card-text">
+                        {blog.summary || blog.content.substring(0, 120)}...
+                      </p>
+                    </div>
+                    <div className="card-footer bg-white border-0 d-flex justify-content-between align-items-center">
+                      <Link to={`/blog/${blog._id}`} className="btn btn-sm btn-outline-primary">
+                        Read More
+                      </Link>
+                      
+                      <div className="d-flex gap-2">
+                        <button 
+                          className={`btn btn-sm ${bookmarkedBlogs.includes(blog._id) ? 'btn-warning' : 'btn-outline-secondary'}`}
+                          onClick={() => toggleBookmark(blog._id)}
+                          aria-label={bookmarkedBlogs.includes(blog._id) ? "Remove bookmark" : "Add bookmark"}
+                        >
+                          <FaBookmark />
+                        </button>
+                        
+                        {isAdmin && (
+                          <>
+                            <Link to={`/admin/blog/edit/${blog._id}`} className="btn btn-sm btn-outline-secondary">
+                              <FaEdit />
+                            </Link>
+                            <button 
+                              className="btn btn-sm btn-outline-danger"
+                              onClick={() => handleDelete(blog._id)}
+                            >
+                              <FaTrash />
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            {/* Empty State */}
+            {filteredBlogs.length === 0 && (
+              <div className="text-center my-5 py-5">
+                <div className="display-6 text-muted mb-4">No articles found</div>
+                <p className="lead">
+                  {showBookmarked 
+                    ? "You haven't bookmarked any articles yet." 
+                    : (filterTag 
+                      ? `No articles match the "${filterTag}" category${searchTerm ? ' and search term' : ''}.` 
+                      : "Try adjusting your search or filter criteria.")}
+                </p>
+                <div className="mt-4">
+                  {showBookmarked && (
+                    <button 
+                      className="btn btn-primary me-3"
+                      onClick={() => setShowBookmarked(false)}
+                    >
+                      View All Articles
+                    </button>
+                  )}
+                  {filterTag && (
+                    <button 
+                      className="btn btn-outline-secondary"
+                      onClick={() => handleTagFilter('')}
+                    >
+                      Clear Filter
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Pagination (basic implementation) */}
+            {filteredBlogs.length > 0 && (
+              <nav className="d-flex justify-content-center mt-5">
+                <ul className="pagination">
+                  <li className="page-item disabled">
+                    <a className="page-link" href="#" tabIndex="-1" aria-disabled="true">Previous</a>
+                  </li>
+                  <li className="page-item active"><a className="page-link" href="#">1</a></li>
+                  <li className="page-item"><a className="page-link" href="#">2</a></li>
+                  <li className="page-item"><a className="page-link" href="#">3</a></li>
+                  <li className="page-item">
+                    <a className="page-link" href="#">Next</a>
+                  </li>
+                </ul>
+              </nav>
+            )}
+          </>
+        )}
       </div>
-    );
+    </div>
+  );
 };
 
 export default MedBlog;
