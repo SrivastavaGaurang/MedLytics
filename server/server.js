@@ -1,4 +1,4 @@
-// server.js - Main entry point for the MedLytics application
+// server.js
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
@@ -9,9 +9,9 @@ import { fileURLToPath } from 'url';
 
 // Route Imports
 import authRoutes from './routes/auth.js';
-import sleepRoutes from './routes/sleep.js';
+import sleepRoutes from './routes/sleep.js'; // Ensure this matches sleep.js export
 import depressionRoutes from './routes/depression.js';
-import blogRoutes from './routes/blogs.js';
+import blogRoutes from './routes/blog.js';
 import userRoutes from './routes/userRoutes.js';
 import anxietyRoutes from './routes/anxietyRoutes.js';
 import bmiRoutes from './routes/bmi.js';
@@ -65,17 +65,18 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Connect to MongoDB and start server
 const PORT = process.env.PORT || 5000;
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/medlytics')
+
+mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/medlytics')
   .then(() => {
-    console.log('MongoDB connected');
+    console.log('MongoDB connected successfully');
     app.listen(PORT, () => {
       console.log(`MedLytics server running on port ${PORT}`);
     });
   })
   .catch(err => {
-    console.error('MongoDB connection error:', err);
+    console.error('MongoDB connection error:', err.message);
     process.exit(1);
   });
+
 export default app;

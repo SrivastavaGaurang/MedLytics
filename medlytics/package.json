@@ -7,7 +7,11 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "start": "react-scripts start",
+    
+  "test": "react-scripts test",
+  "eject": "react-scripts eject"
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.3.0",
@@ -39,6 +43,7 @@
     "react-quill": "^0.0.2",
     "react-router-dom": "^7.6.0",
     "react-slick": "^0.30.3",
+    "react-scripts": "^5.0.1",
     "recharts": "^2.15.3",
     "slick-carousel": "^1.8.1"
   },
@@ -52,6 +57,18 @@
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^16.0.0",
     "vite": "^6.3.1"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   },
   "json.schemas": [],
   "json.validate.enable": false,
