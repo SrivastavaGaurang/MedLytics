@@ -4,9 +4,11 @@ import axios from 'axios';
 
 // Submit sleep analysis data - doesn't require token
 export const analyzeSleep = async (formData) => {
-    const response = await axios.post('http://localhost:5000/api/sleep/analyze', formData);
-    return response.data;
-};  
+  console.log('Submitting sleep analysis:', formData);
+  const response = await axios.post('http://localhost:5000/api/sleep/analyze', formData);
+  console.log('Server response:', response.data);
+  return response.data;
+};
 
 // Get sleep result by ID - doesn't require token for now
 export const getSleepResult = async (id) => {
