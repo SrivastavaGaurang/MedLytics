@@ -1,17 +1,14 @@
 {
   "name": "medlytics-backend",
   "version": "1.0.0",
-  "description": "Backend for MedLytics - Medical Analysis Application",
-  "main": "server.js",
   "type": "module",
+  "description": "MedLytics backend server",
+  "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "server": "nodemon server.js",
-    "client": "cd ../medlytics && npm start",
+    "client": "cd ../medlytics && npm run dev",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "install-client": "cd ../medlytics && npm install",
-    "build-client": "cd ../medlytics && npm run build",
-    "heroku-postbuild": "npm run install-client && npm run build-client",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -25,19 +22,18 @@
     "node"
   ],
   "dependencies": {
-    "axios": "^1.5.0",
     "bcryptjs": "^2.4.3",
-    "config": "^3.3.9",
     "cors": "^2.8.5",
-    "dotenv": "^16.5.0",
-    "express": "^4.21.2",
-    "express-jwt": "^8.5.1",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "express-jwt": "^8.4.1",
     "express-validator": "^7.0.1",
-    "jsonwebtoken": "^9.0.2",
-    "jwks-rsa": "^3.2.0",
-    "mongoose": "^7.8.7",
+    "jsonwebtoken": "^9.0.0",
+    "jwks-rsa": "^3.0.1",
+    "mongoose": "^7.0.3",
     "morgan": "^1.10.0"
   },
+  
   "devDependencies": {
     "concurrently": "^8.2.1",
     "nodemon": "^3.1.10"

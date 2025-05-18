@@ -18,6 +18,42 @@ router.get('/protected', jwtAuth0Check, (req, res) => {
   res.json({ message: 'Protected sleep data', user: req.user });
 });
 
+// Get a specific sleep analysis result by ID
+router.get('/results/:id', async (req, res) => {
+  try {
+    const sleepAnalysis = await SleepAnalysis.findById(req.params.id);
+    
+    if (!sleepAnalysis) {
+      return res.status(404).json({ message: 'Sleep analysis not found' });
+    }
+    
+    res.json(sleepAnalysis);
+  } catch (err) {
+    console.error('Error fetching sleep analysis:', err.message);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+});
+
+// Get user's sleep history (protected)
+router.get('/history', jwtAuth0Check, async (req, res) => {
+  try {
+    const user = await User.findOne({ authId: req.user.sub });
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
+    const sleepHistory = await SleepAnalysis.find({ user: user._id })
+                                          .sort({ date: -1 })
+                                          .select('-__v');
+    
+    res.json(sleepHistory);
+  } catch (err) {
+    console.error('Error fetching sleep history:', err.message);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+});
+
 // Analyze sleep data
 router.post(
   '/analyze',
