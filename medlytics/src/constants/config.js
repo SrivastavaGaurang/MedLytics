@@ -1,3 +1,4 @@
+// src/config.js
 export const API_NOTIFICATION_MESSAGES = {
     loading: {
         title: 'Loading...',
@@ -7,11 +8,11 @@ export const API_NOTIFICATION_MESSAGES = {
         title: 'Success',
         message: 'Data loaded successfully!',
     },
-    responseFailure: { // Fixed typo from 'resposeFailure'
+    responseFailure: {
         title: 'Error',
         message: 'An error occurred while processing your request.',
     },
-    requestFailure: { // Fixed typo from 'requsestFailure'
+    requestFailure: {
         title: 'Error',
         message: 'An error occurred while sending your request.',
     },
@@ -22,8 +23,9 @@ export const API_NOTIFICATION_MESSAGES = {
 };
 
 export const SERVICE_URL = {
-    userSignup: { url: '/api/signup', method: 'POST' }, // Fixed duplicate key
+    userSignup: { url: '/api/signup', method: 'POST' },
+    contact: { url: '/api/contact', method: 'POST' },
 };
 
-// Add SERVER_URL
-export const SERVER_URL = 'http://localhost:8000'; // Replace with your server's base URL
+// Server URL
+export const SERVER_URL = 'http://localhost:5000'; // Matching the port in your server.js file

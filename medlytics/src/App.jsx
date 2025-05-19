@@ -1,6 +1,8 @@
 // src/App.jsx
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import 'bootstrap-icons/font/bootstrap-icons.css';
+
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './components/Home';
@@ -17,7 +19,8 @@ import DepressionPrediction from './pages/DepressionPrediction';
 import NutritionalPrediction from './pages/BMIPrediction';
 import Dashboard from './pages/Dashboard';
 import NotFound from './pages/NotFound';
-import Contact from './components/contact';
+import Contact from './components/ImprovedContact';
+
 import SleepResult from './pages/SleepResults';
 
 function App() {

@@ -1,250 +1,214 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import axios from 'axios';
-import { Bar } from 'react-chartjs-2';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-} from 'chart.js';
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+import { Bar, Radar, Doughnut } from 'react-chartjs-2';
+import { Chart as ChartJS, ArcElement, BarElement, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, RadialLinearScale } from 'chart.js';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap-icons/font/bootstrap-icons.css';
+import 'animate.css';
+import './SleepResult.css';
 
-// Register Chart.js components
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
+ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, RadialLinearScale);
 
-const SleepResults = () => {
-  const { id } = useParams();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [result, setResult] = useState(null);
+const SleepResults = ({ data }) => {
+  const [activeTab, setActiveTab] = useState('overview');
 
-  useEffect(() => {
-    const fetchResult = async () => {
-      try {
-        const response = await axios.get(`/api/sleep/results/${id}`);
-        setResult(response.data);
-        setLoading(false);
-      } catch (err) {
-        console.error('Error fetching sleep results:', err);
-        setError('Could not load sleep analysis results. Please try again later.');
-        setLoading(false);
-      }
-    };
-
-    fetchResult();
-  }, [id]);
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-          <strong className="font-bold">Error!</strong>
-          <span className="block sm:inline"> {error}</span>
-        </div>
-        <div className="mt-4">
-          <Link to="/sleep" className="text-blue-500 hover:text-blue-700">
-            Go back to Sleep Analysis
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-  if (!result) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative" role="alert">
-          <strong className="font-bold">No results found!</strong>
-          <span className="block sm:inline"> The requested analysis doesn't exist.</span>
-        </div>
-        <div className="mt-4">
-          <Link to="/sleep" className="text-blue-500 hover:text-blue-700">
-            Try another analysis
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-  // Prepare chart data
-  const chartData = {
-    labels: ['Sleep Duration', 'Sleep Quality', 'Physical Activity', 'Stress Level', 'BMI', 'Heart Rate'],
-    datasets: [
-      {
-        label: 'Your Metrics',
-        data: [
-          result.sleepDuration,
-          result.qualityOfSleep,
-          result.physicalActivity,
-          result.stressLevel,
-          result.bmi,
-          result.heartRate,
-        ],
-        backgroundColor: [
-          'rgba(255, 99, 132, 0.6)',
-          'rgba(54, 162, 235, 0.6)',
-          'rgba(255, 206, 86, 0.6)',
-          'rgba(75, 192, 192, 0.6)',
-          'rgba(153, 102, 255, 0.6)',
-          'rgba(255, 159, 64, 0.6)',
-        ],
-        borderColor: [
-          'rgba(255, 99, 132, 1)',
-          'rgba(54, 162, 235, 1)',
-          'rgba(255, 206, 86, 1)',
-          'rgba(75, 192, 192, 1)',
-          'rgba(153, 102, 255, 1)',
-          'rgba(255, 159, 64, 1)',
-        ],
-        borderWidth: 1,
-      },
-    ],
+  const defaultData = {
+    sleepDuration: 7.2,
+    sleepQuality: 85,
+    remSleep: 22,
+    deepSleep: 18,
+    sleepEfficiency: 90,
+    heartRate: 65,
+    stressLevel: 30,
   };
 
-  // Chart options
+  const sleepData = { ...defaultData, ...data };
+
+  const barData = {
+    labels: ['Sleep Duration', 'Sleep Quality', 'REM Sleep', 'Deep Sleep'],
+    datasets: [{
+      label: 'Sleep Metrics',
+      data: [sleepData.sleepDuration, sleepData.sleepQuality, sleepData.remSleep, sleepData.deepSleep],
+      backgroundColor: ['#4f46e5', '#10b981', '#f59e0b', '#ef4444'],
+    }],
+  };
+
+  const radarData = {
+    labels: ['Sleep Efficiency', 'Heart Rate', 'Stress Level'],
+    datasets: [{
+      label: 'Health Profile',
+      data: [sleepData.sleepEfficiency, sleepData.heartRate, sleepData.stressLevel],
+      backgroundColor: 'rgba(79, 70, 229, 0.2)',
+      borderColor: '#4f46e5',
+      pointBackgroundColor: '#4f46e5',
+    }],
+  };
+
+  const doughnutData = {
+    labels: ['REM Sleep', 'Deep Sleep', 'Light Sleep'],
+    datasets: [{
+      data: [sleepData.remSleep, sleepData.deepSleep, 100 - sleepData.remSleep - sleepData.deepSleep],
+      backgroundColor: ['#10b981', '#f59e0b', '#d1d5db'],
+    }],
+  };
+
   const chartOptions = {
-    responsive: true,
+    maintainAspectRatio: false,
     plugins: {
-      legend: {
-        position: 'top',
-      },
-      title: {
-        display: true,
-        text: 'Your Health Metrics',
-      },
+      legend: { display: false },
+      tooltip: { enabled: true },
     },
-    scales: {
-      y: {
-        beginAtZero: true,
-      },
+    animation: {
+      duration: 1000,
+      easing: 'easeOutQuart',
     },
   };
 
-  // Get risk level color
-  const getRiskLevelColor = (level) => {
-    switch (level.toLowerCase()) {
-      case 'low':
-        return 'bg-green-100 text-green-800 border-green-200';
-      case 'moderate':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'high':
-        return 'bg-red-100 text-red-800 border-red-200';
-      default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
-    }
+  const radarOptions = {
+    maintainAspectRatio: false,
+    scales: { r: { beginAtZero: true, max: 100 } },
+    plugins: {
+      legend: { display: false },
+      tooltip: { enabled: true },
+    },
+    animation: {
+      duration: 1000,
+      easing: 'easeOutQuart',
+    },
   };
 
-  const riskLevelColor = getRiskLevelColor(result.result.riskLevel);
+  const handlePrint = () => {
+    window.print();
+  };
 
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6 text-center">Sleep Analysis Results</h1>
-      
-      <div className="mb-8">
-        <div className="mb-4">
-          <h2 className="text-xl font-semibold mb-2">Your Health Profile</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-white p-4 rounded shadow">
-              <p className="text-sm text-gray-500">Age</p>
-              <p className="text-lg font-medium">{result.age} years</p>
-            </div>
-            <div className="bg-white p-4 rounded shadow">
-              <p className="text-sm text-gray-500">Gender</p>
-              <p className="text-lg font-medium">{result.gender.charAt(0).toUpperCase() + result.gender.slice(1)}</p>
-            </div>
-            <div className="bg-white p-4 rounded shadow">
-              <p className="text-sm text-gray-500">Daily Steps</p>
-              <p className="text-lg font-medium">{result.dailySteps} steps</p>
-            </div>
-            <div className="bg-white p-4 rounded shadow">
-              <p className="text-sm text-gray-500">Blood Pressure</p>
-              <p className="text-lg font-medium">{result.bloodPressure.systolic}/{result.bloodPressure.diastolic} mmHg</p>
-            </div>
-            <div className="bg-white p-4 rounded shadow">
-              <p className="text-sm text-gray-500">Heart Rate</p>
-              <p className="text-lg font-medium">{result.heartRate} bpm</p>
-            </div>
-            <div className="bg-white p-4 rounded shadow">
-              <p className="text-sm text-gray-500">BMI</p>
-              <p className="text-lg font-medium">{result.bmi}</p>
-            </div>
-          </div>
+  const MetricCard = ({ title, value, icon, delay }) => (
+    <div className="col-md-4">
+      <div className="card shadow-sm h-100 animate__animated animate__fadeInUp" style={{ animationDelay: `${delay}s` }}>
+        <div className="card-body text-center">
+          <i className={`${icon} text-primary mb-3`} style={{ fontSize: '2rem' }} aria-hidden="true"></i>
+          <h6 className="card-title">{title}</h6>
+          <p className="card-text fw-bold">{value}</p>
         </div>
-        
-        <div className="mb-8">
-          <h2 className="text-xl font-semibold mb-4">Health Metrics Visualization</h2>
-          <div className="bg-white p-4 rounded shadow">
-            <Bar data={chartData} options={chartOptions} />
-          </div>
-        </div>
-      </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-        <div className="col-span-1">
-          <div className={`p-6 rounded-lg border ${riskLevelColor}`}>
-            <h3 className="text-xl font-bold mb-2">Sleep Disorder Risk</h3>
-            <div className="text-3xl font-bold mb-2">{result.result.riskLevel}</div>
-            <p className="text-sm">
-              {result.result.riskLevel === 'Low' && 'Your sleep metrics indicate a low risk for sleep disorders.'}
-              {result.result.riskLevel === 'Moderate' && 'You have some risk factors that may contribute to sleep disorders.'}
-              {result.result.riskLevel === 'High' && 'Several risk factors suggest you may be at high risk for sleep disorders.'}
-            </p>
-          </div>
-        </div>
-        
-        <div className="col-span-1 md:col-span-2">
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-xl font-bold mb-4">Possible Sleep Disorders</h3>
-            {result.result.possibleDisorders.length > 0 ? (
-              <ul className="list-disc list-inside space-y-2">
-                {result.result.possibleDisorders.map((disorder, index) => (
-                  <li key={index} className="text-gray-700">{disorder}</li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-gray-700">No specific sleep disorders detected.</p>
-            )}
-          </div>
-        </div>
-      </div>
-      
-      <div className="bg-white p-6 rounded-lg shadow mb-8">
-        <h3 className="text-xl font-bold mb-4">Recommendations</h3>
-        <ul className="list-disc list-inside space-y-2">
-          {result.result.recommendations.map((recommendation, index) => (
-            <li key={index} className="text-gray-700">{recommendation}</li>
-          ))}
-        </ul>
-      </div>
-      
-      <div className="text-center mt-8">
-        <Link
-          to="/sleep"
-          className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-6 rounded-md transition duration-300"
-        >
-          New Analysis
-        </Link>
       </div>
     </div>
   );
+
+  return (
+    <section className="sleep-results-container animate__animated animate__fadeIn" aria-labelledby="sleep-report-title">
+      <div className="container py-5">
+        <h1 id="sleep-report-title" className="display-4 fw-bold mb-4 text-center">Sleep Analysis Report</h1>
+        <p className="lead text-center mb-5">Your personalized sleep insights</p>
+
+        <ul className="nav nav-pills mb-4 justify-content-center" role="tablist" aria-label="Sleep report navigation">
+          {['overview', 'health', 'recommendations'].map((tab) => (
+            <li className="nav-item" key={tab}>
+              <button
+                className={`nav-link ${activeTab === tab ? 'active' : ''}`}
+                onClick={() => setActiveTab(tab)}
+                aria-selected={activeTab === tab}
+                role="tab"
+              >
+                {tab.charAt(0).toUpperCase() + tab.slice(1)}
+              </button>
+            </li>
+          ))}
+        </ul>
+
+        <div className="tab-content">
+          {activeTab === 'overview' && (
+            <div className="tab-pane fade show active" role="tabpanel">
+              <div className="row g-4">
+                <div className="col-md-6">
+                  <div className="card shadow-sm h-100 animate__animated animate__zoomIn">
+                    <div className="card-body">
+                      <h5 className="card-title">Sleep Metrics</h5>
+                      <div className="chart-container">
+                        <Bar data={barData} options={chartOptions} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="col-md-6">
+                  <div className="card shadow-sm h-100 animate__animated animate__zoomIn">
+                    <div className="card-body">
+                      <h5 className="card-title">Sleep Composition</h5>
+                      <div className="chart-container">
+                        <Doughnut data={doughnutData} options={chartOptions} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'health' && (
+            <div className="tab-pane fade show active" role="tabpanel">
+              <div className="card shadow-sm animate__animated animate__fadeInUp">
+                <div className="card-body">
+                  <h5 className="card-title">Health Profile</h5>
+                  <div className="chart-container" style={{ height: '400px' }}>
+                    <Radar data={radarData} options={radarOptions} />
+                  </div>
+                </div>
+              </div>
+              <div className="row g-4 mt-4">
+                {[
+                  { title: 'Sleep Efficiency', value: `${sleepData.sleepEfficiency}%`, icon: 'bi bi-check-circle-fill' },
+                  { title: 'Average Heart Rate', value: `${sleepData.heartRate} bpm`, icon: 'bi bi-heart-fill' },
+                  { title: 'Stress Level', value: `${sleepData.stressLevel}%`, icon: 'bi bi-lightning-fill' },
+                ].map((metric, idx) => (
+                  <MetricCard key={idx} {...metric} delay={idx * 0.2} />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'recommendations' && (
+            <div className="tab-pane fade show active" role="tabpanel">
+              <div className="card shadow-sm animate__animated animate__fadeInUp">
+                <div className="card-body">
+                  <h5 className="card-title">Personalized Recommendations</h5>
+                  <ul className="list-group list-group-flush">
+                    {[
+                      'Maintain a consistent sleep schedule to improve sleep quality.',
+                      'Reduce screen time 1-2 hours before bed to enhance REM sleep.',
+                      'Practice relaxation techniques to lower stress levels.',
+                      'Ensure your bedroom is cool, dark, and quiet for optimal sleep.',
+                    ].map((rec, idx) => (
+                      <li className="list-group-item" key={idx}>{rec}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="text-center mt-5">
+          <button className="btn btn-primary btn-lg" onClick={handlePrint} aria-label="Print sleep report">
+            <i className="bi bi-printer-fill me-2" aria-hidden="true"></i>Print Report
+          </button>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+SleepResults.propTypes = {
+  data: PropTypes.shape({
+    sleepDuration: PropTypes.number,
+    sleepQuality: PropTypes.number,
+    remSleep: PropTypes.number,
+    deepSleep: PropTypes.number,
+    sleepEfficiency: PropTypes.number,
+    heartRate: PropTypes.number,
+    stressLevel: PropTypes.number,
+  }),
+};
+
+SleepResults.defaultProps = {
+  data: {},
 };
 
 export default SleepResults;

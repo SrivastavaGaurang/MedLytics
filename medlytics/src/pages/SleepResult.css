@@ -1,11 +1,134 @@
-.result-card {
-    border-radius: 1rem;
-    background: #111;
-    color: #fff;
-    box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+/* src/pages/SleepResult.css */
+
+:root {
+  --primary-color: #4f46e5;
+  --primary-hover: #4338ca;
+  --background-light: #f8fafc;
+  --card-bg-start: #ffffff;
+  --card-bg-end: #f8fafc;
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 10px 20px rgba(0, 0, 0, 0.1);
+  --border-radius: 12px;
+  --transition: all 0.3s ease;
+}
+
+.sleep-results-container {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--background-light);
+  color: var(--text-primary);
+  padding: 2rem 0;
+  min-height: 100vh;
+}
+
+.card {
+  border-radius: var(--border-radius);
+  background: linear-gradient(145deg, var(--card-bg-start), var(--card-bg-end));
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-md);
+}
+
+.nav-pills .nav-link {
+  border-radius: 8px;
+  padding: 0.5rem 1.5rem;
+  font-weight: 500;
+  color: var(--primary-color);
+  transition: var(--transition);
+  margin: 0 0.25rem;
+}
+
+.nav-pills .nav-link.active {
+  background-color: var(--primary-color);
+  color: #ffffff;
+}
+
+.nav-pills .nav-link:hover {
+  background-color: rgba(79, 70, 229, 0.1);
+}
+
+.btn-primary {
+  background: var(--primary-color);
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: 10px;
+  font-weight: 600;
+  transition: var(--transition);
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(79, 70, 229, 0.3);
+}
+
+.btn-primary:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.3);
+}
+
+.list-group-item {
+  border: none;
+  padding: 1rem 0;
+  font-size: 1rem;
+  color: var(--text-secondary);
+}
+
+.chart-container {
+  position: relative;
+  height: 300px;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .nav-pills {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
   }
-  
-  .badge.bg-success { background-color: #28a745; }
-  .badge.bg-warning { background-color: #ffc107; }
-  .badge.bg-danger { background-color: #dc3545; }
-  
+  .nav-link {
+    flex: 1;
+    text-align: center;
+    font-size: 0.9rem;
+  }
+  .card {
+    margin-bottom: 1.5rem;
+  }
+  .chart-container {
+    height: 250px;
+  }
+}
+
+@media print {
+  .sleep-results-container {
+    background: #fff;
+    padding: 0;
+  }
+  .card {
+    margin: 0;
+    padding: 1rem;
+    box-shadow: none;
+    border: 1px solid #e5e7eb;
+  }
+  .list-group-item {
+    padding: 0.5rem 0;
+  }
+  .btn-primary, .nav {
+    display: none;
+  }
+  .tab-content > .tab-pane {
+    display: block !important;
+    opacity: 1 !important;
+  }
+  h1, h5 {
+    color: #000 !important;
+  }
+  .chart-container {
+    height: 200px;
+  }
+}

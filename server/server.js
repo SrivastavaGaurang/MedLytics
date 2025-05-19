@@ -15,6 +15,8 @@ import blogRoutes from './routes/blog.js';
 import userRoutes from './routes/userRoutes.js';
 import anxietyRoutes from './routes/anxietyRoutes.js';
 import bmiRoutes from './routes/bmi.js';
+import contactRoutes from './routes/contactRoutes.js'; // Added contact routes import
+
 
 // Load environment variables
 dotenv.config();
@@ -35,6 +37,8 @@ app.use('/api/anxiety', anxietyRoutes);
 app.use('/api/depression', depressionRoutes);
 app.use('/api/blogs', blogRoutes);
 app.use('/api/bmi', bmiRoutes);
+app.use('/api/contact', contactRoutes); // Added contact routes
+
 
 // Health check route
 app.get('/health', (req, res) => {
