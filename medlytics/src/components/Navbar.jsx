@@ -40,7 +40,7 @@ const Navbar = () => {
               <li><Link className="dropdown-item" to="/sleep-disorder" onClick={toggleMenu}>Sleep Disorder</Link></li>
               <li><Link className="dropdown-item" to="/anxiety-prediction" onClick={toggleMenu}>Anxiety Prediction</Link></li>
               <li><Link className="dropdown-item" to="/depression-prediction" onClick={toggleMenu}>Depression Prediction</Link></li>
-              <li><Link className="dropdown-item" to="/nutritional-prediction" onClick={toggleMenu}>Nutritional Prediction</Link></li>
+              <li><Link className="dropdown-item" to="/nutritional-prediction" onClick={toggleMenu}>BMI Prediction</Link></li>
             </ul>
           </li>
 

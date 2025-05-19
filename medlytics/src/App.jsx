@@ -1,4 +1,4 @@
-// src/App.jsx
+// App.jsx with updated BMI Routes
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import 'bootstrap-icons/font/bootstrap-icons.css';
@@ -15,8 +15,10 @@ import CreateBlog from './components/blogs/BlogDashboard';
 import EditBlog from './components/blogs/EditBlog';
 import SleepDisorder from './pages/SleepDisorder';
 import AnxietyPrediction from './pages/AnxietyPrediction';
+import AnxietyResults from './pages/AnxietyResults';
 import DepressionPrediction from './pages/DepressionPrediction';
-import NutritionalPrediction from './pages/BMIPrediction';
+import NutritionalPrediction from './pages/ImprovedBMIPrediction';
+import BMIResults from './pages/BMIResults';  // Import the BMI results component
 import Dashboard from './pages/Dashboard';
 import NotFound from './pages/NotFound';
 import Contact from './components/ImprovedContact';
@@ -39,8 +41,10 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/not-found" element={<NotFound />} />
         <Route path="/anxiety-prediction" element={<AnxietyPrediction />} />
+        <Route path="/anxiety-results/:id" element={<AnxietyResults />} />
         <Route path="/depression-prediction" element={<DepressionPrediction />} />
         <Route path="/nutritional-prediction" element={<NutritionalPrediction />} />
+        <Route path="/bmi-results/:id" element={<BMIResults />} />  {/* Added this route */}
         <Route path="/contact" element={<Contact />} />
         <Route path="/sleep-results/:id" element={<SleepResult />} />
       </Routes>

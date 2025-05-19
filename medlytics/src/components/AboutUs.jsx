@@ -31,7 +31,7 @@ const About = () => {
       <section 
         className="text-white py-5 position-relative d-flex align-items-center" 
         style={{
-          backgroundImage: "linear-gradient(rgba(0, 123, 255, 0.85), rgba(0, 123, 255, 0.95)), url('https://res.cloudinary.com/dmilgqv8u/image/upload/v1746040208/ChatGPT_Image_Apr_1_2025_03_33_51_AM_xgki5n.png')",
+          backgroundImage: "linear-gradient(rgba(0, 123, 255, 0.85), rgba(0, 123, 255, 0.95)), url(https://res.cloudinary.com/dmilgqv8u/image/upload/v1742818725/Doctor_ixnlix.jpg)",
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundAttachment: "fixed",
@@ -546,7 +546,7 @@ const About = () => {
 
       {/* Call to Action - Enhanced with better styling */}
       <section className="py-5 position-relative text-white" style={{
-        backgroundImage: "linear-gradient(rgba(0, 123, 255, 0.9), rgba(0, 123, 255, 0.9)), url('https://res.cloudinary.com/dmilgqv8u/image/upload/v1746040208/ChatGPT_Image_Apr_1_2025_03_33_51_AM_xgki5n.png')",
+        backgroundImage: "linear-gradient(rgba(0, 123, 255, 0.9), rgba(0, 123, 255, 0.9)), url('https://res.cloudinary.com/dmilgqv8u/image/upload/v1742818725/Doctor_ixnlix.jpg')",
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundAttachment: "fixed"

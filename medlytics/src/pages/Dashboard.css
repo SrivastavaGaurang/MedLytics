@@ -1,0 +1,120 @@
+/* src/pages/Dashboard.css */
+.dashboard-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    color: #444;
+  }
+  
+  .card {
+    border-radius: 0.8rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
+  
+  .card-header {
+    border-bottom: 1px solid #eee;
+  }
+  
+  .nav-pills .nav-link {
+    border-radius: 0.5rem;
+    font-weight: 600;
+    color: #777;
+    transition: all 0.3s ease;
+  }
+  
+  .nav-pills .nav-link.active {
+    background-color: #3498db;
+    color: white;
+  }
+  
+  .nav-pills .nav-link:hover:not(.active) {
+    background-color: rgba(52, 152, 219, 0.1);
+    color: #333;
+  }
+  
+  .border-left-primary { border-left: 4px solid #3498db; }
+  .border-left-info { border-left: 4px solid #17a2b8; }
+  .border-left-warning { border-left: 4px solid #f39c12; }
+  .border-left-danger { border-left: 4px solid #e74c3c; }
+  
+  .recommendations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  .recommendation-card {
+    display: flex;
+    background-color: white;
+    border-radius: 0.8rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease;
+  }
+  
+  .recommendation-card.priority-high { border-left: 4px solid #e74c3c; }
+  .recommendation-card.priority-medium { border-left: 4px solid #f39c12; }
+  .recommendation-card.priority-low { border-left: 4px solid #2ecc71; }
+  
+  .recommendation-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .recommendation-icon {
+    font-size: 2rem;
+    color: #3498db;
+    margin-right: 1rem;
+  }
+  
+  .recommendation-content h6 {
+    margin: 0 0 0.5rem;
+    font-weight: 600;
+    color: #2c3e50;
+  }
+  
+  .recommendation-content p {
+    margin: 0;
+    color: #555;
+  }
+  
+  .list-group-item-action:hover {
+    background-color: rgba(52, 152, 219, 0.05);
+  }
+  
+  .disclaimer-section {
+    background-color: rgba(52, 152, 219, 0.06);
+    border-radius: 0.8rem;
+    padding: 1.2rem;
+    display: flex;
+    align-items: flex-start;
+  }
+  
+  .disclaimer-icon {
+    font-size: 1.5rem;
+    color: #3498db;
+    margin-right: 1rem;
+  }
+  
+  .disclaimer-content h5 {
+    margin: 0 0 0.5rem;
+    color: #2c3e50;
+    font-weight: 600;
+  }
+  
+  .disclaimer-content p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #555;
+  }
+  
+  @media (max-width: 768px) {
+    .nav-pills {
+      flex-direction: column;
+    }
+    .nav-pills .nav-link {
+      margin-bottom: 0.5rem;
+    }
+    .recommendations-grid {
+      grid-template-columns: 1fr;
+    }
+  }

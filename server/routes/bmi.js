@@ -1,24 +1,31 @@
-// routes/bmi.js - Converted to ES Module format
 import express from 'express';
 import { check, validationResult } from 'express-validator';
 import auth from '../middleware/auth.js';
 import BMIAnalysis from '../models/BMIAnalysis.js';
-import User from '../models/User.js';
 
 const router = express.Router();
 
-// @route   POST api/bmi
-// @desc    Create or update a BMI analysis
+// @route   POST api/bmi/analyze
+// @desc    Create a BMI analysis
 // @access  Private
 router.post(
-  '/',
+  '/analyze',
   [
     auth,
     [
-      check('age', 'Age is required').not().isEmpty(),
-      check('height', 'Height is required').not().isEmpty(),
-      check('weight', 'Weight is required').not().isEmpty(),
-      check('gender', 'Gender is required').not().isEmpty()
+      check('age', 'Age is required').isInt({ min: 18, max: 100 }),
+      check('gender', 'Gender is required').isIn(['Male', 'Female', 'Other']),
+      check('height', 'Height is required').isFloat({ min: 100, max: 250 }),
+      check('weight', 'Weight is required').isFloat({ min: 30, max: 300 }),
+      check('sleepDuration', 'Sleep duration is required').isFloat({ min: 1, max: 12 }),
+      check('qualityOfSleep', 'Quality of sleep is required').isInt({ min: 1, max: 10 }),
+      check('physicalActivityLevel', 'Physical activity level is required').isInt({ min: 0, max: 100 }),
+      check('stressLevel', 'Stress level is required').isInt({ min: 1, max: 10 }),
+      check('bloodPressure.systolic', 'Systolic blood pressure is required').isInt({ min: 70, max: 200 }),
+      check('bloodPressure.diastolic', 'Diastolic blood pressure is required').isInt({ min: 40, max: 120 }),
+      check('heartRate', 'Heart rate is required').isInt({ min: 40, max: 200 }),
+      check('dailySteps', 'Daily steps is required').isInt({ min: 100, max: 50000 }),
+      check('result.predictedCategory', 'Predicted category is required').isIn(['Underweight', 'Normal', 'Overweight', 'Obesity'])
     ]
   ],
   async (req, res) => {
@@ -26,43 +33,12 @@ router.post(
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-
     try {
-      const { age, height, weight, gender } = req.body;
-      
-      // Calculate BMI
-      const heightInMeters = height / 100; // Convert cm to meters
-      const bmi = weight / (heightInMeters * heightInMeters);
-      const roundedBMI = Math.round(bmi * 10) / 10; // Round to 1 decimal place
-      
-      // Determine BMI category
-      let bmiCategory;
-      if (bmi < 18.5) {
-        bmiCategory = 'Underweight';
-      } else if (bmi >= 18.5 && bmi < 25) {
-        bmiCategory = 'Normal weight';
-      } else if (bmi >= 25 && bmi < 30) {
-        bmiCategory = 'Overweight';
-      } else {
-        bmiCategory = 'Obesity';
-      }
-      
-      // Create BMI analysis object
-      const bmiFields = {
+      const bmiAnalysis = new BMIAnalysis({
         user: req.user.id,
-        age,
-        height,
-        weight,
-        gender,
-        bmi: roundedBMI,
-        bmiCategory,
-        date: Date.now()
-      };
-
-      // Create new BMI analysis
-      let bmiAnalysis = new BMIAnalysis(bmiFields);
+        ...req.body
+      });
       await bmiAnalysis.save();
-      
       res.json(bmiAnalysis);
     } catch (err) {
       console.error(err.message);
@@ -71,10 +47,10 @@ router.post(
   }
 );
 
-// @route   GET api/bmi
+// @route   GET api/bmi/history
 // @desc    Get all BMI analyses for a user
 // @access  Private
-router.get('/', auth, async (req, res) => {
+router.get('/history', auth, async (req, res) => {
   try {
     const bmiAnalyses = await BMIAnalysis.find({ user: req.user.id }).sort({ date: -1 });
     res.json(bmiAnalyses);
@@ -84,23 +60,18 @@ router.get('/', auth, async (req, res) => {
   }
 });
 
-// @route   GET api/bmi/:id
+// @route   GET api/bmi/results/:id
 // @desc    Get BMI analysis by ID
 // @access  Private
-router.get('/:id', auth, async (req, res) => {
+router.get('/results/:id', auth, async (req, res) => {
   try {
     const bmiAnalysis = await BMIAnalysis.findById(req.params.id);
-    
-    // Check if BMI analysis exists
     if (!bmiAnalysis) {
       return res.status(404).json({ msg: 'BMI analysis not found' });
     }
-    
-    // Check if user owns the BMI analysis
     if (bmiAnalysis.user.toString() !== req.user.id) {
       return res.status(401).json({ msg: 'User not authorized' });
     }
-    
     res.json(bmiAnalysis);
   } catch (err) {
     console.error(err.message);
@@ -117,18 +88,12 @@ router.get('/:id', auth, async (req, res) => {
 router.delete('/:id', auth, async (req, res) => {
   try {
     const bmiAnalysis = await BMIAnalysis.findById(req.params.id);
-    
-    // Check if BMI analysis exists
     if (!bmiAnalysis) {
       return res.status(404).json({ msg: 'BMI analysis not found' });
     }
-    
-    // Check if user owns the BMI analysis
     if (bmiAnalysis.user.toString() !== req.user.id) {
       return res.status(401).json({ msg: 'User not authorized' });
     }
-    
-    // Updated from .remove() to .deleteOne() as .remove() is deprecated
     await bmiAnalysis.deleteOne();
     res.json({ msg: 'BMI analysis removed' });
   } catch (err) {
