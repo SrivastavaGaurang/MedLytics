@@ -1,34 +1,61 @@
 // src/services/sleepService.js
-import apiClient from './api';
 import axios from 'axios';
+import { SERVER_URL } from '../constants/config';
 
-// Submit sleep analysis data - doesn't require token
+const API_URL = SERVER_URL || 'http://localhost:5000';
+
 export const analyzeSleep = async (formData) => {
-  console.log('Submitting sleep analysis:', formData);
-  const response = await axios.post('http://localhost:5000/api/sleep/analyze', formData);
-  console.log('Server response:', response.data);
-  return response.data;
-};
-
-// Get sleep result by ID - doesn't require token for now
-export const getSleepResult = async (id) => {
   try {
-    const response = await axios.get(`http://localhost:5000/api/sleep/results/${id}`);
+    console.log('Submitting sleep analysis to:', `${API_URL}/api/sleep/analyze`);
+    console.log('Payload:', formData);
+    const response = await axios.post(`${API_URL}/api/sleep/analyze`, formData);
+    console.log('Analyze response:', response.data);
     return response.data;
   } catch (error) {
-    console.error('Error fetching sleep result:', error);
-    throw error;
+    console.error('Error submitting sleep analysis:', {
+      message: error.message,
+      status: error.response?.status,
+      data: error.response?.data,
+    });
+    throw new Error(error.response?.data?.message || 'Failed to analyze sleep data');
   }
 };
 
-// Get sleep history - requires authentication token
-export const getSleepHistory = async (getAccessTokenSilently) => {
+export const getSleepResult = async (id) => {
   try {
-    const client = await apiClient(getAccessTokenSilently);
-    const response = await client.get('/sleep/history');
+    console.log('Fetching sleep result:', `${API_URL}/api/sleep/results/${id}`);
+    const response = await axios.get(`${API_URL}/api/sleep/results/${id}`);
+    console.log('Result response:', response.data);
     return response.data;
   } catch (error) {
-    console.error('Error fetching sleep history:', error);
-    throw error;
+    console.error('Error fetching sleep result:', {
+      message: error.message,
+      status: error.response?.status,
+      data: error.response?.data,
+    });
+    throw new Error(error.response?.data?.message || 'Failed to fetch sleep result');
+  }
+};
+
+export const getSleepHistory = async (getAccessTokenSilently) => {
+  try {
+    console.log('Attempting to fetch access token');
+    const token = await getAccessTokenSilently();
+    console.log('Access token retrieved successfully');
+    console.log('Fetching sleep history from:', `${API_URL}/api/sleep/history`);
+    const response = await axios.get(`${API_URL}/api/sleep/history`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    console.log('History response:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching sleep history:', {
+      message: error.message,
+      status: error.response?.status,
+      data: error.response?.data,
+    });
+    throw error; // Preserve original error for status code handling
   }
 };
