@@ -1,4 +1,3 @@
-
 // src/pages/About.jsx
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -93,7 +92,7 @@ const About = () => {
                   <div className="bg-light p-4 rounded-3">
                     <h4 className="text-primary mb-3">Future Direction</h4>
                     <p className="mb-0">
-                      We're working to overcome current limitations by implementing real-time monitoring capabilities and more diverse data collection. Evaluative studies are underway to incorporate ongoing technology-induced observation and advanced AI systems for superior predictive capabilities. We prioritize ethical requirements including privacy protection and fair AI models. Our goal is to revolutionize mental healthcare through data-driven methodologies, enabling preventative assistance to at-risk young individuals through collaboration between AI researchers and mental health professionals.
+                      We're working to overcome current limitations by implementing real-time monitoring capabilities and more diverse data collection. We are developing seamless integration with IoT devices such as smartwatches, fitness trackers, and health monitoring sensors to provide continuous health monitoring. These devices will track vital signs, sleep patterns, physical activity, and stress levels in real-time, enabling more accurate predictions and timely interventions. Our IoT ecosystem will include features like automatic medication reminders, emergency alerts to healthcare providers, and personalized wellness recommendations based on continuous data streams. Evaluative studies are underway to incorporate ongoing technology-induced observation and advanced AI systems for superior predictive capabilities. We prioritize ethical requirements including privacy protection and fair AI models. Our goal is to revolutionize mental healthcare through data-driven methodologies, enabling preventative assistance to at-risk young individuals through collaboration between AI researchers and mental health professionals.
                     </p>
                   </div>
                 </div>
@@ -294,7 +293,7 @@ const About = () => {
                       </div>
                       <div>
                         <h6 className="mb-1">Security & DevOps</h6>
-                        <p className="text-muted mb-0 small">AWS, Docker, CI/CD Pipelines</p>
+                        <p className="text-muted mb-0 small">AWS, Docker</p>
                       </div>
                     </div>
                   </div>
@@ -305,7 +304,7 @@ const About = () => {
                       </div>
                       <div>
                         <h6 className="mb-1">Machine Learning</h6>
-                        <p className="text-muted mb-0 small">TensorFlow, PyTorch, scikit-learn</p>
+                        <p className="text-muted mb-0 small">PyTorch</p>
                       </div>
                     </div>
                   </div>
@@ -316,7 +315,7 @@ const About = () => {
                       </div>
                       <div>
                         <h6 className="mb-1">Data Processing</h6>
-                        <p className="text-muted mb-0 small">Pandas, NumPy, Data Visualization</p>
+                        <p className="text-muted mb-0 small">Pandas, NumPy</p>
                       </div>
                     </div>
                   </div>
@@ -436,13 +435,13 @@ const About = () => {
                   
                   <div>
                     <div className="d-flex justify-content-between mb-2">
-                      <h6 className="mb-0">Nutritional Prediction Analysis</h6>
+                      <h6 className="mb-0">BMI Prediction Analysis</h6>
                       <span className="badge bg-info rounded-pill">95%</span>
                     </div>
                     <div className="progress" style={{ height: '15px', borderRadius: '10px' }}>
                       <div className="progress-bar bg-info" role="progressbar" style={{ width: '95%', borderRadius: '10px' }} aria-valuenow="95" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
-                    <p className="text-muted mt-2 small">Analyzing dietary patterns and their impact on mental and physical wellbeing</p>
+                    <p className="text-muted mt-2 small">Analyzing body mass index trends and their correlation with mental health patterns, lifestyle factors, and overall wellness indicators to provide comprehensive health insights</p>
                   </div>
                 </div>
               </div>
@@ -481,7 +480,7 @@ const About = () => {
                       <i className="bi bi-person-fill text-primary"></i>
                     </div>
                     <div>
-                      <h6 className="mb-0">Anika S.</h6>
+                      <h6 className="mb-0">Anika sha.</h6>
                       <p className="text-muted mb-0 small">University Student, 21</p>
                     </div>
                   </div>
@@ -507,7 +506,7 @@ const About = () => {
                       <i className="bi bi-person-fill text-primary"></i>
                     </div>
                     <div>
-                      <h6 className="mb-0">Rohan K.</h6>
+                      <h6 className="mb-0">Aryan Dubey</h6>
                       <p className="text-muted mb-0 small">IT Professional, 28</p>
                     </div>
                   </div>
@@ -533,7 +532,7 @@ const About = () => {
                       <i className="bi bi-person-fill text-primary"></i>
                     </div>
                     <div>
-                      <h6 className="mb-0">Dr. Meera P.</h6>
+                      <h6 className="mb-0">Dr. Ram Pandey</h6>
                       <p className="text-muted mb-0 small">Clinical Psychologist</p>
                     </div>
                   </div>
@@ -562,11 +561,11 @@ const About = () => {
                 <Link to="/sleep-disorder" className="btn btn-light btn-lg shadow fw-bold px-4">
                   <i className="bi bi-heart-pulse me-2"></i> Sleep Analysis
                 </Link>
-                <Link to="/mental-health" className="btn btn-light btn-lg shadow fw-bold px-4">
-                  <i className="bi bi-shield-fill-check me-2"></i> Mental Health Check
+                <Link to="/anxiety-prediction" className="btn btn-light btn-lg shadow fw-bold px-4">
+                  <i className="bi bi-heart-pulse me-2"></i> Anxiety Prediction
                 </Link>
-                <Link to="/login" className="btn btn-outline-light btn-lg">
-                  <i className="bi bi-person-plus me-2"></i> Create Account
+                <Link to="/depression-prediction" className="btn btn-outline-light btn-lg">
+                  <i className="bi bi-heart-pulse me-2"></i> Depression Prediction
                 </Link>
               </div>
             </div>

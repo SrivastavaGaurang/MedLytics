@@ -47,10 +47,10 @@ const Home = () => {
     },
     {
       id: 4,
-      title: "Nutritional Analysis",
-      description: "Personalized nutritional guidance based on your unique health profile and goals.",
-      icon: "bi-apple",
-      link: "/nutritional-prediction",
+      title: "BMI Prediction",
+      description: "Comprehensive BMI analysis with health metrics assessment and personalized recommendations for optimal body weight management.",
+      icon: "bi-calculator",
+      link: "/bmi-prediction",
       color: "success"
     }
   ];
@@ -60,19 +60,19 @@ const Home = () => {
     {
       id: 1,
       text: "MedLytics helped me understand my sleep patterns and significantly improved my rest quality.",
-      author: "Sarah J.",
+      author: "Ananya Sharma",
       role: "Software Engineer"
     },
     {
       id: 2,
       text: "The anxiety prediction tool gave me insights I never would have recognized on my own. Truly life-changing.",
-      author: "Michael T.",
+      author: "Rajesh Patel",
       role: "Teacher"
     },
     {
       id: 3,
       text: "I've tried many health apps, but MedLytics offers analysis that's actually personalized and actionable.",
-      author: "Priya K.",
+      author: "Priya Nair",
       role: "Healthcare Professional"
     }
   ];
@@ -280,7 +280,7 @@ const Home = () => {
           <div className="row align-items-center">
             <div className="col-lg-6 mb-4 mb-lg-0">
               <img 
-                src="/api/placeholder/600/400" 
+                src="https://res.cloudinary.com/dmilgqv8u/image/upload/v1747517504/ChatGPT_Image_May_18_2025_02_59_40_AM_jysenz.png" 
                 alt="Health Analytics Dashboard" 
                 className="img-fluid rounded shadow"
               />
