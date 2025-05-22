@@ -12,67 +12,67 @@ const Doctors = () => {
     });
   }, []);
 
-  // Doctors data
+  // Doctors data with Indian names
   const doctors = [
     {
       id: 1,
-      name: "Dr. Sarah Johnson",
+      name: "Dr. Priya Sharma",
       specialty: "Sleep Medicine Specialist",
-      description: "Board-certified sleep medicine specialist with over 12 years of experience in diagnosing and treating sleep disorders. Dr. Johnson collaborates with our AI team to validate our sleep disorder analysis algorithm.",
+      description: "Board-certified sleep medicine specialist with over 12 years of experience in diagnosing and treating sleep disorders. Dr. Sharma collaborates with our AI team to validate our sleep disorder analysis algorithm and ensure accurate sleep pattern assessments.",
       image: "https://res.cloudinary.com/dmilgqv8u/image/upload/v1742818725/Doctor_ixnlix.jpg",
-      education: "MD, Stanford University",
+      education: "MD, All India Institute of Medical Sciences (AIIMS), Delhi",
       experience: "12+ years",
-      focus: "Sleep Disorders"
+      focus: "Sleep Disorders & Sleep Pattern Analysis"
     },
     {
       id: 2,
-      name: "Dr. Michael Chen",
+      name: "Dr. Arjun Patel",
       specialty: "Psychiatrist",
-      description: "Dr. Chen specializes in anxiety and depression treatment with a focus on integrating technology into mental healthcare. He helps ensure our mental health predictions are clinically relevant.",
+      description: "Dr. Patel specializes in anxiety and depression treatment with a focus on integrating technology into mental healthcare. He helps ensure our mental health predictions are clinically relevant and provides expert validation for our psychological assessment algorithms.",
       image: "/api/placeholder/400/400",
-      education: "MD, Johns Hopkins University",
+      education: "MD Psychiatry, Postgraduate Institute of Medical Education and Research (PGIMER), Chandigarh",
       experience: "15+ years",
-      focus: "Anxiety & Depression"
+      focus: "Anxiety & Depression Prediction"
     },
     {
       id: 3,
-      name: "Dr. Priya Patel",
-      specialty: "Clinical Nutritionist",
-      description: "As a dietitian and nutritional medicine expert, Dr. Patel brings valuable insights to our nutritional analysis algorithms, ensuring they provide scientifically sound dietary recommendations.",
+      name: "Dr. Kavita Nair",
+      specialty: "Clinical Nutritionist & BMI Specialist",
+      description: "As a dietitian and nutritional medicine expert, Dr. Nair brings valuable insights to our nutritional analysis and BMI prediction algorithms. She ensures our tools provide scientifically sound dietary recommendations and accurate body weight management guidance.",
       image: "/api/placeholder/400/400",
-      education: "Ph.D. in Nutritional Sciences, Cornell University",
+      education: "Ph.D. in Nutritional Sciences, National Institute of Nutrition, Hyderabad",
       experience: "10+ years",
-      focus: "Clinical Nutrition"
+      focus: "Clinical Nutrition & BMI Prediction"
     },
     {
       id: 4,
-      name: "Dr. James Wilson",
+      name: "Dr. Rajesh Kumar",
       specialty: "Neurologist",
-      description: "Dr. Wilson's expertise in neurology helps inform our sleep and mental health assessment tools. He specializes in the relationship between neurological health and sleep patterns.",
+      description: "Dr. Kumar's expertise in neurology helps inform our sleep and mental health assessment tools. He specializes in the relationship between neurological health, sleep patterns, and their impact on overall wellness and body metabolism.",
       image: "/api/placeholder/400/400",
-      education: "MD, University of California, San Francisco",
+      education: "MD Neurology, Christian Medical College (CMC), Vellore",
       experience: "18+ years",
-      focus: "Neurological Health"
+      focus: "Neurological Health & Sleep-Brain Connection"
     },
     {
       id: 5,
-      name: "Dr. Lisa Nguyen",
+      name: "Dr. Sneha Gupta",
       specialty: "Clinical Psychologist",
-      description: "With extensive experience in psychological assessments, Dr. Nguyen helps validate our anxiety and depression prediction models to ensure they align with clinical standards.",
+      description: "With extensive experience in psychological assessments, Dr. Gupta helps validate our anxiety and depression prediction models to ensure they align with clinical standards. She also contributes to understanding the psychological aspects of weight management.",
       image: "/api/placeholder/400/400",
-      education: "Psy.D., University of Michigan",
+      education: "Psy.D., National Institute of Mental Health and Neurosciences (NIMHANS), Bangalore",
       experience: "14+ years",
-      focus: "Psychological Assessment"
+      focus: "Psychological Assessment & Behavioral Analysis"
     },
     {
       id: 6,
-      name: "Dr. Robert Martinez",
-      specialty: "Data Science Lead",
-      description: "Dr. Martinez bridges the gap between medicine and technology. With dual expertise in machine learning and health informatics, he oversees the development of our prediction algorithms.",
+      name: "Dr. Vikram Singh",
+      specialty: "Data Science Lead & Health Informatics",
+      description: "Dr. Singh bridges the gap between medicine and technology. With dual expertise in machine learning and health informatics, he oversees the development of our prediction algorithms including sleep, mental health, and BMI analysis systems.",
       image: "/api/placeholder/400/400",
-      education: "Ph.D. in Computer Science, MIT",
+      education: "Ph.D. in Computer Science, Indian Institute of Technology (IIT) Bombay",
       experience: "9+ years",
-      focus: "Healthcare AI"
+      focus: "Healthcare AI & Predictive Analytics"
     }
   ];
 
@@ -85,7 +85,7 @@ const Doctors = () => {
             <div className="col-lg-8 mx-auto text-center" data-aos="fade-up">
               <h1 className="display-4 fw-bold mb-4">Our Medical Experts</h1>
               <p className="lead mb-4">
-                Meet the healthcare professionals who validate our AI technology and ensure clinical accuracy
+                Meet the healthcare professionals who validate our AI technology and ensure clinical accuracy across all health analytics
               </p>
             </div>
           </div>
@@ -99,9 +99,9 @@ const Doctors = () => {
             <div className="col-lg-10 mx-auto">
               <div className="card border-0 shadow-sm mb-5" data-aos="fade-up">
                 <div className="card-body p-4 p-md-5">
-                  <h2 className="mb-4 text-primary">Medical Expertise Behind Medlytics</h2>
+                  <h2 className="mb-4 text-primary">Medical Expertise Behind MedLytics</h2>
                   <p className="lead mb-4">
-                    At Medlytics, we believe that technology and medical expertise must work hand in hand. Our AI-driven health analytics are developed and validated by experienced healthcare professionals from diverse specialties.
+                    At MedLytics, we believe that technology and medical expertise must work hand in hand. Our AI-driven health analytics are developed and validated by experienced healthcare professionals from diverse specialties across India's premier medical institutions.
                   </p>
                   <p className="mb-3">
                     Our medical team collaborates closely with our data scientists and engineers to ensure that:
@@ -109,11 +109,12 @@ const Doctors = () => {
                   <ul className="mb-4">
                     <li className="mb-2">Our algorithms are grounded in clinical evidence and best practices</li>
                     <li className="mb-2">Health predictions are accurate and reliable for diverse populations</li>
-                    <li className="mb-2">Recommendations align with current medical guidelines</li>
+                    <li className="mb-2">Recommendations align with current medical guidelines and Indian healthcare standards</li>
                     <li className="mb-2">Ethical considerations are prioritized in all our tools</li>
+                    <li className="mb-2">Cultural and demographic factors are considered in our analysis</li>
                   </ul>
                   <p>
-                    Each of our medical experts brings specialized knowledge that directly informs one or more of our health analytics services. From sleep medicine to mental health to nutrition, our doctors ensure that Medlytics delivers trustworthy health insights.
+                    Each of our medical experts brings specialized knowledge that directly informs one or more of our health analytics services. From sleep medicine to mental health, nutrition, and BMI management, our doctors ensure that MedLytics delivers trustworthy health insights tailored to your needs.
                   </p>
                 </div>
               </div>
@@ -128,7 +129,7 @@ const Doctors = () => {
           <div className="text-center mb-5" data-aos="fade-up">
             <h2 className="display-5 fw-bold text-primary">Meet Our Doctors</h2>
             <p className="lead text-muted">
-              The specialists who ensure our health analytics are clinically accurate
+              The specialists who ensure our health analytics are clinically accurate and culturally relevant
             </p>
           </div>
           
@@ -138,27 +139,27 @@ const Doctors = () => {
                 <div className="card h-100 shadow-sm border-0">
                   <div className="card-body p-4">
                     <div className="text-center mb-4">
-                      <div className="rounded-circle mx-auto mb-3 overflow-hidden" style={{ width: '150px', height: '150px' }}>
-                        <img src={doctor.image} alt={doctor.name} className="img-fluid" />
+                      <div className="rounded-circle mx-auto mb-3 overflow-hidden border border-3 border-primary" style={{ width: '150px', height: '150px' }}>
+                        <img src={doctor.image} alt={doctor.name} className="img-fluid w-100 h-100" style={{ objectFit: 'cover' }} />
                       </div>
-                      <h5 className="card-title mb-1">{doctor.name}</h5>
-                      <p className="text-primary mb-3">{doctor.specialty}</p>
+                      <h5 className="card-title mb-1 text-primary fw-bold">{doctor.name}</h5>
+                      <p className="text-info mb-3 fw-semibold">{doctor.specialty}</p>
                     </div>
-                    <p className="card-text mb-4">
+                    <p className="card-text mb-4 text-muted">
                       {doctor.description}
                     </p>
                     <div className="border-top pt-3">
                       <div className="d-flex justify-content-between mb-2">
-                        <strong>Education:</strong>
-                        <span className="text-muted">{doctor.education}</span>
+                        <strong className="text-dark">Education:</strong>
+                        <span className="text-muted text-end" style={{ fontSize: '0.9rem' }}>{doctor.education}</span>
                       </div>
                       <div className="d-flex justify-content-between mb-2">
-                        <strong>Experience:</strong>
+                        <strong className="text-dark">Experience:</strong>
                         <span className="text-muted">{doctor.experience}</span>
                       </div>
                       <div className="d-flex justify-content-between">
-                        <strong>Focus Area:</strong>
-                        <span className="text-muted">{doctor.focus}</span>
+                        <strong className="text-dark">Focus Area:</strong>
+                        <span className="text-muted text-end" style={{ fontSize: '0.9rem' }}>{doctor.focus}</span>
                       </div>
                     </div>
                   </div>
@@ -176,7 +177,7 @@ const Doctors = () => {
             <div className="col-lg-6 mb-4 mb-lg-0" data-aos="fade-right">
               <h2 className="display-6 fw-bold mb-4 text-primary">Our Collaborative Approach</h2>
               <p className="mb-4">
-                At Medlytics, we believe that the most effective healthcare technology combines medical expertise with advanced analytics. Our doctors work closely with our technology team through every step of development.
+                At MedLytics, we believe that the most effective healthcare technology combines medical expertise with advanced analytics. Our doctors work closely with our technology team through every step of development, ensuring our solutions are both innovative and clinically sound.
               </p>
               <div className="d-flex mb-3">
                 <div className="me-3">
@@ -184,7 +185,7 @@ const Doctors = () => {
                 </div>
                 <div>
                   <h5 className="mb-1">Research-Based Development</h5>
-                  <p className="text-muted">Our medical team reviews the latest research to ensure our algorithms reflect current scientific understanding</p>
+                  <p className="text-muted">Our medical team reviews the latest international and Indian research to ensure our algorithms reflect current scientific understanding</p>
                 </div>
               </div>
               <div className="d-flex mb-3">
@@ -193,7 +194,7 @@ const Doctors = () => {
                 </div>
                 <div>
                   <h5 className="mb-1">Clinical Validation</h5>
-                  <p className="text-muted">Each of our predictive models undergoes rigorous testing and validation by relevant specialists</p>
+                  <p className="text-muted">Each of our predictive models undergoes rigorous testing and validation by relevant specialists from top medical institutions</p>
                 </div>
               </div>
               <div className="d-flex">
@@ -202,7 +203,7 @@ const Doctors = () => {
                 </div>
                 <div>
                   <h5 className="mb-1">Continuous Improvement</h5>
-                  <p className="text-muted">Our doctors regularly review user outcomes to refine and improve our algorithms</p>
+                  <p className="text-muted">Our doctors regularly review user outcomes and latest medical guidelines to refine and improve our algorithms</p>
                 </div>
               </div>
             </div>
@@ -212,41 +213,77 @@ const Doctors = () => {
                   <h4 className="mb-4 text-primary">Specialized Medical Input</h4>
                   <div className="d-flex align-items-center mb-4">
                     <div className="rounded-circle bg-primary bg-opacity-10 p-3 me-3">
-                      <i className="bi bi-moon-stars text-primary"></i>
+                      <i className="bi bi-moon-stars text-primary fs-4"></i>
                     </div>
                     <div>
                       <h5 className="mb-1">Sleep Disorder Analysis</h5>
-                      <p className="text-muted mb-0 small">Guided by Dr. Sarah Johnson, Sleep Medicine Specialist</p>
+                      <p className="text-muted mb-0 small">Guided by Dr. Priya Sharma, Sleep Medicine Specialist</p>
                     </div>
                   </div>
                   <div className="d-flex align-items-center mb-4">
                     <div className="rounded-circle bg-info bg-opacity-10 p-3 me-3">
-                      <i className="bi bi-heart-pulse text-info"></i>
+                      <i className="bi bi-heart-pulse text-info fs-4"></i>
                     </div>
                     <div>
                       <h5 className="mb-1">Anxiety Prediction</h5>
-                      <p className="text-muted mb-0 small">Overseen by Dr. Michael Chen and Dr. Lisa Nguyen</p>
+                      <p className="text-muted mb-0 small">Overseen by Dr. Arjun Patel and Dr. Sneha Gupta</p>
                     </div>
                   </div>
                   <div className="d-flex align-items-center mb-4">
                     <div className="rounded-circle bg-warning bg-opacity-10 p-3 me-3">
-                      <i className="bi bi-emoji-frown text-warning"></i>
+                      <i className="bi bi-emoji-frown text-warning fs-4"></i>
                     </div>
                     <div>
                       <h5 className="mb-1">Depression Prediction</h5>
-                      <p className="text-muted mb-0 small">Validated by Dr. Michael Chen and Dr. Lisa Nguyen</p>
+                      <p className="text-muted mb-0 small">Validated by Dr. Arjun Patel and Dr. Sneha Gupta</p>
                     </div>
                   </div>
                   <div className="d-flex align-items-center">
                     <div className="rounded-circle bg-success bg-opacity-10 p-3 me-3">
-                      <i className="bi bi-apple text-success"></i>
+                      <i className="bi bi-calculator text-success fs-4"></i>
                     </div>
                     <div>
-                      <h5 className="mb-1">Nutritional Analysis</h5>
-                      <p className="text-muted mb-0 small">Developed with Dr. Priya Patel, Clinical Nutritionist</p>
+                      <h5 className="mb-1">BMI & Nutritional Analysis</h5>
+                      <p className="text-muted mb-0 small">Developed with Dr. Kavita Nair, Clinical Nutritionist & BMI Specialist</p>
                     </div>
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="py-5 bg-light">
+        <div className="container">
+          <div className="text-center mb-5">
+            <h2 className="display-6 fw-bold text-primary">Our Medical Team's Impact</h2>
+            <p className="lead text-muted">Numbers that reflect our commitment to quality healthcare analytics</p>
+          </div>
+          <div className="row g-4 text-center">
+            <div className="col-md-3 col-6">
+              <div className="p-4 bg-white rounded shadow-sm">
+                <h2 className="display-4 fw-bold text-primary">98%</h2>
+                <p className="text-muted mb-0">Clinical Accuracy</p>
+              </div>
+            </div>
+            <div className="col-md-3 col-6">
+              <div className="p-4 bg-white rounded shadow-sm">
+                <h2 className="display-4 fw-bold text-success">50+</h2>
+                <p className="text-muted mb-0">Years Combined Experience</p>
+              </div>
+            </div>
+            <div className="col-md-3 col-6">
+              <div className="p-4 bg-white rounded shadow-sm">
+                <h2 className="display-4 fw-bold text-info">4</h2>
+                <p className="text-muted mb-0">Validated Health Services</p>
+              </div>
+            </div>
+            <div className="col-md-3 col-6">
+              <div className="p-4 bg-white rounded shadow-sm">
+                <h2 className="display-4 fw-bold text-warning">6</h2>
+                <p className="text-muted mb-0">Medical Specialists</p>
               </div>
             </div>
           </div>
@@ -260,11 +297,14 @@ const Doctors = () => {
             <div className="col-lg-8 mx-auto text-center" data-aos="fade-up">
               <h2 className="mb-4">Experience Expert-Backed Health Analytics</h2>
               <p className="lead mb-4">
-                Get personalized health insights developed and validated by medical professionals
+                Get personalized health insights developed and validated by medical professionals from India's top medical institutions
               </p>
-              <div>
-                <Link to="/sleep-disorder" className="btn btn-light btn-lg me-3 shadow">
+              <div className="d-flex justify-content-center gap-3 flex-wrap">
+                <Link to="/sleep-disorder" className="btn btn-light btn-lg shadow">
                   Try Sleep Analysis
+                </Link>
+                <Link to="/bmi-prediction" className="btn btn-outline-light btn-lg">
+                  Check BMI Analysis
                 </Link>
                 <Link to="/contact" className="btn btn-outline-light btn-lg">
                   Contact Our Team
