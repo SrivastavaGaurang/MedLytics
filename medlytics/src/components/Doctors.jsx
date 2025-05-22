@@ -1,9 +1,11 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 
 const Doctors = () => {
+  const [showDisclaimer, setShowDisclaimer] = useState(true);
+
   useEffect(() => {
     // Initialize AOS animation library
     AOS.init({
@@ -78,6 +80,86 @@ const Doctors = () => {
 
   return (
     <>
+      {/* Disclaimer Modal */}
+      {showDisclaimer && (
+        <div 
+          className="modal fade show d-block" 
+          style={{ 
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            backdropFilter: 'blur(5px)',
+            zIndex: 9999 
+          }}
+          tabIndex="-1" 
+          role="dialog"
+        >
+          <div className="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div className="modal-content border-0 shadow-lg" style={{ borderRadius: '20px', overflow: 'hidden' }}>
+              {/* Header with gradient background */}
+              <div 
+                className="modal-header border-0 text-white position-relative" 
+                style={{ 
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  padding: '2rem'
+                }}
+              >
+                <div className="text-center w-100">
+                  <div className="mb-3">
+                    <i className="bi bi-info-circle-fill" style={{ fontSize: '3rem' }}></i>
+                  </div>
+                  <h4 className="modal-title fw-bold mb-0">
+                    Important Disclaimer
+                  </h4>
+                </div>
+              </div>
+              
+              {/* Body */}
+              <div className="modal-body p-4 p-md-5">
+                <div className="text-center mb-4">
+                  <h5 className="text-primary mb-3">Demo Content Notice</h5>
+                  <div className="alert alert-info border-0 shadow-sm" style={{ borderRadius: '15px' }}>
+                    <div className="d-flex align-items-start">
+                      <i className="bi bi-exclamation-triangle-fill text-warning me-3 mt-1" style={{ fontSize: '1.5rem' }}></i>
+                      <div className="text-start">
+                        <p className="mb-2 fw-semibold">Please note that all doctor profiles, credentials, and information displayed on this page are <strong>fictional and created for demonstration purposes only</strong>.</p>
+                        <p className="mb-0 small text-muted">
+                          • Doctor names, photos, and qualifications are not real<br/>
+                          • Educational backgrounds and experience details are simulated<br/>
+                          • This content showcases the platform's design and functionality<br/>
+                          • No actual medical professionals are associated with these profiles
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="text-center">
+                  <div className="mb-4">
+                    <i className="bi bi-shield-check text-success" style={{ fontSize: '2rem' }}></i>
+                  </div>
+                  <h6 className="text-success mb-3">Our Commitment to Transparency</h6>
+                  <p className="text-muted mb-4">
+                    At MedLytics, we believe in complete transparency. This demonstration page shows how we would present our medical advisory team in a real-world scenario, ensuring you understand exactly what to expect from our platform.
+                  </p>
+                </div>
+              </div>
+              
+              {/* Footer */}
+              <div className="modal-footer border-0 justify-content-center" style={{ padding: '1.5rem 2rem 2rem' }}>
+                <button 
+                  type="button" 
+                  className="btn btn-primary btn-lg px-5 shadow-sm" 
+                  onClick={() => setShowDisclaimer(false)}
+                  style={{ borderRadius: '25px' }}
+                >
+                  <i className="bi bi-check-circle me-2"></i>
+                  I Understand, Continue
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Hero Section */}
       <section className="bg-info text-white py-5">
         <div className="container">
@@ -243,7 +325,7 @@ const Doctors = () => {
                       <i className="bi bi-calculator text-success fs-4"></i>
                     </div>
                     <div>
-                      <h5 className="mb-1">BMI & Nutritional Analysis</h5>
+                      <h5 className="mb-1">BMI Prediction</h5>
                       <p className="text-muted mb-0 small">Developed with Dr. Kavita Nair, Clinical Nutritionist & BMI Specialist</p>
                     </div>
                   </div>
