@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import { getAllBlogs, deleteBlog, getBlogsByTag } from '../../services/blogService';
-import { FaPlus, FaEdit, FaTrash, FaSearch, FaTags, FaClock, FaCalendarAlt, FaBookmark, FaFilter } from 'react-icons/fa';
+import { FaPlus, FaEdit, FaTrash, FaSearch, FaTags, FaClock, FaCalendarAlt, FaBookmark, FaFilter, FaTools, FaTimes, FaWrench, FaUser } from 'react-icons/fa';
 
 const MedBlog = () => {
   const [blogs, setBlogs] = useState([]);
@@ -16,6 +16,7 @@ const MedBlog = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [bookmarkedBlogs, setBookmarkedBlogs] = useState([]);
   const [showBookmarked, setShowBookmarked] = useState(false);
+  const [showMaintenanceModal, setShowMaintenanceModal] = useState(true);
   const { isAuthenticated, user } = useAuth0();
 
   // Fetch all blogs on component mount and handle query params
@@ -183,6 +184,119 @@ const MedBlog = () => {
 
   return (
     <div className="med-blog-container py-5">
+      {/* Maintenance Modal */}
+      {showMaintenanceModal && (
+        <div 
+          className="modal d-block"
+          style={{ 
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            backdropFilter: 'blur(8px)',
+            zIndex: 9999
+          }}
+        >
+          <div className="modal-dialog modal-dialog-centered modal-lg">
+            <div className="modal-content border-0 shadow-lg">
+              <div className="modal-body p-0">
+                <div className="text-center p-5" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+                  <button
+                    type="button"
+                    className="btn-close position-absolute top-0 end-0 m-3"
+                    style={{ filter: 'invert(1)' }}
+                    onClick={() => setShowMaintenanceModal(false)}
+                  ></button>
+                  
+                  <div className="mb-4">
+                    <div 
+                      className="mx-auto mb-3 d-flex align-items-center justify-content-center"
+                      style={{ 
+                        width: '80px', 
+                        height: '80px', 
+                        background: 'rgba(255,255,255,0.2)', 
+                        borderRadius: '50%',
+                        backdropFilter: 'blur(10px)'
+                      }}
+                    >
+                      <FaTools className="text-white" size={35} />
+                    </div>
+                    <h2 className="text-white mb-0 fw-bold">Under Maintenance</h2>
+                  </div>
+                  
+                  <div className="text-white-50 mb-4">
+                    <p className="mb-3 fs-5">
+                      We're currently upgrading our blog platform to serve you better!
+                    </p>
+                    <p className="mb-0">
+                      Our team is working hard to bring you an enhanced reading experience with new features and improved performance.
+                    </p>
+                  </div>
+                  
+                  <div className="row text-center mb-4">
+                    <div className="col-md-4">
+                      <div className="p-3">
+                        <div className="mb-2">
+                          <FaWrench className="text-white" size={24} />
+                        </div>
+                        <h6 className="text-white mb-1">Performance</h6>
+                        <small className="text-white-50">Faster loading times</small>
+                      </div>
+                    </div>
+                    <div className="col-md-4">
+                      <div className="p-3">
+                        <div className="mb-2">
+                          <FaBookmark className="text-white" size={24} />
+                        </div>
+                        <h6 className="text-white mb-1">Features</h6>
+                        <small className="text-white-50">Enhanced bookmarking</small>
+                      </div>
+                    </div>
+                    <div className="col-md-4">
+                      <div className="p-3">
+                        <div className="mb-2">
+                          <FaSearch className="text-white" size={24} />
+                        </div>
+                        <h6 className="text-white mb-1">Search</h6>
+                        <small className="text-white-50">Improved search functionality</small>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="mb-4">
+                    <div className="progress mb-2" style={{ height: '6px', background: 'rgba(255,255,255,0.2)' }}>
+                      <div 
+                        className="progress-bar" 
+                        style={{ 
+                          width: '75%', 
+                          background: 'linear-gradient(90deg, #00d4ff, #090979)'
+                        }}
+                      ></div>
+                    </div>
+                    <small className="text-white-50">75% Complete</small>
+                  </div>
+                  
+                  <div className="d-flex justify-content-center gap-3">
+                    <button 
+                      className="btn btn-light px-4 py-2"
+                      onClick={() => setShowMaintenanceModal(false)}
+                    >
+                      Continue Browsing
+                    </button>
+                    <Link to="/" className="btn btn-outline-light px-4 py-2">
+                      Back to Home
+                    </Link>
+                  </div>
+                  
+                  <div className="mt-4">
+                    <p className="text-white-50 small mb-0">
+                      Expected completion: <strong className="text-white">Soon</strong>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="container">
         {/* Hero Section */}
         <div className="row mb-5">
