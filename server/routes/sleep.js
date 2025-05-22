@@ -88,7 +88,8 @@ router.post('/analyze', async (req, res) => {
 // GET /api/sleep/results/:id
 router.get('/results/:id', async (req, res) => {
   try {
-    const sleepResult = await_sleep.findById(req.params.id);
+    // BUG FIX: Changed from await_sleep.findById to await Sleep.findById
+    const sleepResult = await Sleep.findById(req.params.id);
     if (!sleepResult) {
       return res.status(404).json({ message: 'Sleep result not found' });
     }

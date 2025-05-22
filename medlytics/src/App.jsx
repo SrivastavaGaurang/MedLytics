@@ -16,7 +16,8 @@ import EditBlog from './components/blogs/EditBlog';
 import SleepDisorder from './pages/SleepDisorder';
 import AnxietyPrediction from './pages/AnxietyPrediction';
 import AnxietyResults from './pages/AnxietyResults';
-import DepressionPrediction from './pages/DepressionPrediction';
+import DepressionPrediction from './pages/DepressionPredictionEnhanced';
+import DepressionResults from './pages/DepressionResult';
 import NutritionalPrediction from './pages/ImprovedBMIPrediction';
 import BMIResults from './pages/BMIResults';  // Import the BMI results component
 import Dashboard from './pages/Dashboard';
@@ -43,6 +44,7 @@ function App() {
         <Route path="/anxiety-prediction" element={<AnxietyPrediction />} />
         <Route path="/anxiety-results/:id" element={<AnxietyResults />} />
         <Route path="/depression-prediction" element={<DepressionPrediction />} />
+        <Route path="/depression-results/:id" element={<DepressionResults />} />
         <Route path="/nutritional-prediction" element={<NutritionalPrediction />} />
         <Route path="/bmi-results/:id" element={<BMIResults />} />  {/* Added this route */}
         <Route path="/contact" element={<Contact />} />

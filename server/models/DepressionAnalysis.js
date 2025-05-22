@@ -1,8 +1,8 @@
-// models/DepressionPrediction.js
+// models/DepressionAnalysis.js
 import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
-const DepressionPredictionSchema = new Schema({
+const DepressionAnalysisSchema = new Schema({
   user: {
     type: Schema.Types.ObjectId,
     ref: 'User'
@@ -67,10 +67,24 @@ const DepressionPredictionSchema = new Schema({
     riskLevel: {
       type: String,
       enum: ['low', 'moderate', 'high'],
-      default: null
+      required: true
     },
-    possibleDepressionTypes: [{
+    depressionType: {
       type: String
+    },
+    depressionTypeDescription: {
+      type: String
+    },
+    keyFactors: [{
+      name: {
+        type: String,
+        required: true
+      },
+      impact: {
+        type: String,
+        enum: ['High', 'Moderate', 'Low'],
+        required: true
+      }
     }],
     recommendations: [{
       type: String
@@ -82,4 +96,4 @@ const DepressionPredictionSchema = new Schema({
   }
 });
 
-export default mongoose.model('DepressionPrediction', DepressionPredictionSchema);
+export default mongoose.model('DepressionAnalysis', DepressionAnalysisSchema);
