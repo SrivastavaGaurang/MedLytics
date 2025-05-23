@@ -7,18 +7,38 @@ const BMIAnalysisSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'User'
   },
+  authId: {
+    type: String,
+    required: true
+  },
   age: {
     type: Number,
-    required: true
+    required: true,
+    min: 18,
+    max: 100
   },
   gender: {
     type: String,
     required: true,
-    enum: ['Male', 'Female']
+    enum: ['Male', 'Female', 'Other']
+  },
+  height: {
+    type: Number,
+    required: true,
+    min: 100,
+    max: 250
+  },
+  weight: {
+    type: Number,
+    required: true,
+    min: 30,
+    max: 300
   },
   sleepDuration: {
     type: Number,
-    required: true
+    required: true,
+    min: 1,
+    max: 12
   },
   qualityOfSleep: {
     type: Number,
@@ -41,37 +61,60 @@ const BMIAnalysisSchema = new Schema({
   bloodPressure: {
     systolic: {
       type: Number,
-      required: true
+      required: true,
+      min: 70,
+      max: 200
     },
     diastolic: {
       type: Number,
-      required: true
+      required: true,
+      min: 40,
+      max: 120
     }
   },
   heartRate: {
     type: Number,
-    required: true
+    required: true,
+    min: 40,
+    max: 200
   },
   dailySteps: {
     type: Number,
-    required: true
+    required: true,
+    min: 100,
+    max: 50000
   },
   result: {
+    calculatedBMI: {
+      type: Number,
+      required: true
+    },
     predictedCategory: {
       type: String,
-      enum: ['Underweight', 'Normal', 'Overweight', 'Obesity'],
-      default: null
+      enum: ['Underweight', 'Normal', 'Overweight', 'Obese'],
+      required: true
     },
-    explanation: {
-      type: String
+    healthRisk: {
+      type: String,
+      enum: ['Low', 'Moderate', 'High', 'Very High'],
+      default: 'Low'
     },
+    keyFactors: [{
+      name: String,
+      impact: {
+        type: String,
+        enum: ['Low', 'Medium', 'High']
+      },
+      value: mongoose.Schema.Types.Mixed
+    }],
     recommendations: [{
       type: String
     }],
     confidence: {
       type: Number,
       min: 0,
-      max: 100
+      max: 100,
+      default: 0
     }
   },
   date: {

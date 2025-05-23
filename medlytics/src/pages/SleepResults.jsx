@@ -12,17 +12,16 @@ ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale, PointElemen
 const SleepResults = ({ data }) => {
   const [activeTab, setActiveTab] = useState('overview');
 
-  const defaultData = {
-    sleepDuration: 7.2,
-    sleepQuality: 85,
-    remSleep: 22,
-    deepSleep: 18,
-    sleepEfficiency: 90,
-    heartRate: 65,
-    stressLevel: 30,
+  // Use data prop directly, with fallbacks for missing values
+  const sleepData = {
+    sleepDuration: data.sleepDuration || 0,
+    sleepQuality: data.sleepQuality || 0,
+    remSleep: data.remSleep || 0,
+    deepSleep: data.deepSleep || 0,
+    sleepEfficiency: data.sleepEfficiency || 0,
+    heartRate: data.heartRate || 0,
+    stressLevel: data.stressLevel || 0,
   };
-
-  const sleepData = { ...defaultData, ...data };
 
   const barData = {
     labels: ['Sleep Duration', 'Sleep Quality', 'REM Sleep', 'Deep Sleep'],
@@ -47,7 +46,7 @@ const SleepResults = ({ data }) => {
   const doughnutData = {
     labels: ['REM Sleep', 'Deep Sleep', 'Light Sleep'],
     datasets: [{
-      data: [sleepData.remSleep, sleepData.deepSleep, 100 - sleepData.remSleep - sleepData.deepSleep],
+      data: [sleepData.remSleep, sleepData.deepSleep, 100 - (sleepData.remSleep + sleepData.deepSleep)],
       backgroundColor: ['#10b981', '#f59e0b', '#d1d5db'],
     }],
   };
@@ -171,10 +170,10 @@ const SleepResults = ({ data }) => {
                   <h5 className="card-title">Personalized Recommendations</h5>
                   <ul className="list-group list-group-flush">
                     {[
-                      'Maintain a consistent sleep schedule to improve sleep quality.',
-                      'Reduce screen time 1-2 hours before bed to enhance REM sleep.',
-                      'Practice relaxation techniques to lower stress levels.',
-                      'Ensure your bedroom is cool, dark, and quiet for optimal sleep.',
+                      sleepData.sleepDuration < 7 ? 'Aim for 7-9 hours of sleep per night to improve overall health.' : 'Maintain your consistent sleep schedule.',
+                      sleepData.sleepQuality < 70 ? 'Reduce screen time before bed to enhance sleep quality.' : 'Continue avoiding screens before bed.',
+                      sleepData.stressLevel > 50 ? 'Practice mindfulness or meditation to lower stress levels.' : 'Keep up your stress management techniques.',
+                      sleepData.sleepEfficiency < 85 ? 'Optimize your sleep environment (cool, dark, quiet) for better efficiency.' : 'Your sleep environment is well-optimized.',
                     ].map((rec, idx) => (
                       <li className="list-group-item" key={idx}>{rec}</li>
                     ))}

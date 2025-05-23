@@ -21,7 +21,7 @@ const Doctors = () => {
       name: "Dr. Priya Sharma",
       specialty: "Sleep Medicine Specialist",
       description: "Board-certified sleep medicine specialist with over 12 years of experience in diagnosing and treating sleep disorders. Dr. Sharma collaborates with our AI team to validate our sleep disorder analysis algorithm and ensure accurate sleep pattern assessments.",
-      image: "https://res.cloudinary.com/dmilgqv8u/image/upload/v1742818725/Doctor_ixnlix.jpg",
+      image: "https://res.cloudinary.com/dmilgqv8u/image/upload/v1747958278/AdobeStock_632907942_Preview_f1ssdb.jpg",
       education: "MD, All India Institute of Medical Sciences (AIIMS), Delhi",
       experience: "12+ years",
       focus: "Sleep Disorders & Sleep Pattern Analysis"
@@ -31,7 +31,7 @@ const Doctors = () => {
       name: "Dr. Arjun Patel",
       specialty: "Psychiatrist",
       description: "Dr. Patel specializes in anxiety and depression treatment with a focus on integrating technology into mental healthcare. He helps ensure our mental health predictions are clinically relevant and provides expert validation for our psychological assessment algorithms.",
-      image: "/api/placeholder/400/400",
+      image: "https://res.cloudinary.com/dmilgqv8u/image/upload/v1747958278/AdobeStock_632907942_Preview_f1ssdb.jpg",
       education: "MD Psychiatry, Postgraduate Institute of Medical Education and Research (PGIMER), Chandigarh",
       experience: "15+ years",
       focus: "Anxiety & Depression Prediction"
@@ -41,7 +41,7 @@ const Doctors = () => {
       name: "Dr. Kavita Nair",
       specialty: "Clinical Nutritionist & BMI Specialist",
       description: "As a dietitian and nutritional medicine expert, Dr. Nair brings valuable insights to our nutritional analysis and BMI prediction algorithms. She ensures our tools provide scientifically sound dietary recommendations and accurate body weight management guidance.",
-      image: "/api/placeholder/400/400",
+      image: "https://res.cloudinary.com/dmilgqv8u/image/upload/v1747958278/AdobeStock_632907942_Preview_f1ssdb.jpg",
       education: "Ph.D. in Nutritional Sciences, National Institute of Nutrition, Hyderabad",
       experience: "10+ years",
       focus: "Clinical Nutrition & BMI Prediction"
@@ -51,7 +51,7 @@ const Doctors = () => {
       name: "Dr. Rajesh Kumar",
       specialty: "Neurologist",
       description: "Dr. Kumar's expertise in neurology helps inform our sleep and mental health assessment tools. He specializes in the relationship between neurological health, sleep patterns, and their impact on overall wellness and body metabolism.",
-      image: "/api/placeholder/400/400",
+      image: "https://res.cloudinary.com/dmilgqv8u/image/upload/v1747958278/AdobeStock_632907942_Preview_f1ssdb.jpg",
       education: "MD Neurology, Christian Medical College (CMC), Vellore",
       experience: "18+ years",
       focus: "Neurological Health & Sleep-Brain Connection"
@@ -61,7 +61,7 @@ const Doctors = () => {
       name: "Dr. Sneha Gupta",
       specialty: "Clinical Psychologist",
       description: "With extensive experience in psychological assessments, Dr. Gupta helps validate our anxiety and depression prediction models to ensure they align with clinical standards. She also contributes to understanding the psychological aspects of weight management.",
-      image: "/api/placeholder/400/400",
+      image: "https://res.cloudinary.com/dmilgqv8u/image/upload/v1747958278/AdobeStock_632907942_Preview_f1ssdb.jpg",
       education: "Psy.D., National Institute of Mental Health and Neurosciences (NIMHANS), Bangalore",
       experience: "14+ years",
       focus: "Psychological Assessment & Behavioral Analysis"
@@ -71,7 +71,7 @@ const Doctors = () => {
       name: "Dr. Vikram Singh",
       specialty: "Data Science Lead & Health Informatics",
       description: "Dr. Singh bridges the gap between medicine and technology. With dual expertise in machine learning and health informatics, he oversees the development of our prediction algorithms including sleep, mental health, and BMI analysis systems.",
-      image: "/api/placeholder/400/400",
+      image: "https://res.cloudinary.com/dmilgqv8u/image/upload/v1747958278/AdobeStock_632907942_Preview_f1ssdb.jpg",
       education: "Ph.D. in Computer Science, Indian Institute of Technology (IIT) Bombay",
       experience: "9+ years",
       focus: "Healthcare AI & Predictive Analytics"
