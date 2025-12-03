@@ -1,14 +1,12 @@
-// services/blogService.js
-import axios from 'axios';
-
-const API_URL = import.meta.env.VITE_API_URL || '/api';
+// src/services/blogService.js
+import apiClient from './api';
 
 /**
  * Get all blog posts
  */
 export const getAllBlogs = async () => {
   try {
-    const response = await axios.get(`${API_URL}/blogs`);
+    const response = await apiClient.get('/blogs');
     return response.data;
   } catch (error) {
     console.error('Error fetching blogs:', error);
@@ -22,7 +20,7 @@ export const getAllBlogs = async () => {
  */
 export const getBlogById = async (id) => {
   try {
-    const response = await axios.get(`${API_URL}/blogs/${id}`);
+    const response = await apiClient.get(`/blogs/${id}`);
     return response.data;
   } catch (error) {
     console.error(`Error fetching blog with ID ${id}:`, error);
@@ -36,7 +34,7 @@ export const getBlogById = async (id) => {
  */
 export const createBlog = async (blogData) => {
   try {
-    const response = await axios.post(`${API_URL}/blogs`, blogData);
+    const response = await apiClient.post('/blogs', blogData);
     return response.data;
   } catch (error) {
     console.error('Error creating blog:', error);
@@ -51,7 +49,7 @@ export const createBlog = async (blogData) => {
  */
 export const updateBlog = async (id, blogData) => {
   try {
-    const response = await axios.put(`${API_URL}/blogs/${id}`, blogData);
+    const response = await apiClient.put(`/blogs/${id}`, blogData);
     return response.data;
   } catch (error) {
     console.error(`Error updating blog with ID ${id}:`, error);
@@ -65,7 +63,7 @@ export const updateBlog = async (id, blogData) => {
  */
 export const deleteBlog = async (id) => {
   try {
-    const response = await axios.delete(`${API_URL}/blogs/${id}`);
+    const response = await apiClient.delete(`/blogs/${id}`);
     return response.data;
   } catch (error) {
     console.error(`Error deleting blog with ID ${id}:`, error);
@@ -79,7 +77,7 @@ export const deleteBlog = async (id) => {
  */
 export const getBlogsByTag = async (tag) => {
   try {
-    const response = await axios.get(`${API_URL}/blogs/tag/${tag}`);
+    const response = await apiClient.get(`/blogs/tag/${tag}`);
     return response.data;
   } catch (error) {
     console.error(`Error fetching blogs with tag ${tag}:`, error);
@@ -93,7 +91,7 @@ export const getBlogsByTag = async (tag) => {
  */
 export const searchBlogs = async (term) => {
   try {
-    const response = await axios.get(`${API_URL}/blogs/search?term=${term}`);
+    const response = await apiClient.get(`/blogs/search?term=${term}`);
     return response.data;
   } catch (error) {
     console.error(`Error searching blogs with term ${term}:`, error);

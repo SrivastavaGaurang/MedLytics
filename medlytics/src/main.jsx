@@ -14,7 +14,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       domain="gaurang-dev.us.auth0.com"
     clientId="Be6QIK8pbPkLeuSBGwdcZDxZXJrHxgd3"
       authorizationParams={{
-        redirect_uri: window.location.origin,
+        redirectUri: 'http://localhost:5173',
       }}
     >
       <ProtectedApp>

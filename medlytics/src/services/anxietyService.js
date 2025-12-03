@@ -1,7 +1,5 @@
 // src/services/anxietyService.js
-import axios from 'axios';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+import apiClient from './api';
 
 /**
  * Analyze anxiety data by sending it to the backend API
@@ -11,12 +9,8 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
  */
 export const analyzeAnxiety = async (anxietyData, token = null) => {
   try {
-    let headers = { 'Content-Type': 'application/json' };
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
-    }
-
-    const response = await axios.post(`${API_URL}/anxiety/analyze`, anxietyData, { headers });
+    const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+    const response = await apiClient.post('/anxiety/analyze', anxietyData, config);
     return response.data;
   } catch (error) {
     console.error('Error analyzing anxiety data:', error);
@@ -31,7 +25,7 @@ export const analyzeAnxiety = async (anxietyData, token = null) => {
  */
 export const getAnxietyResult = async (id) => {
   try {
-    const response = await axios.get(`${API_URL}/anxiety/results/${id}`);
+    const response = await apiClient.get(`/anxiety/results/${id}`);
     return response.data;
   } catch (error) {
     console.error('Error fetching anxiety result:', error);
@@ -46,12 +40,9 @@ export const getAnxietyResult = async (id) => {
  */
 export const getAnxietyHistory = async (token) => {
   try {
-    const response = await axios.get(`${API_URL}/anxiety/history`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
+    const response = await apiClient.get('/anxiety/history', {
+      headers: { Authorization: `Bearer ${token}` }
     });
-
     return response.data;
   } catch (error) {
     console.error('Error fetching anxiety history:', error);

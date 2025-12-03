@@ -1,84 +1,44 @@
 // src/services/depressionService.js
-import apiClient from './api';
-import axios from 'axios';
-
-// Use window.location to determine the API base URL, or fallback to localhost
-const getApiBaseUrl = () => {
-    // Try to get from environment variable first
-    if (typeof process !== 'undefined' && process.env && process.env.REACT_APP_API_URL) {
-        return process.env.REACT_APP_API_URL;
-    }
-    
-    // Fallback logic based on current location
-    if (typeof window !== 'undefined') {
-        const { protocol, hostname } = window.location;
-        
-        // If we're running on localhost, use localhost:5000
-        if (hostname === 'localhost' || hostname === '127.0.0.1') {
-            return 'http://localhost:5000';
-        }
-        
-        // For production, construct the API URL
-        return `${protocol}//${hostname}`;
-    }
-    
-    // Final fallback
-    return 'http://localhost:5000';
-};
-
-const API_BASE_URL = getApiBaseUrl();
+import apiClient, { createAuthenticatedClient } from './api';
 
 // Submit depression analysis data - doesn't require token
 export const analyzeDepression = async (formData) => {
     try {
         console.log('Submitting depression analysis data:', formData);
-        
-        const response = await axios.post(`${API_BASE_URL}/api/depression/predict`, formData, {
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            timeout: 30000, // 30 second timeout
-        });
-        
+        const response = await apiClient.post('/depression/predict', formData);
         console.log('Depression analysis response:', response.data);
         return response.data;
     } catch (error) {
         console.error('Error submitting depression analysis:', error);
-        
+
         if (error.response) {
-            // Server responded with error status
-            const errorMessage = error.response.data?.message || 
-                               error.response.data?.errors?.[0]?.msg || 
-                               'Server error occurred';
+            const errorMessage = error.response.data?.message ||
+                error.response.data?.errors?.[0]?.msg ||
+                'Server error occurred';
             throw new Error(errorMessage);
         } else if (error.request) {
-            // Request was made but no response received
             throw new Error('Unable to connect to server. Please check your connection.');
         } else {
-            // Something else happened
             throw new Error('An unexpected error occurred. Please try again.');
         }
     }
-};  
+};
 
-// Get depression result by ID - doesn't require token for now
+// Get depression result by ID - doesn't require token
 export const getDepressionResult = async (id) => {
     try {
         console.log('Fetching depression result for ID:', id);
-        
+
         if (!id) {
             throw new Error('Analysis ID is required');
         }
-        
-        const response = await axios.get(`${API_BASE_URL}/api/depression/results/${id}`, {
-            timeout: 15000, // 15 second timeout
-        });
-        
+
+        const response = await apiClient.get(`/depression/results/${id}`);
         console.log('Depression result response:', response.data);
         return response.data;
     } catch (error) {
         console.error('Error fetching depression result:', error);
-        
+
         if (error.response) {
             if (error.response.status === 404) {
                 throw new Error('Analysis results not found. The ID may be invalid or results may have expired.');
@@ -98,15 +58,13 @@ export const getDepressionResult = async (id) => {
 export const getDepressionHistory = async (getAccessTokenSilently) => {
     try {
         console.log('Fetching depression history...');
-        
-        const client = await apiClient(getAccessTokenSilently);
+        const client = await createAuthenticatedClient(getAccessTokenSilently);
         const response = await client.get('/depression/history');
-        
         console.log('Depression history response:', response.data);
         return response.data;
     } catch (error) {
         console.error('Error fetching depression history:', error);
-        
+
         if (error.response) {
             const errorMessage = error.response.data?.message || 'Server error occurred';
             throw new Error(errorMessage);
@@ -122,19 +80,18 @@ export const getDepressionHistory = async (getAccessTokenSilently) => {
 export const deleteDepressionAnalysis = async (id, getAccessTokenSilently) => {
     try {
         console.log('Deleting depression analysis with ID:', id);
-        
+
         if (!id) {
             throw new Error('Analysis ID is required');
         }
-        
-        const client = await apiClient(getAccessTokenSilently);
+
+        const client = await createAuthenticatedClient(getAccessTokenSilently);
         const response = await client.delete(`/depression/analysis/${id}`);
-        
         console.log('Delete depression analysis response:', response.data);
         return response.data;
     } catch (error) {
         console.error('Error deleting depression analysis:', error);
-        
+
         if (error.response) {
             if (error.response.status === 404) {
                 throw new Error('Analysis not found or already deleted.');
@@ -156,28 +113,27 @@ export const deleteDepressionAnalysis = async (id, getAccessTokenSilently) => {
 export const updateDepressionAnalysis = async (id, formData, getAccessTokenSilently) => {
     try {
         console.log('Updating depression analysis with ID:', id, 'Data:', formData);
-        
+
         if (!id) {
             throw new Error('Analysis ID is required');
         }
-        
-        const client = await apiClient(getAccessTokenSilently);
+
+        const client = await createAuthenticatedClient(getAccessTokenSilently);
         const response = await client.put(`/depression/analysis/${id}`, formData);
-        
         console.log('Update depression analysis response:', response.data);
         return response.data;
     } catch (error) {
         console.error('Error updating depression analysis:', error);
-        
+
         if (error.response) {
             if (error.response.status === 404) {
                 throw new Error('Analysis not found.');
             } else if (error.response.status === 403) {
                 throw new Error('You do not have permission to update this analysis.');
             } else {
-                const errorMessage = error.response.data?.message || 
-                                   error.response.data?.errors?.[0]?.msg || 
-                                   'Server error occurred';
+                const errorMessage = error.response.data?.message ||
+                    error.response.data?.errors?.[0]?.msg ||
+                    'Server error occurred';
                 throw new Error(errorMessage);
             }
         } else if (error.request) {
@@ -192,15 +148,13 @@ export const updateDepressionAnalysis = async (id, formData, getAccessTokenSilen
 export const getDepressionStats = async (getAccessTokenSilently) => {
     try {
         console.log('Fetching depression statistics...');
-        
-        const client = await apiClient(getAccessTokenSilently);
+        const client = await createAuthenticatedClient(getAccessTokenSilently);
         const response = await client.get('/depression/stats');
-        
         console.log('Depression stats response:', response.data);
         return response.data;
     } catch (error) {
         console.error('Error fetching depression stats:', error);
-        
+
         if (error.response) {
             const errorMessage = error.response.data?.message || 'Server error occurred';
             throw new Error(errorMessage);
@@ -216,16 +170,15 @@ export const getDepressionStats = async (getAccessTokenSilently) => {
 export const exportDepressionAnalysisToPDF = async (id) => {
     try {
         console.log('Exporting depression analysis to PDF for ID:', id);
-        
+
         if (!id) {
             throw new Error('Analysis ID is required');
         }
-        
-        const response = await axios.get(`${API_BASE_URL}/api/depression/export/${id}`, {
+
+        const response = await apiClient.get(`/depression/export/${id}`, {
             responseType: 'blob', // Important for file downloads
-            timeout: 30000,
         });
-        
+
         // Create blob link to download
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement('a');
@@ -234,12 +187,12 @@ export const exportDepressionAnalysisToPDF = async (id) => {
         document.body.appendChild(link);
         link.click();
         link.remove();
-        
+
         console.log('Depression analysis PDF exported successfully');
         return { success: true, message: 'PDF exported successfully' };
     } catch (error) {
         console.error('Error exporting depression analysis to PDF:', error);
-        
+
         if (error.response) {
             if (error.response.status === 404) {
                 throw new Error('Analysis not found for PDF export.');
@@ -259,20 +212,17 @@ export const exportDepressionAnalysisToPDF = async (id) => {
 export const shareDepressionAnalysis = async (id) => {
     try {
         console.log('Creating shareable link for depression analysis ID:', id);
-        
+
         if (!id) {
             throw new Error('Analysis ID is required');
         }
-        
-        const response = await axios.post(`${API_BASE_URL}/api/depression/share/${id}`, {}, {
-            timeout: 15000,
-        });
-        
+
+        const response = await apiClient.post(`/depression/share/${id}`, {});
         console.log('Share depression analysis response:', response.data);
         return response.data;
     } catch (error) {
         console.error('Error creating shareable link:', error);
-        
+
         if (error.response) {
             if (error.response.status === 404) {
                 throw new Error('Analysis not found for sharing.');
@@ -291,49 +241,49 @@ export const shareDepressionAnalysis = async (id) => {
 // Validate depression form data before submission
 export const validateDepressionFormData = (formData) => {
     const errors = [];
-    
+
     // Check required fields
     if (!formData.age || formData.age < 13 || formData.age > 100) {
         errors.push('Age must be between 13 and 100');
     }
-    
+
     if (!formData.gender || !['male', 'female', 'other'].includes(formData.gender)) {
         errors.push('Please select a valid gender');
     }
-    
+
     if (!formData.maritalStatus || !['single', 'married', 'divorced', 'widowed'].includes(formData.maritalStatus)) {
         errors.push('Please select a valid marital status');
     }
-    
+
     if (!formData.employmentStatus || !['employed', 'unemployed', 'student', 'retired'].includes(formData.employmentStatus)) {
         errors.push('Please select a valid employment status');
     }
-    
+
     // Check numeric ranges
     if (formData.stressLevel < 1 || formData.stressLevel > 10) {
         errors.push('Stress level must be between 1 and 10');
     }
-    
+
     if (formData.sleepQuality < 1 || formData.sleepQuality > 10) {
         errors.push('Sleep quality must be between 1 and 10');
     }
-    
+
     if (formData.socialSupport < 1 || formData.socialSupport > 10) {
         errors.push('Social support must be between 1 and 10');
     }
-    
+
     if (formData.physicalActivity < 0 || formData.physicalActivity > 100) {
         errors.push('Physical activity must be between 0 and 100 minutes per week');
     }
-    
+
     if (formData.dietQuality < 1 || formData.dietQuality > 10) {
         errors.push('Diet quality must be between 1 and 10');
     }
-    
+
     if (typeof formData.geneticHistory !== 'boolean') {
         errors.push('Genetic history must be specified');
     }
-    
+
     return {
         isValid: errors.length === 0,
         errors
@@ -368,7 +318,7 @@ export const getDepressionRecommendations = (riskLevel) => {
             'Focus on basic self-care: regular meals, sleep, and hygiene'
         ]
     };
-    
+
     return recommendations[riskLevel] || recommendations.low;
 };
 
