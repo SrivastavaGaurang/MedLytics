@@ -2,15 +2,16 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getBlogById, updateBlog } from '../../services/blogService';
-import { useAuth0 } from '@auth0/auth0-react';
+import { useAuth } from '../../contexts/useAuth';
 import { FaSave, FaTimes, FaArrowLeft, FaImage, FaEye, FaEdit } from 'react-icons/fa';
 import ReactMarkdown from 'react-markdown';
 
 const EditBlog = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { isAuthenticated, loginWithRedirect } = useAuth0();
-  
+  const { isAuthenticated, loginWithRedirect } = useAuth();
+
+
   const [formData, setFormData] = useState({
     title: '',
     content: '',
@@ -97,31 +98,31 @@ const EditBlog = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Validation
     if (!formData.title.trim()) {
       setError('Title is required');
       return;
     }
-    
+
     if (!formData.content.trim()) {
       setError('Content is required');
       return;
     }
-    
+
     try {
       setSubmitting(true);
       setError(null);
-      
+
       // If no summary is provided, create one from the first 150 characters of content
       const blogToSubmit = {
         ...formData,
         summary: formData.summary.trim() || formData.content.substring(0, 150) + '...'
       };
-      
+
       await updateBlog(id, blogToSubmit);
       setSubmitting(false);
-      
+
       // Redirect to the blog post
       navigate(`/blog/${id}`);
     } catch (err) {
@@ -156,14 +157,14 @@ const EditBlog = () => {
     <div className="edit-blog-container py-5">
       <div className="container">
         <div className="mb-4">
-          <button 
+          <button
             className="btn btn-outline-secondary"
             onClick={() => navigate(`/blog/${id}`)}
           >
             <FaArrowLeft className="me-2" /> Back to Article
           </button>
         </div>
-        
+
         <div className="row mb-4">
           <div className="col">
             <h1 className="mb-3">Edit Article</h1>
@@ -181,7 +182,7 @@ const EditBlog = () => {
           <div className="col-lg-12">
             {/* Preview Toggle */}
             <div className="d-flex justify-content-end mb-3">
-              <button 
+              <button
                 className={`btn ${previewMode ? 'btn-primary' : 'btn-outline-primary'}`}
                 onClick={togglePreview}
               >
@@ -193,7 +194,7 @@ const EditBlog = () => {
             {previewMode ? (
               <div className="preview-container border rounded p-4 mb-4">
                 <h2 className="preview-title mb-3">{formData.title || 'Untitled Article'}</h2>
-                
+
                 {formData.tags.length > 0 && (
                   <div className="mb-3">
                     {formData.tags.map((tag, idx) => (
@@ -203,22 +204,22 @@ const EditBlog = () => {
                     ))}
                   </div>
                 )}
-                
+
                 <div className="text-muted small mb-3">
                   By {formData.author} • {originalBlog ? new Date(originalBlog.date).toLocaleDateString() : new Date().toLocaleDateString()}
                 </div>
-                
+
                 {formData.image && (
                   <div className="preview-image mb-4">
-                    <img 
-                      src={formData.image} 
-                      className="img-fluid rounded" 
-                      alt={formData.title} 
+                    <img
+                      src={formData.image}
+                      className="img-fluid rounded"
+                      alt={formData.title}
                       style={{ maxHeight: '400px', width: '100%', objectFit: 'cover' }}
                     />
                   </div>
                 )}
-                
+
                 <div className="preview-content">
                   <ReactMarkdown>{formData.content || 'No content to preview'}</ReactMarkdown>
                 </div>
@@ -240,7 +241,7 @@ const EditBlog = () => {
                         required
                       />
                     </div>
-                    
+
                     <div className="mb-3">
                       <label htmlFor="summary" className="form-label">Summary</label>
                       <textarea
@@ -253,7 +254,7 @@ const EditBlog = () => {
                         rows="2"
                       />
                     </div>
-                    
+
                     <div className="mb-3">
                       <label htmlFor="image" className="form-label">Featured Image URL</label>
                       <div className="input-group">
@@ -270,7 +271,7 @@ const EditBlog = () => {
                       </div>
                       <div className="form-text">Leave default for a placeholder image</div>
                     </div>
-                    
+
                     <div className="mb-3">
                       <label htmlFor="author" className="form-label">Author</label>
                       <input
@@ -282,7 +283,7 @@ const EditBlog = () => {
                         onChange={handleChange}
                       />
                     </div>
-                    
+
                     <div className="mb-3">
                       <label htmlFor="tags" className="form-label">Tags</label>
                       <div className="input-group">
@@ -295,15 +296,15 @@ const EditBlog = () => {
                           onChange={handleTagInput}
                           onKeyPress={handleTagKeyPress}
                         />
-                        <button 
-                          type="button" 
+                        <button
+                          type="button"
                           className="btn btn-outline-primary"
                           onClick={addTag}
                         >
                           <FaPlus />
                         </button>
                       </div>
-                      
+
                       {/* Tag suggestions */}
                       <div className="suggested-tags my-2">
                         <small className="text-muted">Suggested: </small>
@@ -325,7 +326,7 @@ const EditBlog = () => {
                           </button>
                         ))}
                       </div>
-                      
+
                       {/* Tags display */}
                       {formData.tags.length > 0 && (
                         <div className="selected-tags mt-2">
@@ -337,7 +338,7 @@ const EditBlog = () => {
                         </div>
                       )}
                     </div>
-                    
+
                     <div className="mb-3">
                       <label htmlFor="content" className="form-label">Content <span className="text-danger">*</span></label>
                       <div className="form-text mb-2">Supports Markdown formatting</div>
@@ -352,7 +353,7 @@ const EditBlog = () => {
                         required
                       />
                     </div>
-                    
+
                     <div className="d-flex justify-content-between mt-4">
                       <button
                         type="button"

@@ -1,11 +1,12 @@
 // src/pages/AnxietyHistory.jsx
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth0 } from '@auth0/auth0-react';
+import { useAuth } from '../contexts/useAuth';
 import { getAnxietyHistory } from '../services/anxietyService';
 
 const AnxietyHistory = () => {
-  const { isAuthenticated, loginWithRedirect } = useAuth0();
+  const { isAuthenticated, loginWithRedirect } = useAuth();
+  const navigate = useNavigate();
   const navigate = useNavigate();
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);

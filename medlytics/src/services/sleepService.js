@@ -1,6 +1,5 @@
 // src/services/sleepService.js
-import axios from 'axios';
-import { SERVER_URL } from '../constants/config';
+import apiClient, { createAuthenticatedClient } from './api';
 
 /**
  * Send sleep data to the server for analysis
@@ -10,7 +9,7 @@ import { SERVER_URL } from '../constants/config';
  */
 export const analyzeSleep = async (data) => {
   try {
-    const response = await axios.post(`${SERVER_URL}/api/sleep/analyze`, data);
+    const response = await apiClient.post('/sleep/analyze', data);
     return response.data;
   } catch (error) {
     console.error('Error in sleep analysis service:', error);
@@ -26,7 +25,7 @@ export const analyzeSleep = async (data) => {
  */
 export const getSleepResult = async (id) => {
   try {
-    const response = await axios.get(`${SERVER_URL}/api/sleep/results/${id}`);
+    const response = await apiClient.get(`/sleep/results/${id}`);
     return response.data;
   } catch (error) {
     console.error('Error fetching sleep result:', error);
@@ -37,16 +36,13 @@ export const getSleepResult = async (id) => {
 /**
  * Fetch sleep analysis history for current user
  * 
- * @param {string} token - Authentication token
+ * @param {Function} getAccessTokenSilently - Auth0 token getter
  * @returns {Promise<Array>} - Array of sleep analysis results
  */
-export const getSleepHistory = async (token) => {
+export const getSleepHistory = async (getAccessTokenSilently) => {
   try {
-    const response = await axios.get(`${SERVER_URL}/api/sleep/history`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    });
+    const client = await createAuthenticatedClient(getAccessTokenSilently);
+    const response = await client.get('/sleep/history');
     return response.data;
   } catch (error) {
     console.error('Error fetching sleep history:', error);

@@ -1,7 +1,7 @@
 // src/components/DepressionHistory.jsx
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth0 } from '@auth0/auth0-react';
+import { useAuth } from '../contexts/useAuth';
 import { getDepressionHistory } from '../services/depressionService';
 import { FaExclamationTriangle, FaCheckCircle, FaInfoCircle, FaCalendarAlt, FaChartLine } from 'react-icons/fa';
 
@@ -9,7 +9,8 @@ const DepressionHistory = () => {
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { getAccessTokenSilently, isAuthenticated, loginWithRedirect } = useAuth0();
+  const {, isAuthenticated, loginWithRedirect } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -18,7 +19,7 @@ const DepressionHistory = () => {
 
     const fetchHistory = async () => {
       try {
-        const data = await getDepressionHistory(getAccessTokenSilently);
+        const data = await getDepressionHistory();
         setHistory(data);
       } catch (err) {
         console.error('Error fetching depression history:', err);
@@ -29,7 +30,7 @@ const DepressionHistory = () => {
     };
 
     fetchHistory();
-  }, [isAuthenticated, getAccessTokenSilently]);
+  }, [isAuthenticated]);
 
   const handleLoginRedirect = () => {
     loginWithRedirect({

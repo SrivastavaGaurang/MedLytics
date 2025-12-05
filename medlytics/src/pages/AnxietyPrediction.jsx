@@ -1,12 +1,13 @@
 // src/pages/AnxietyPrediction.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth0 } from '@auth0/auth0-react';
+import { useAuth } from '../contexts/useAuth';
 import { analyzeAnxiety } from '../services/anxietyService';
 
 const AnxietyPrediction = () => {
   const navigate = useNavigate();
-  const { user, isAuthenticated, loginWithRedirect } = useAuth0();
+  const { user, isAuthenticated, loginWithRedirect } = useAuth();
+
   const [formData, setFormData] = useState({
     school_year: 1,
     age: '',
@@ -18,12 +19,12 @@ const AnxietyPrediction = () => {
     suicidal: false,
     epworth_score: 5
   });
-  
+
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showAuthPrompt, setShowAuthPrompt] = useState(false);
-  
+
   useEffect(() => {
     // Show login prompt after a delay if user isn't authenticated
     if (!isAuthenticated) {
@@ -31,18 +32,18 @@ const AnxietyPrediction = () => {
       return () => clearTimeout(timer);
     }
   }, [isAuthenticated]);
-  
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    
+
     setFormData({
       ...formData,
-      [name]: type === 'checkbox' ? checked : 
-              ['phq_score', 'epworth_score', 'school_year'].includes(name) ? 
-              Number(value) : value
+      [name]: type === 'checkbox' ? checked :
+        ['phq_score', 'epworth_score', 'school_year'].includes(name) ?
+          Number(value) : value
     });
   };
-  
+
   const nextStep = () => {
     // Validate current step before proceeding
     if (step === 1) {
@@ -55,19 +56,19 @@ const AnxietyPrediction = () => {
     }
     setStep(step + 1);
   };
-  
+
   const prevStep = () => {
     setStep(step - 1);
   };
-  
+
   const calculateBMI = () => {
     const height = document.getElementById('height').value / 100; // Convert cm to m
     const weight = document.getElementById('weight').value;
-    
+
     if (height && weight) {
       const bmi = (weight / (height * height)).toFixed(1);
       let who_bmi = 'Normal';
-      
+
       if (bmi < 18.5) {
         who_bmi = 'Underweight';
       } else if (bmi >= 25 && bmi < 30) {
@@ -75,7 +76,7 @@ const AnxietyPrediction = () => {
       } else if (bmi >= 30) {
         who_bmi = 'Obese';
       }
-      
+
       setFormData({
         ...formData,
         bmi,
@@ -83,24 +84,24 @@ const AnxietyPrediction = () => {
       });
     }
   };
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!isAuthenticated) {
       setShowAuthPrompt(true);
       return;
     }
-    
+
     setLoading(true);
     setError(null);
-    
+
     try {
       const authId = user?.sub;
       if (!authId) {
         throw new Error('Authentication required to analyze anxiety data');
       }
-      
+
       const payload = { ...formData, authId };
       const data = await analyzeAnxiety(payload);
       navigate(`/anxiety-results/${data._id}`);
@@ -111,7 +112,7 @@ const AnxietyPrediction = () => {
       setLoading(false);
     }
   };
-  
+
   // Render form based on current step
   const renderStep = () => {
     switch (step) {
@@ -135,7 +136,7 @@ const AnxietyPrediction = () => {
                 />
                 <div className="form-text">Must be 18 years or older</div>
               </div>
-              
+
               <div className="col-md-6 mb-3">
                 <label htmlFor="gender" className="form-label">Gender <span className="text-danger">*</span></label>
                 <select
@@ -153,7 +154,7 @@ const AnxietyPrediction = () => {
                 </select>
               </div>
             </div>
-            
+
             <div className="mb-3">
               <label htmlFor="school_year" className="form-label">School/Academic Year</label>
               <select
@@ -170,7 +171,7 @@ const AnxietyPrediction = () => {
                 <option value="5">5th Year or Graduate</option>
               </select>
             </div>
-            
+
             <div className="card mb-4 border-light bg-light">
               <div className="card-body">
                 <h5 className="card-title">Body Mass Index (BMI)</h5>
@@ -189,7 +190,7 @@ const AnxietyPrediction = () => {
                       placeholder="e.g. 170"
                     />
                   </div>
-                  
+
                   <div className="col-md-6 mb-3">
                     <label htmlFor="weight" className="form-label">Weight (kg)</label>
                     <input
@@ -205,7 +206,7 @@ const AnxietyPrediction = () => {
                     />
                   </div>
                 </div>
-                
+
                 <div className="row">
                   <div className="col-md-6 mb-3">
                     <label htmlFor="bmi" className="form-label">BMI</label>
@@ -218,7 +219,7 @@ const AnxietyPrediction = () => {
                       readOnly
                     />
                   </div>
-                  
+
                   <div className="col-md-6 mb-3">
                     <label htmlFor="who_bmi" className="form-label">BMI Category</label>
                     <input
@@ -233,11 +234,11 @@ const AnxietyPrediction = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="d-grid mt-4">
-              <button 
-                type="button" 
-                className="btn btn-primary" 
+              <button
+                type="button"
+                className="btn btn-primary"
                 onClick={nextStep}
               >
                 Continue <i className="bi bi-arrow-right ms-1"></i>
@@ -245,7 +246,7 @@ const AnxietyPrediction = () => {
             </div>
           </>
         );
-        
+
       case 2:
         return (
           <>
@@ -256,7 +257,7 @@ const AnxietyPrediction = () => {
                 <p className="text-muted small mb-3">
                   Over the last 2 weeks, how often have you been bothered by any of the following problems?
                 </p>
-                
+
                 <label htmlFor="phq_score" className="form-label fw-bold">
                   Depression Score (PHQ-9 Scale: 0-27)
                 </label>
@@ -288,11 +289,11 @@ const AnxietyPrediction = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="card mb-4 border-light">
               <div className="card-body">
                 <h5 className="card-title">Anxiety Symptoms</h5>
-                
+
                 <div className="mb-3 mt-3">
                   <div className="form-check">
                     <input
@@ -308,7 +309,7 @@ const AnxietyPrediction = () => {
                     </label>
                   </div>
                 </div>
-                
+
                 <div className="mb-3">
                   <div className="form-check">
                     <input
@@ -341,18 +342,18 @@ const AnxietyPrediction = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="d-flex justify-content-between mt-4">
-              <button 
-                type="button" 
-                className="btn btn-outline-secondary" 
+              <button
+                type="button"
+                className="btn btn-outline-secondary"
                 onClick={prevStep}
               >
                 <i className="bi bi-arrow-left me-1"></i> Back
               </button>
-              <button 
-                type="button" 
-                className="btn btn-primary" 
+              <button
+                type="button"
+                className="btn btn-primary"
                 onClick={nextStep}
               >
                 Continue <i className="bi bi-arrow-right ms-1"></i>
@@ -360,7 +361,7 @@ const AnxietyPrediction = () => {
             </div>
           </>
         );
-        
+
       case 3:
         return (
           <>
@@ -371,7 +372,7 @@ const AnxietyPrediction = () => {
                 <p className="text-muted mb-3">
                   How likely are you to doze off or fall asleep in the following situations, in contrast to just feeling tired?
                 </p>
-                
+
                 <label htmlFor="epworth_score" className="form-label fw-bold">
                   Daytime Sleepiness (0-24)
                 </label>
@@ -400,26 +401,26 @@ const AnxietyPrediction = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="alert alert-info d-flex" role="alert">
               <i className="bi bi-info-circle-fill me-2 fs-5"></i>
               <div>
                 <strong>Your privacy matters to us!</strong>
-                <p className="mb-0">All data will be processed securely and used only for your personalized analysis. 
-                See our <a href="/privacy-policy" className="alert-link">privacy policy</a> for details.</p>
+                <p className="mb-0">All data will be processed securely and used only for your personalized analysis.
+                  See our <a href="/privacy-policy" className="alert-link">privacy policy</a> for details.</p>
               </div>
             </div>
-            
+
             <div className="d-flex justify-content-between mt-4">
-              <button 
-                type="button" 
-                className="btn btn-outline-secondary" 
+              <button
+                type="button"
+                className="btn btn-outline-secondary"
                 onClick={prevStep}
               >
                 <i className="bi bi-arrow-left me-1"></i> Back
               </button>
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 className="btn btn-success btn-lg"
                 disabled={loading}
               >
@@ -437,12 +438,12 @@ const AnxietyPrediction = () => {
             </div>
           </>
         );
-        
+
       default:
         return null;
     }
   };
-  
+
   return (
     <div className="container py-5">
       <div className="row">
@@ -455,9 +456,9 @@ const AnxietyPrediction = () => {
                 <div>
                   <strong>Sign in to save your results!</strong>
                   <p className="mb-0">Creating an account allows you to track your progress and access your history.</p>
-                  <button 
-                    className="btn btn-sm btn-outline-dark mt-2" 
-                    onClick={() => loginWithRedirect()}
+                  <button
+                    className="btn btn-sm btn-outline-dark mt-2"
+                    onClick={() => navigate('/login')}
                   >
                     Sign In / Register
                   </button>
@@ -466,7 +467,7 @@ const AnxietyPrediction = () => {
               <button type="button" className="btn-close" onClick={() => setShowAuthPrompt(false)}></button>
             </div>
           )}
-        
+
           {/* Anxiety prediction card */}
           <div className="card shadow">
             <div className="card-header bg-primary text-white py-3">
@@ -482,12 +483,12 @@ const AnxietyPrediction = () => {
               {/* Progress indicator */}
               <div className="mb-4">
                 <div className="progress" style={{ height: '10px' }}>
-                  <div 
-                    className="progress-bar bg-primary" 
-                    role="progressbar" 
+                  <div
+                    className="progress-bar bg-primary"
+                    role="progressbar"
                     style={{ width: `${(step / 3) * 100}%` }}
-                    aria-valuenow={step} 
-                    aria-valuemin="1" 
+                    aria-valuenow={step}
+                    aria-valuemin="1"
                     aria-valuemax="3"
                   ></div>
                 </div>
@@ -503,7 +504,7 @@ const AnxietyPrediction = () => {
                   </span>
                 </div>
               </div>
-              
+
               {/* Error message */}
               {error && (
                 <div className="alert alert-danger d-flex align-items-center" role="alert">
@@ -511,14 +512,14 @@ const AnxietyPrediction = () => {
                   <div>{error}</div>
                 </div>
               )}
-              
+
               {/* Form */}
               <form onSubmit={handleSubmit}>
                 {renderStep()}
               </form>
             </div>
           </div>
-          
+
           {/* Informational cards */}
           <div className="row mt-4">
             <div className="col-md-6">
@@ -539,7 +540,7 @@ const AnxietyPrediction = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="col-md-6">
               <div className="card h-100 shadow-sm border-light">
                 <div className="card-body">
@@ -548,7 +549,7 @@ const AnxietyPrediction = () => {
                     Medical Disclaimer
                   </h5>
                   <p className="card-text">
-                    This assessment tool is for informational purposes only and not intended to replace 
+                    This assessment tool is for informational purposes only and not intended to replace
                     professional medical advice, diagnosis, or treatment.
                   </p>
                   <p className="card-text">

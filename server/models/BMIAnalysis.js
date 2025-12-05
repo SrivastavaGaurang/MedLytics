@@ -99,6 +99,9 @@ const BMIAnalysisSchema = new Schema({
       enum: ['Low', 'Moderate', 'High', 'Very High'],
       default: 'Low'
     },
+    explanation: {
+      type: String
+    },
     keyFactors: [{
       name: String,
       impact: {

@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth0 } from '@auth0/auth0-react';
+import { useAuth } from '../contexts/useAuth';
 import { analyzeBMI } from '../services/bmiService';
 
 const ImprovedBMIPrediction = () => {
   const navigate = useNavigate();
-  const { user, isAuthenticated, loginWithRedirect } = useAuth0();
+  const { user, isAuthenticated, loginWithRedirect } = useAuth();
+
   const [formData, setFormData] = useState({
     height: '',
     weight: '',
@@ -19,14 +20,14 @@ const ImprovedBMIPrediction = () => {
     heartRate: '',
     dailySteps: ''
   });
-  
+
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showAuthPrompt, setShowAuthPrompt] = useState(false);
   const [bmi, setBmi] = useState(null);
   const [bmiCategory, setBmiCategory] = useState('');
-  
+
   useEffect(() => {
     // Show login prompt after a delay if user isn't authenticated
     if (!isAuthenticated) {
@@ -34,10 +35,10 @@ const ImprovedBMIPrediction = () => {
       return () => clearTimeout(timer);
     }
   }, [isAuthenticated]);
-  
+
   const handleChange = (e) => {
     const { name, value, type } = e.target;
-    
+
     if (name.includes('.')) {
       const [parent, child] = name.split('.');
       setFormData(prev => ({
@@ -47,21 +48,21 @@ const ImprovedBMIPrediction = () => {
     } else {
       setFormData(prev => ({
         ...prev,
-        [name]: ['qualityOfSleep', 'physicalActivityLevel', 'stressLevel'].includes(name) ? 
-                Number(value) : value
+        [name]: ['qualityOfSleep', 'physicalActivityLevel', 'stressLevel'].includes(name) ?
+          Number(value) : value
       }));
     }
   };
-  
+
   const calculateBMI = () => {
     const height = parseFloat(formData.height);
     const weight = parseFloat(formData.weight);
-    
+
     if (height && weight) {
       const heightM = height / 100; // Convert cm to m
       const calculatedBMI = (weight / (heightM * heightM));
       let category = 'Normal';
-      
+
       if (calculatedBMI < 18.5) {
         category = 'Underweight';
       } else if (calculatedBMI >= 25 && calculatedBMI < 30) {
@@ -69,12 +70,12 @@ const ImprovedBMIPrediction = () => {
       } else if (calculatedBMI >= 30) {
         category = 'Obesity';
       }
-      
+
       setBmi(calculatedBMI.toFixed(1));
       setBmiCategory(category);
     }
   };
-  
+
   const nextStep = () => {
     // Validate current step before proceeding
     if (step === 1) {
@@ -85,25 +86,25 @@ const ImprovedBMIPrediction = () => {
       calculateBMI();
       setError(null);
     }
-    
+
     if (step === 2) {
-      if (!formData.sleepDuration || !formData.bloodPressure.systolic || 
-          !formData.bloodPressure.diastolic || !formData.heartRate || !formData.dailySteps) {
+      if (!formData.sleepDuration || !formData.bloodPressure.systolic ||
+        !formData.bloodPressure.diastolic || !formData.heartRate || !formData.dailySteps) {
         setError("Please fill in all required fields before continuing");
         return;
       }
       setError(null);
     }
-    
+
     setStep(step + 1);
   };
-  
+
   const prevStep = () => {
     setStep(step - 1);
   };
-  
+
   const getRecommendations = (category) => {
-    switch(category) {
+    switch (category) {
       case 'Underweight':
         return [
           'Increase caloric intake with nutrient-dense foods',
@@ -134,24 +135,24 @@ const ImprovedBMIPrediction = () => {
         ];
     }
   };
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!isAuthenticated) {
       setShowAuthPrompt(true);
       return;
     }
-    
+
     setLoading(true);
     setError(null);
-    
+
     try {
       const authId = user?.sub;
       if (!authId) {
         throw new Error('Authentication required to analyze BMI data');
       }
-      
+
       const dataToSubmit = {
         ...formData,
         height: parseFloat(formData.height),
@@ -171,7 +172,7 @@ const ImprovedBMIPrediction = () => {
         bmiCategory,
         authId
       };
-      
+
       const bmiData = await analyzeBMI(dataToSubmit);
       navigate(`/bmi-results/${bmiData._id}`);
     } catch (err) {
@@ -181,9 +182,9 @@ const ImprovedBMIPrediction = () => {
       setLoading(false);
     }
   };
-  
+
   const getBMIColor = (category) => {
-    switch(category) {
+    switch (category) {
       case 'Underweight': return 'text-info';
       case 'Normal': return 'text-success';
       case 'Overweight': return 'text-warning';
@@ -191,7 +192,7 @@ const ImprovedBMIPrediction = () => {
       default: return 'text-muted';
     }
   };
-  
+
   // Render form based on current step
   const renderStep = () => {
     switch (step) {
@@ -217,7 +218,7 @@ const ImprovedBMIPrediction = () => {
                 />
                 <div className="form-text">Enter your height in centimeters</div>
               </div>
-              
+
               <div className="col-md-6 mb-3">
                 <label htmlFor="weight" className="form-label">Weight (kg) <span className="text-danger">*</span></label>
                 <input
@@ -236,7 +237,7 @@ const ImprovedBMIPrediction = () => {
                 <div className="form-text">Enter your weight in kilograms</div>
               </div>
             </div>
-            
+
             <div className="row">
               <div className="col-md-6 mb-3">
                 <label htmlFor="age" className="form-label">Age <span className="text-danger">*</span></label>
@@ -253,7 +254,7 @@ const ImprovedBMIPrediction = () => {
                 />
                 <div className="form-text">Must be 18 years or older</div>
               </div>
-              
+
               <div className="col-md-6 mb-3">
                 <label htmlFor="gender" className="form-label">Gender <span className="text-danger">*</span></label>
                 <select
@@ -271,7 +272,7 @@ const ImprovedBMIPrediction = () => {
                 </select>
               </div>
             </div>
-            
+
             {bmi && (
               <div className="card mb-4 border-light bg-light">
                 <div className="card-body">
@@ -293,11 +294,11 @@ const ImprovedBMIPrediction = () => {
                 </div>
               </div>
             )}
-            
+
             <div className="d-grid mt-4">
-              <button 
-                type="button" 
-                className="btn btn-primary" 
+              <button
+                type="button"
+                className="btn btn-primary"
                 onClick={nextStep}
               >
                 Continue <i className="bi bi-arrow-right ms-1"></i>
@@ -305,7 +306,7 @@ const ImprovedBMIPrediction = () => {
             </div>
           </>
         );
-        
+
       case 2:
         return (
           <>
@@ -331,7 +332,7 @@ const ImprovedBMIPrediction = () => {
                     />
                     <div className="form-text">Typical range: 7-9 hours</div>
                   </div>
-                  
+
                   <div className="col-md-6 mb-3">
                     <label htmlFor="dailySteps" className="form-label">Daily Steps <span className="text-danger">*</span></label>
                     <input
@@ -349,7 +350,7 @@ const ImprovedBMIPrediction = () => {
                     <div className="form-text">Goal: 10,000 steps per day</div>
                   </div>
                 </div>
-                
+
                 <div className="mb-3">
                   <label htmlFor="qualityOfSleep" className="form-label">Sleep Quality (1-10)</label>
                   <div className="d-flex justify-content-between mb-2">
@@ -376,7 +377,7 @@ const ImprovedBMIPrediction = () => {
                     <span className="fs-5 fw-bold">Selected: {formData.qualityOfSleep}</span>
                   </div>
                 </div>
-                
+
                 <div className="mb-3">
                   <label htmlFor="physicalActivityLevel" className="form-label">Physical Activity Level (0-100)</label>
                   <div className="d-flex justify-content-between mb-2">
@@ -405,18 +406,18 @@ const ImprovedBMIPrediction = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="d-flex justify-content-between mt-4">
-              <button 
-                type="button" 
-                className="btn btn-outline-secondary" 
+              <button
+                type="button"
+                className="btn btn-outline-secondary"
                 onClick={prevStep}
               >
                 <i className="bi bi-arrow-left me-1"></i> Back
               </button>
-              <button 
-                type="button" 
-                className="btn btn-primary" 
+              <button
+                type="button"
+                className="btn btn-primary"
                 onClick={nextStep}
               >
                 Continue <i className="bi bi-arrow-right ms-1"></i>
@@ -424,7 +425,7 @@ const ImprovedBMIPrediction = () => {
             </div>
           </>
         );
-        
+
       case 3:
         return (
           <>
@@ -449,7 +450,7 @@ const ImprovedBMIPrediction = () => {
                     />
                     <div className="form-text">Normal: less than 120</div>
                   </div>
-                  
+
                   <div className="col-md-6 mb-3">
                     <label htmlFor="bloodPressure.diastolic" className="form-label">Diastolic BP <span className="text-danger">*</span></label>
                     <input
@@ -467,7 +468,7 @@ const ImprovedBMIPrediction = () => {
                     <div className="form-text">Normal: less than 80</div>
                   </div>
                 </div>
-                
+
                 <div className="row">
                   <div className="col-md-6 mb-3">
                     <label htmlFor="heartRate" className="form-label">Resting Heart Rate (bpm) <span className="text-danger">*</span></label>
@@ -485,7 +486,7 @@ const ImprovedBMIPrediction = () => {
                     />
                     <div className="form-text">Normal: 60-100 bpm</div>
                   </div>
-                  
+
                   <div className="col-md-6 mb-3">
                     <label htmlFor="stressLevel" className="form-label">Stress Level (1-10)</label>
                     <input
@@ -509,26 +510,26 @@ const ImprovedBMIPrediction = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="alert alert-info d-flex" role="alert">
               <i className="bi bi-info-circle-fill me-2 fs-5"></i>
               <div>
                 <strong>Your privacy matters to us!</strong>
-                <p className="mb-0">All health data will be processed securely and used only for your personalized BMI analysis. 
-                See our <a href="/privacy-policy" className="alert-link">privacy policy</a> for details.</p>
+                <p className="mb-0">All health data will be processed securely and used only for your personalized BMI analysis.
+                  See our <a href="/privacy-policy" className="alert-link">privacy policy</a> for details.</p>
               </div>
             </div>
-            
+
             <div className="d-flex justify-content-between mt-4">
-              <button 
-                type="button" 
-                className="btn btn-outline-secondary" 
+              <button
+                type="button"
+                className="btn btn-outline-secondary"
                 onClick={prevStep}
               >
                 <i className="bi bi-arrow-left me-1"></i> Back
               </button>
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 className="btn btn-success btn-lg"
                 disabled={loading}
               >
@@ -546,12 +547,12 @@ const ImprovedBMIPrediction = () => {
             </div>
           </>
         );
-        
+
       default:
         return null;
     }
   };
-  
+
   return (
     <div className="container py-5">
       <div className="row">
@@ -564,9 +565,9 @@ const ImprovedBMIPrediction = () => {
                 <div>
                   <strong>Sign in to save your results!</strong>
                   <p className="mb-0">Creating an account allows you to track your BMI progress and access your health history.</p>
-                  <button 
-                    className="btn btn-sm btn-outline-dark mt-2" 
-                    onClick={() => loginWithRedirect()}
+                  <button
+                    className="btn btn-sm btn-outline-dark mt-2"
+                    onClick={() => navigate('/login')}
                   >
                     Sign In / Register
                   </button>
@@ -575,7 +576,7 @@ const ImprovedBMIPrediction = () => {
               <button type="button" className="btn-close" onClick={() => setShowAuthPrompt(false)}></button>
             </div>
           )}
-        
+
           {/* BMI prediction card */}
           <div className="card shadow">
             <div className="card-header bg-success text-white py-3">
@@ -591,12 +592,12 @@ const ImprovedBMIPrediction = () => {
               {/* Progress indicator */}
               <div className="mb-4">
                 <div className="progress" style={{ height: '10px' }}>
-                  <div 
-                    className="progress-bar bg-success" 
-                    role="progressbar" 
+                  <div
+                    className="progress-bar bg-success"
+                    role="progressbar"
                     style={{ width: `${(step / 3) * 100}%` }}
-                    aria-valuenow={step} 
-                    aria-valuemin="1" 
+                    aria-valuenow={step}
+                    aria-valuemin="1"
                     aria-valuemax="3"
                   ></div>
                 </div>
@@ -612,7 +613,7 @@ const ImprovedBMIPrediction = () => {
                   </span>
                 </div>
               </div>
-              
+
               {/* Error message */}
               {error && (
                 <div className="alert alert-danger d-flex align-items-center" role="alert">
@@ -620,14 +621,14 @@ const ImprovedBMIPrediction = () => {
                   <div>{error}</div>
                 </div>
               )}
-              
+
               {/* Form */}
               <form onSubmit={handleSubmit}>
                 {renderStep()}
               </form>
             </div>
           </div>
-          
+
           {/* BMI ranges reference */}
           <div className="row mt-4">
             <div className="col-md-6">
@@ -658,7 +659,7 @@ const ImprovedBMIPrediction = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="col-md-6">
               <div className="card h-100 shadow-sm border-light">
                 <div className="card-body">
@@ -667,15 +668,15 @@ const ImprovedBMIPrediction = () => {
                     Health Disclaimer
                   </h5>
                   <p className="card-text">
-                    This BMI calculator is for informational purposes only and should not replace 
+                    This BMI calculator is for informational purposes only and should not replace
                     professional medical advice, diagnosis, or treatment.
                   </p>
                   <p className="card-text">
-                    BMI is a screening tool and doesn't directly measure body fat or account for 
+                    BMI is a screening tool and doesn't directly measure body fat or account for
                     muscle mass, bone density, or overall body composition.
                   </p>
                   <p className="card-text mb-0">
-                    <strong>Always consult with a healthcare provider</strong> for comprehensive 
+                    <strong>Always consult with a healthcare provider</strong> for comprehensive
                     health assessments and personalized medical advice.
                   </p>
                 </div>

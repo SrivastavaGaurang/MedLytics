@@ -1,7 +1,7 @@
 // components/blogs/MedBlog.jsx
 import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { useAuth0 } from '@auth0/auth0-react';
+import { useAuth } from '../../contexts/useAuth';
 import { getAllBlogs, deleteBlog, getBlogsByTag } from '../../services/blogService';
 import { FaPlus, FaEdit, FaTrash, FaSearch, FaTags, FaClock, FaCalendarAlt, FaBookmark, FaFilter, FaTools, FaTimes, FaWrench, FaUser } from 'react-icons/fa';
 
@@ -17,7 +17,7 @@ const MedBlog = () => {
   const [bookmarkedBlogs, setBookmarkedBlogs] = useState([]);
   const [showBookmarked, setShowBookmarked] = useState(false);
   const [showMaintenanceModal, setShowMaintenanceModal] = useState(true);
-  const { isAuthenticated, user } = useAuth0();
+  const { isAuthenticated, user } = useAuth();
 
   // Fetch all blogs on component mount and handle query params
   useEffect(() => {
@@ -42,11 +42,11 @@ const MedBlog = () => {
       setLoading(true);
       const data = await getAllBlogs();
       setBlogs(data);
-      
+
       // Extract all unique tags
       const tags = data.flatMap(blog => blog.tags || []).filter(Boolean);
       setAllTags([...new Set(tags)]);
-      
+
       setLoading(false);
     } catch (err) {
       setError('Failed to load blogs. Please try again later.');
@@ -75,7 +75,7 @@ const MedBlog = () => {
       try {
         await deleteBlog(id);
         setBlogs(blogs.filter(blog => blog._id !== id));
-        
+
         // Also remove from bookmarks if present
         if (bookmarkedBlogs.includes(id)) {
           const updatedBookmarks = bookmarkedBlogs.filter(bookmarkId => bookmarkId !== id);
@@ -102,10 +102,10 @@ const MedBlog = () => {
   // Handle sorting blogs
   const handleSort = (sortOption) => {
     setSortBy(sortOption);
-    
+
     // Create a sorted copy of the blogs array
     const sortedBlogs = [...blogs];
-    
+
     switch (sortOption) {
       case 'newest':
         sortedBlogs.sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -122,24 +122,24 @@ const MedBlog = () => {
       default:
         break;
     }
-    
+
     setBlogs(sortedBlogs);
   };
 
   // Toggle bookmark for a blog
   const toggleBookmark = (blogId) => {
     let updatedBookmarks;
-    
+
     if (bookmarkedBlogs.includes(blogId)) {
       updatedBookmarks = bookmarkedBlogs.filter(id => id !== blogId);
     } else {
       updatedBookmarks = [...bookmarkedBlogs, blogId];
     }
-    
+
     setBookmarkedBlogs(updatedBookmarks);
     localStorage.setItem('bookmarkedBlogs', JSON.stringify(updatedBookmarks));
   };
-  
+
   // Toggle showing only bookmarked blogs
   const toggleShowBookmarked = () => {
     setShowBookmarked(!showBookmarked);
@@ -166,16 +166,16 @@ const MedBlog = () => {
   const getFilteredBlogs = () => {
     return blogs.filter(blog => {
       // Filter by search term
-      const matchesSearchTerm = blog.title?.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                              blog.content?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                              blog.author?.toLowerCase().includes(searchTerm.toLowerCase());
-      
+      const matchesSearchTerm = blog.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        blog.content?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        blog.author?.toLowerCase().includes(searchTerm.toLowerCase());
+
       // Filter by tag
       const matchesTag = !filterTag || (blog.tags && blog.tags.includes(filterTag));
-      
+
       // Filter by bookmarks
       const matchesBookmark = !showBookmarked || (bookmarkedBlogs.includes(blog._id));
-      
+
       return matchesSearchTerm && matchesTag && matchesBookmark;
     });
   };
@@ -186,9 +186,9 @@ const MedBlog = () => {
     <div className="med-blog-container py-5">
       {/* Maintenance Modal */}
       {showMaintenanceModal && (
-        <div 
+        <div
           className="modal d-block"
-          style={{ 
+          style={{
             backgroundColor: 'rgba(0, 0, 0, 0.8)',
             backdropFilter: 'blur(8px)',
             zIndex: 9999
@@ -204,14 +204,14 @@ const MedBlog = () => {
                     style={{ filter: 'invert(1)' }}
                     onClick={() => setShowMaintenanceModal(false)}
                   ></button>
-                  
+
                   <div className="mb-4">
-                    <div 
+                    <div
                       className="mx-auto mb-3 d-flex align-items-center justify-content-center"
-                      style={{ 
-                        width: '80px', 
-                        height: '80px', 
-                        background: 'rgba(255,255,255,0.2)', 
+                      style={{
+                        width: '80px',
+                        height: '80px',
+                        background: 'rgba(255,255,255,0.2)',
                         borderRadius: '50%',
                         backdropFilter: 'blur(10px)'
                       }}
@@ -220,7 +220,7 @@ const MedBlog = () => {
                     </div>
                     <h2 className="text-white mb-0 fw-bold">Under Maintenance</h2>
                   </div>
-                  
+
                   <div className="text-white-50 mb-4">
                     <p className="mb-3 fs-5">
                       We're currently upgrading our blog platform to serve you better!
@@ -229,7 +229,7 @@ const MedBlog = () => {
                       Our team is working hard to bring you an enhanced reading experience with new features and improved performance.
                     </p>
                   </div>
-                  
+
                   <div className="row text-center mb-4">
                     <div className="col-md-4">
                       <div className="p-3">
@@ -259,22 +259,22 @@ const MedBlog = () => {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="mb-4">
                     <div className="progress mb-2" style={{ height: '6px', background: 'rgba(255,255,255,0.2)' }}>
-                      <div 
-                        className="progress-bar" 
-                        style={{ 
-                          width: '75%', 
+                      <div
+                        className="progress-bar"
+                        style={{
+                          width: '75%',
                           background: 'linear-gradient(90deg, #00d4ff, #090979)'
                         }}
                       ></div>
                     </div>
                     <small className="text-white-50">75% Complete</small>
                   </div>
-                  
+
                   <div className="d-flex justify-content-center gap-3">
-                    <button 
+                    <button
                       className="btn btn-light px-4 py-2"
                       onClick={() => setShowMaintenanceModal(false)}
                     >
@@ -284,7 +284,7 @@ const MedBlog = () => {
                       Back to Home
                     </Link>
                   </div>
-                  
+
                   <div className="mt-4">
                     <p className="text-white-50 small mb-0">
                       Expected completion: <strong className="text-white">Soon</strong>
@@ -311,7 +311,7 @@ const MedBlog = () => {
                   <FaPlus className="me-2" /> New Article
                 </Link>
               )}
-              <button 
+              <button
                 className={`btn ${showBookmarked ? 'btn-success' : 'btn-outline-secondary'}`}
                 onClick={toggleShowBookmarked}
               >
@@ -340,14 +340,14 @@ const MedBlog = () => {
                   />
                 </div>
               </div>
-              
+
               {/* Tag Filter */}
               <div className="col-md-4">
                 <div className="input-group">
                   <span className="input-group-text bg-white">
                     <FaTags />
                   </span>
-                  <select 
+                  <select
                     className="form-select"
                     value={filterTag}
                     onChange={(e) => handleTagFilter(e.target.value)}
@@ -359,14 +359,14 @@ const MedBlog = () => {
                   </select>
                 </div>
               </div>
-              
+
               {/* Sort By */}
               <div className="col-md-3">
                 <div className="input-group">
                   <span className="input-group-text bg-white">
                     <FaFilter />
                   </span>
-                  <select 
+                  <select
                     className="form-select"
                     value={sortBy}
                     onChange={(e) => handleSort(e.target.value)}
@@ -388,7 +388,7 @@ const MedBlog = () => {
             {error}
           </div>
         )}
-        
+
         {/* Loading State */}
         {loading ? (
           <div className="text-center my-5">
@@ -402,15 +402,15 @@ const MedBlog = () => {
             {/* Results count */}
             <div className="d-flex justify-content-between align-items-center mb-4">
               <p className="text-muted mb-0">
-                {filteredBlogs.length === 0 
-                  ? 'No articles found' 
+                {filteredBlogs.length === 0
+                  ? 'No articles found'
                   : `Showing ${filteredBlogs.length} article${filteredBlogs.length !== 1 ? 's' : ''}`}
                 {filterTag && ` in "${filterTag}"`}
                 {showBookmarked && ' from your bookmarks'}
               </p>
-              
+
               {filterTag && (
-                <button 
+                <button
                   className="btn btn-sm btn-outline-secondary"
                   onClick={() => handleTagFilter('')}
                 >
@@ -425,8 +425,8 @@ const MedBlog = () => {
                 <div className="card border-0 shadow-sm">
                   <div className="row g-0">
                     <div className="col-lg-6">
-                      <img 
-                        src={filteredBlogs[0].image || "https://via.placeholder.com/800x600?text=Medical+Blog"} 
+                      <img
+                        src={filteredBlogs[0].image || "https://via.placeholder.com/800x600?text=Medical+Blog"}
                         className="img-fluid rounded-start h-100"
                         alt={filteredBlogs[0].title}
                         style={{ objectFit: "cover" }}
@@ -436,8 +436,8 @@ const MedBlog = () => {
                       <div className="card-body p-4 h-100 d-flex flex-column">
                         <div>
                           {filteredBlogs[0].tags && filteredBlogs[0].tags.map((tag, idx) => (
-                            <span 
-                              key={idx} 
+                            <span
+                              key={idx}
                               className="badge bg-primary-subtle text-primary me-2 mb-2 clickable"
                               onClick={() => handleTagFilter(tag)}
                               style={{ cursor: 'pointer' }}
@@ -465,8 +465,8 @@ const MedBlog = () => {
                           <Link to={`/blog/${filteredBlogs[0]._id}`} className="btn btn-primary">
                             Read Full Article
                           </Link>
-                          
-                          <button 
+
+                          <button
                             className={`btn btn-sm ${bookmarkedBlogs.includes(filteredBlogs[0]._id) ? 'btn-warning' : 'btn-outline-secondary'}`}
                             onClick={() => toggleBookmark(filteredBlogs[0]._id)}
                             aria-label={bookmarkedBlogs.includes(filteredBlogs[0]._id) ? "Remove bookmark" : "Add bookmark"}
@@ -474,13 +474,13 @@ const MedBlog = () => {
                             <FaBookmark />
                           </button>
                         </div>
-                        
+
                         {isAdmin && (
                           <div className="mt-3">
                             <Link to={`/admin/blog/edit/${filteredBlogs[0]._id}`} className="btn btn-sm btn-outline-secondary me-2">
                               <FaEdit className="me-1" /> Edit
                             </Link>
-                            <button 
+                            <button
                               className="btn btn-sm btn-outline-danger"
                               onClick={() => handleDelete(filteredBlogs[0]._id)}
                             >
@@ -494,13 +494,13 @@ const MedBlog = () => {
                 </div>
               </div>
             )}
-            
+
             {/* Blog Grid */}
             <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
               {filteredBlogs.slice(1).map((blog) => (
                 <div className="col" key={blog._id}>
                   <div className="card h-100 border-0 shadow-sm hover-effect">
-                    <img 
+                    <img
                       src={blog.image || "https://via.placeholder.com/400x200?text=Medical+Blog"}
                       className="card-img-top"
                       alt={blog.title}
@@ -509,8 +509,8 @@ const MedBlog = () => {
                     <div className="card-body">
                       <div className="mb-2">
                         {blog.tags && blog.tags.map((tag, idx) => (
-                          <span 
-                            key={idx} 
+                          <span
+                            key={idx}
                             className="badge bg-primary-subtle text-primary me-1 mb-1"
                             onClick={() => handleTagFilter(tag)}
                             style={{ cursor: 'pointer' }}
@@ -541,22 +541,22 @@ const MedBlog = () => {
                       <Link to={`/blog/${blog._id}`} className="btn btn-sm btn-outline-primary">
                         Read More
                       </Link>
-                      
+
                       <div className="d-flex gap-2">
-                        <button 
+                        <button
                           className={`btn btn-sm ${bookmarkedBlogs.includes(blog._id) ? 'btn-warning' : 'btn-outline-secondary'}`}
                           onClick={() => toggleBookmark(blog._id)}
                           aria-label={bookmarkedBlogs.includes(blog._id) ? "Remove bookmark" : "Add bookmark"}
                         >
                           <FaBookmark />
                         </button>
-                        
+
                         {isAdmin && (
                           <>
                             <Link to={`/admin/blog/edit/${blog._id}`} className="btn btn-sm btn-outline-secondary">
                               <FaEdit />
                             </Link>
-                            <button 
+                            <button
                               className="btn btn-sm btn-outline-danger"
                               onClick={() => handleDelete(blog._id)}
                             >
@@ -570,21 +570,21 @@ const MedBlog = () => {
                 </div>
               ))}
             </div>
-            
+
             {/* Empty State */}
             {filteredBlogs.length === 0 && (
               <div className="text-center my-5 py-5">
                 <div className="display-6 text-muted mb-4">No articles found</div>
                 <p className="lead">
-                  {showBookmarked 
-                    ? "You haven't bookmarked any articles yet." 
-                    : (filterTag 
-                      ? `No articles match the "${filterTag}" category${searchTerm ? ' and search term' : ''}.` 
+                  {showBookmarked
+                    ? "You haven't bookmarked any articles yet."
+                    : (filterTag
+                      ? `No articles match the "${filterTag}" category${searchTerm ? ' and search term' : ''}.`
                       : "Try adjusting your search or filter criteria.")}
                 </p>
                 <div className="mt-4">
                   {showBookmarked && (
-                    <button 
+                    <button
                       className="btn btn-primary me-3"
                       onClick={() => setShowBookmarked(false)}
                     >
@@ -592,7 +592,7 @@ const MedBlog = () => {
                     </button>
                   )}
                   {filterTag && (
-                    <button 
+                    <button
                       className="btn btn-outline-secondary"
                       onClick={() => handleTagFilter('')}
                     >

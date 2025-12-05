@@ -1,91 +1,99 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn, FaEnvelope, FaPhone, FaMapMarkerAlt, FaHeartbeat } from 'react-icons/fa';
 
 const Footer = () => {
   return (
-    <footer className=" text-white pt-5 pb-4" style={{ backgroundColor: '#2c3e50' }}>
+    <footer className="text-white pt-5 pb-2" style={{ background: 'linear-gradient(to right, #1a2980, #26d0ce)' }}>
       <div className="container">
-        <div className="row">
+        <div className="row g-4">
           {/* About Us Section */}
-          <div className="col-md-4 mb-4">
-            <h5 className="mb-3" style={{ color: '#ecf0f1' }}>About MedLytics</h5>
-            <p className="text-muted">
-              AI-powered health analytics platform providing personalized wellness insights through advanced machine learning algorithms. We help you understand your health patterns and make informed decisions about your wellbeing.
+          <div className="col-lg-4 col-md-6 mb-4">
+            <div className="d-flex align-items-center gap-2 mb-3">
+              <div className="bg-white text-primary rounded-circle d-flex align-items-center justify-content-center"
+                style={{ width: '32px', height: '32px' }}>
+                <span className="fw-bold">M</span>
+              </div>
+              <h4 className="mb-0 fw-bold" style={{ fontFamily: "'Outfit', sans-serif" }}>MedLytics</h4>
+            </div>
+            <p className="text-white-50 mb-4">
+              AI-powered health analytics platform providing personalized wellness insights through advanced machine learning algorithms. We help you understand your health patterns and make informed decisions.
             </p>
-          </div>
-
-          {/* Our Services Section */}
-          <div className="col-md-2 mb-4">
-            <h5 className="mb-3" style={{ color: '#ecf0f1' }}>Our Services</h5>
-            <ul className="list-unstyled">
-              <li><a href="/sleep-disorder" className="text-muted text-decoration-none">Sleep Disorder Analysis</a></li>
-              <li><a href="/anxiety-prediction" className="text-muted text-decoration-none">Anxiety Prediction</a></li>
-              <li><a href="/depression-prediction" className="text-muted text-decoration-none">Depression Prediction</a></li>
-              <li><a href="/bmi-prediction" className="text-muted text-decoration-none">BMI Analysis</a></li>
-            </ul>
-          </div>
-
-          {/* Contact Us Section */}
-          <div className="col-md-3 mb-4">
-            <h5 className="mb-3" style={{ color: '#ecf0f1' }}>Contact Us</h5>
-            <ul className="list-unstyled">
-              <li className="text-muted mb-2">
-                <i className="bi bi-geo-alt me-2"></i>
-                Law Gate, Phagwara
-              </li>
-              <li className="text-muted mb-2">
-                <i className="bi bi-geo me-2"></i>
-                Punjab, India
-              </li>
-              <li className="text-muted mb-2">
-                <i className="bi bi-envelope me-2"></i>
-                gaurangsrivastava@gmail.com
-              </li>
-              <li className="text-muted mb-2">
-                <i className="bi bi-phone me-2"></i>
-                +91 6389697117
-              </li>
-            </ul>
-            <div className="mt-3">
-              <small className="text-muted">24/7 Support Available</small>
+            <div className="d-flex gap-3">
+              <a href="#" className="btn btn-outline-light btn-sm rounded-circle d-flex align-items-center justify-content-center" style={{ width: '36px', height: '36px' }}>
+                <FaFacebookF />
+              </a>
+              <a href="#" className="btn btn-outline-light btn-sm rounded-circle d-flex align-items-center justify-content-center" style={{ width: '36px', height: '36px' }}>
+                <FaTwitter />
+              </a>
+              <a href="#" className="btn btn-outline-light btn-sm rounded-circle d-flex align-items-center justify-content-center" style={{ width: '36px', height: '36px' }}>
+                <FaInstagram />
+              </a>
+              <a href="#" className="btn btn-outline-light btn-sm rounded-circle d-flex align-items-center justify-content-center" style={{ width: '36px', height: '36px' }}>
+                <FaLinkedinIn />
+              </a>
             </div>
           </div>
 
-          {/* Newsletter Section */}
-          <div className="col-md-3 mb-4">
-            <h5 className="mb-3" style={{ color: '#ecf0f1' }}>Health Insights Newsletter</h5>
-            <p className="text-muted small mb-3">
-              Get the latest health tips and AI-powered wellness insights delivered to your inbox.
-            </p>
-            <form>
-              <div className="mb-3">
-                <input
-                  type="email"
-                  className="form-control"
-                  placeholder="Enter your email"
-                  required
-                />
-              </div>
-              <button type="submit" className="btn btn-primary w-100" style={{ backgroundColor: '#3498db', border: 'none' }}>
-                Subscribe to Health Tips
-              </button>
-            </form>
+          {/* Quick Links */}
+          <div className="col-lg-2 col-md-6 mb-4">
+            <h5 className="mb-3 fw-bold">Quick Links</h5>
+            <ul className="list-unstyled d-flex flex-column gap-2">
+              <li><Link to="/" className="text-white-50 text-decoration-none hover-text-white transition-all">Home</Link></li>
+              <li><Link to="/about" className="text-white-50 text-decoration-none hover-text-white transition-all">About Us</Link></li>
+              <li><Link to="/doctors" className="text-white-50 text-decoration-none hover-text-white transition-all">Doctors</Link></li>
+              <li><Link to="/blog" className="text-white-50 text-decoration-none hover-text-white transition-all">Health Blog</Link></li>
+              <li><Link to="/contact" className="text-white-50 text-decoration-none hover-text-white transition-all">Contact</Link></li>
+            </ul>
+          </div>
+
+          {/* Services */}
+          <div className="col-lg-3 col-md-6 mb-4">
+            <h5 className="mb-3 fw-bold">Our Services</h5>
+            <ul className="list-unstyled d-flex flex-column gap-2">
+              <li><Link to="/sleep-disorder" className="text-white-50 text-decoration-none hover-text-white transition-all">Sleep Analysis</Link></li>
+              <li><Link to="/anxiety-prediction" className="text-white-50 text-decoration-none hover-text-white transition-all">Anxiety Prediction</Link></li>
+              <li><Link to="/depression-prediction" className="text-white-50 text-decoration-none hover-text-white transition-all">Depression Prediction</Link></li>
+              <li><Link to="/bmi-prediction" className="text-white-50 text-decoration-none hover-text-white transition-all">BMI Calculator</Link></li>
+            </ul>
+          </div>
+
+          {/* Contact Info */}
+          <div className="col-lg-3 col-md-6 mb-4">
+            <h5 className="mb-3 fw-bold">Contact Us</h5>
+            <ul className="list-unstyled d-flex flex-column gap-3">
+              <li className="d-flex gap-3 text-white-50">
+                <FaMapMarkerAlt className="mt-1 flex-shrink-0" />
+                <span>Law Gate, Phagwara<br />Punjab, India</span>
+              </li>
+              <li className="d-flex gap-3 text-white-50">
+                <FaEnvelope className="mt-1 flex-shrink-0" />
+                <span>gaurangsrivastava@gmail.com</span>
+              </li>
+              <li className="d-flex gap-3 text-white-50">
+                <FaPhone className="mt-1 flex-shrink-0" />
+                <span>+91 6389697117</span>
+              </li>
+            </ul>
           </div>
         </div>
-        
-        <hr className="my-4" style={{ borderColor: '#34495e' }} />
-        
+
+        <hr className="my-4 border-white-50" />
+
         {/* Bottom Footer */}
-        <div className="row align-items-center">
-          <div className="col-md-6">
-            <p className="text-muted mb-0">
-              &copy; 2025 MedLytics. All rights reserved. | Privacy-focused health analytics
+        <div className="row align-items-center pb-3">
+          <div className="col-md-6 text-center text-md-start mb-3 mb-md-0">
+            <p className="text-white-50 mb-0 small">
+              &copy; {new Date().getFullYear()} MedLytics. All rights reserved.
             </p>
           </div>
-          <div className="col-md-6 text-md-end">
-            <div className="d-flex justify-content-md-end justify-content-center gap-3 mt-3 mt-md-0">
-              <span className="badge bg-success">98% Accuracy</span>
-              <span className="badge bg-info">10k+ Users</span>
-              <span className="badge bg-primary">AI-Powered</span>
+          <div className="col-md-6 text-center text-md-end">
+            <div className="d-flex justify-content-center justify-content-md-end gap-3">
+              <span className="badge bg-white/10 text-white border border-white/20 d-flex align-items-center gap-1">
+                <FaHeartbeat className="text-danger" /> AI Powered
+              </span>
+              <span className="badge bg-white/10 text-white border border-white/20">Privacy Focused</span>
+              <span className="badge bg-white/10 text-white border border-white/20">Secure</span>
             </div>
           </div>
         </div>

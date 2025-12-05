@@ -1,19 +1,16 @@
+// src/pages/DepressionResult.jsx
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { getDepressionResult } from '../services/depressionService';
-import { 
-  FaExclamationTriangle, 
-  FaCheckCircle, 
-  FaInfoCircle, 
-  FaArrowLeft, 
-  FaUser, 
-  FaCalendarAlt,
-  FaChartLine,
-  FaLightbulb
-} from 'react-icons/fa';
+import ResultLayout from '../components/results/ResultLayout';
+import SeverityGauge from '../components/results/SeverityGauge';
+import InsightCard from '../components/results/InsightCard';
+import RecommendationList from '../components/results/RecommendationList';
+import DisclaimerSection from '../components/results/DisclaimerSection';
 
 const DepressionResults = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -21,8 +18,6 @@ const DepressionResults = () => {
   useEffect(() => {
     const fetchResults = async () => {
       try {
-        console.log('Fetching results for ID:', id);
-        
         if (!id) {
           setError('No analysis ID provided.');
           setLoading(false);
@@ -30,7 +25,6 @@ const DepressionResults = () => {
         }
 
         const data = await getDepressionResult(id);
-        console.log('Received depression result data:', data);
         setResult(data);
       } catch (err) {
         console.error('Error fetching results:', err);
@@ -43,247 +37,146 @@ const DepressionResults = () => {
     fetchResults();
   }, [id]);
 
-  const renderRiskBadge = (level) => {
-    const badges = {
-      low: { 
-        bg: 'success', 
-        icon: <FaCheckCircle className="me-2" />, 
-        text: 'Low Risk',
-        textColor: 'text-success'
-      },
-      moderate: { 
-        bg: 'warning', 
-        icon: <FaInfoCircle className="me-2" />, 
-        text: 'Moderate Risk',
-        textColor: 'text-warning'
-      },
-      high: { 
-        bg: 'danger', 
-        icon: <FaExclamationTriangle className="me-2" />, 
-        text: 'High Risk',
-        textColor: 'text-danger'
-      }
-    };
-
-    const badge = badges[level] || badges.low;
-
-    return (
-      <div className="text-center mb-4">
-        <div className={`alert alert-${badge.bg} d-inline-block px-4 py-3`}>
-          <h4 className="mb-0">
-            {badge.icon}
-            {badge.text}
-          </h4>
-        </div>
-      </div>
-    );
+  // Map "Low", "Moderate", "High" risk levels to severity gauge values
+  const getSeverityScore = (riskLevel) => {
+    switch (riskLevel?.toLowerCase()) {
+      case 'low': return 20;
+      case 'moderate': return 55;
+      case 'high': return 85;
+      default: return 0;
+    }
   };
 
-  const renderFactorBadge = (impact) => {
-    const impacts = {
-      High: 'danger',
-      Moderate: 'warning',
-      Low: 'info'
-    };
-    return `badge bg-${impacts[impact] || 'secondary'}`;
+  // Map risk levels to standard severity labels
+  const getSeverityLabel = (riskLevel) => {
+    switch (riskLevel?.toLowerCase()) {
+      case 'low': return 'Mild';
+      case 'moderate': return 'Moderate';
+      case 'high': return 'Severe';
+      default: return 'Unknown';
+    }
   };
 
-  if (loading) {
+  const getFactorIcon = (factorName) => {
+    const name = factorName?.toLowerCase() || '';
+    if (name.includes('sleep')) return 'bi-moon-stars';
+    if (name.includes('stress') || name.includes('worry')) return 'bi-lightning';
+    if (name.includes('diet') || name.includes('eating')) return 'bi-egg-fried';
+    if (name.includes('activity') || name.includes('exercise')) return 'bi-person-walking';
+    if (name.includes('social')) return 'bi-people';
+    if (name.includes('mood') || name.includes('sadness')) return 'bi-emoji-frown';
+    if (name.includes('suicid')) return 'bi-exclamation-diamond';
+    return 'bi-activity';
+  };
+
+  if (loading || error) {
     return (
-      <div className="container py-5">
-        <div className="row justify-content-center">
-          <div className="col-md-6 text-center">
-            <div className="spinner-border text-primary mb-3" role="status" style={{width: '3rem', height: '3rem'}}>
-              <span className="visually-hidden">Loading...</span>
-            </div>
-            <h4>Analyzing Your Results...</h4>
-            <p className="text-muted">Please wait while we fetch your depression analysis results.</p>
-          </div>
-        </div>
-      </div>
+      <ResultLayout
+        loading={loading}
+        error={error}
+        retakePath="/depression-prediction"
+      />
     );
   }
 
-  if (error) {
-    return (
-      <div className="container py-5">
-        <div className="row justify-content-center">
-          <div className="col-md-8">
-            <div className="alert alert-danger d-flex align-items-center" role="alert">
-              <FaExclamationTriangle className="me-3" size={24} />
-              <div>
-                <h5 className="alert-heading mb-1">Unable to Load Results</h5>
-                <p className="mb-0">{error}</p>
-              </div>
-            </div>
-            <div className="text-center mt-4">
-              <Link to="/depression-prediction" className="btn btn-primary btn-lg">
-                <FaArrowLeft className="me-2" /> Take New Assessment
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!result) {
-    return (
-      <div className="container py-5">
-        <div className="row justify-content-center">
-          <div className="col-md-8">
-            <div className="alert alert-warning d-flex align-items-center" role="alert">
-              <FaInfoCircle className="me-3" size={24} />
-              <div>
-                <h5 className="alert-heading mb-1">No Results Found</h5>
-                <p className="mb-0">The analysis results could not be found. This may be due to an invalid ID or expired results.</p>
-              </div>
-            </div>
-            <div className="text-center mt-4">
-              <Link to="/depression-prediction" className="btn btn-primary btn-lg">
-                <FaArrowLeft className="me-2" /> Take New Assessment
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const riskLevel = result?.result?.riskLevel;
+  const severityLabel = getSeverityLabel(riskLevel);
 
   return (
-    <div className="container py-5">
-      <div className="row justify-content-center">
-        <div className="col-lg-10">
-          {/* Main Results Card */}
-          <div className="card shadow-lg mb-4">
-            <div className="card-header bg-primary text-white py-3">
-              <div className="d-flex align-items-center">
-                <FaChartLine className="me-3" size={24} />
-                <h2 className="mb-0">Depression Risk Analysis Results</h2>
-              </div>
-            </div>
-            <div className="card-body p-4">
-              {/* Risk Assessment Section */}
-              {result.result && renderRiskBadge(result.result.riskLevel)}
-              
-              <div className="row mb-4">
-                <div className="col-md-6">
-                  <div className="d-flex align-items-center text-muted mb-2">
-                    <FaCalendarAlt className="me-2" />
-                    <span>Analysis Date: {new Date(result.date).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
-                    })}</span>
-                  </div>
+    <ResultLayout
+      title="Depression Risk Analysis"
+      date={result.date}
+      onRetake={() => navigate('/depression-prediction')}
+    >
+      <div className="row g-4">
+        {/* Severity Gauge Section */}
+        <div className="col-md-5 col-lg-4">
+          <SeverityGauge
+            score={getSeverityScore(riskLevel)}
+            maxScore={100}
+            label="Depression Risk Level"
+            severity={severityLabel}
+          />
+
+          <div className="card mt-4 border-0 shadow-sm">
+            <div className="card-body">
+              <h5 className="card-title h6 text-muted mb-3">Assessment Summary</h5>
+              <div className="d-flex align-items-center mb-3">
+                <div className="bg-light rounded-circle p-2 me-3">
+                  <i className="bi bi-person text-primary"></i>
                 </div>
-                <div className="col-md-6">
-                  <div className="d-flex align-items-center text-muted mb-2">
-                    <FaUser className="me-2" />
-                    <span>Age: {result.age} | Gender: {result.gender}</span>
-                  </div>
+                <div>
+                  <small className="text-muted d-block">Profile</small>
+                  <strong>{result.age} years • {result.gender}</strong>
                 </div>
               </div>
 
-              {/* Depression Type Section */}
-              {result.result && result.result.depressionType && (
-                <div className="mb-4">
-                  <h4 className="text-primary mb-3">
-                    <FaInfoCircle className="me-2" />
-                    Assessment Summary
-                  </h4>
-                  <div className="card border-primary">
-                    <div className="card-body">
-                      <h5 className="card-title text-primary">{result.result.depressionType}</h5>
-                      <p className="card-text">{result.result.depressionTypeDescription}</p>
-                    </div>
-                  </div>
+              {result.result?.depressionType && (
+                <div className="mt-3 pt-3 border-top">
+                  <h6 className="text-primary mb-2">{result.result.depressionType}</h6>
+                  <p className="small text-muted mb-0">
+                    {result.result.depressionTypeDescription}
+                  </p>
                 </div>
               )}
-
-              {/* Key Contributing Factors */}
-              {result.result && result.result.keyFactors && result.result.keyFactors.length > 0 && (
-                <div className="mb-4">
-                  <h4 className="text-primary mb-3">
-                    <FaExclamationTriangle className="me-2" />
-                    Key Contributing Factors
-                  </h4>
-                  <div className="row">
-                    {result.result.keyFactors.map((factor, index) => (
-                      <div key={index} className="col-md-6 mb-3">
-                        <div className="card h-100">
-                          <div className="card-body">
-                            <div className="d-flex justify-content-between align-items-start">
-                              <h6 className="card-title mb-1">{factor.name}</h6>
-                              <span className={renderFactorBadge(factor.impact)}>
-                                {factor.impact} Impact
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Recommendations Section */}
-              {result.result && result.result.recommendations && result.result.recommendations.length > 0 && (
-                <div className="mb-4">
-                  <h4 className="text-success mb-3">
-                    <FaLightbulb className="me-2" />
-                    Personalized Recommendations
-                  </h4>
-                  <div className="card border-success">
-                    <div className="card-body">
-                      <div className="row">
-                        {result.result.recommendations.map((recommendation, index) => (
-                          <div key={index} className="col-12 mb-3">
-                            <div className="d-flex align-items-start">
-                              <FaCheckCircle className="text-success me-3 mt-1 flex-shrink-0" />
-                              <p className="mb-0">{recommendation}</p>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Important Disclaimer */}
-              <div className="alert alert-info border-info" role="alert">
-                <h5 className="alert-heading d-flex align-items-center">
-                  <FaInfoCircle className="me-2" />
-                  Important Medical Disclaimer
-                </h5>
-                <p className="mb-2">
-                  This assessment is designed for informational and educational purposes only. It is not intended to be a substitute 
-                  for professional medical advice, diagnosis, or treatment. Always seek the advice of a qualified healthcare 
-                  provider with any questions you may have regarding a medical condition.
-                </p>
-                <hr />
-                <p className="mb-0">
-                  <strong>Crisis Resources:</strong> If you're experiencing a mental health emergency or having thoughts of harming yourself, 
-                  please call the National Suicide Prevention Lifeline at <strong>988</strong>, or text <strong>HOME</strong> to <strong>741741</strong> to 
-                  connect with a Crisis Counselor immediately.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="d-flex flex-column flex-md-row justify-content-between gap-3">
-            <Link to="/depression-prediction" className="btn btn-primary btn-lg">
-              <FaArrowLeft className="me-2" /> Take New Assessment
-            </Link>
-            <div className="d-flex gap-2">
-             
             </div>
           </div>
         </div>
+
+        {/* Key Factors & Insights */}
+        <div className="col-md-7 col-lg-8">
+          <h3 className="h4 mb-4">Key Contributing Factors</h3>
+          <div className="row g-3">
+            {result.result?.keyFactors && result.result.keyFactors.length > 0 ? (
+              result.result.keyFactors.map((factor, idx) => (
+                <div key={idx} className="col-sm-6">
+                  <InsightCard
+                    title={factor.name}
+                    impact={factor.impact}
+                    icon={getFactorIcon(factor.name)}
+                    delay={idx * 0.1}
+                  />
+                </div>
+              ))
+            ) : (
+              <div className="col-12">
+                <div className="alert alert-light border">
+                  <i className="bi bi-check-circle text-success me-2"></i>
+                  No significant contributing factors identified.
+                </div>
+              </div>
+            )}
+          </div>
+
+          <RecommendationList items={result.result?.recommendations} />
+
+          {/* Crisis Resources for High Risk */}
+          {(riskLevel === 'High' || riskLevel === 'high') && (
+            <div className="alert alert-danger mt-4 shadow-sm border-danger">
+              <div className="d-flex">
+                <i className="bi bi-life-preserver fs-1 me-3 text-danger"></i>
+                <div>
+                  <h5 className="alert-heading h6 fw-bold">Immediate Support Available</h5>
+                  <p className="mb-2 small">
+                    If you are feeling overwhelmed or hopeless, you are not alone. Support is available right now.
+                  </p>
+                  <div className="d-flex gap-2 flex-wrap">
+                    <a href="tel:988" className="btn btn-sm btn-danger">
+                      <i className="bi bi-telephone-fill me-2"></i> Call 988
+                    </a>
+                    <a href="sms:741741" className="btn btn-sm btn-outline-danger">
+                      Text HOME to 741741
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+
+      <DisclaimerSection />
+    </ResultLayout>
   );
 };
 

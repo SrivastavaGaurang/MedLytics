@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { getBMIHistory } from '../services/bmiService';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
@@ -288,7 +288,7 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="d-flex justify-content-center align-items-center vh-100">
+      <div className="min-vh-100 d-flex justify-content-center align-items-center bg-light">
         <div className="spinner-border text-primary" role="status">
           <span className="visually-hidden">Loading...</span>
         </div>
@@ -298,567 +298,434 @@ const Dashboard = () => {
 
   if (error) {
     return (
-      <div className="container py-4">
-        <div className="alert alert-danger" role="alert">
-          {error}
-        </div>
-        <div className="text-center mt-4">
-          <Link to="/login" className="btn btn-primary">Log In</Link>
+      <div className="min-vh-100 d-flex justify-content-center align-items-center bg-light">
+        <div className="glass-card p-5 text-center max-w-md">
+          <div className="text-danger mb-3">
+            <i className="bi bi-exclamation-circle fs-1"></i>
+          </div>
+          <h3 className="h4 mb-3">Authentication Error</h3>
+          <p className="text-muted mb-4">{error}</p>
+          <Link to="/login" className="btn btn-primary px-4 py-2 rounded-pill">
+            Log In
+          </Link>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container py-5">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        {/* Header Section */}
-        <div className="row mb-4 align-items-center">
-          <div className="col-lg-8">
-            <h1 className="display-5 fw-bold mb-2">Welcome, {user?.name}!</h1>
-            <p className="lead text-muted">Your health metrics at a glance</p>
-            <motion.div
-              initial={{ scale: 0.95 }}
-              animate={{ scale: 1 }}
-              className={`fs-5 fw-bold ${healthStatus.color} d-flex align-items-center mt-2`}
-            >
-              <i className={`bi ${healthStatus.status === 'good' ? 'bi-check-circle-fill' : 
-                                  healthStatus.status === 'caution' ? 'bi-exclamation-triangle-fill' : 
-                                  healthStatus.status === 'attention' ? 'bi-exclamation-circle-fill' : 
-                                  'bi-question-circle-fill'} me-2`}></i>
-              Health Status: {healthStatus.message}
-            </motion.div>
-          </div>
-          <div className="col-lg-4 text-lg-end mt-3 mt-lg-0">
-            <Link to="/nutritional-prediction" className="btn btn-primary me-2">
-              <i className="bi bi-clipboard2-pulse me-1"></i> BMI Analysis
-            </Link>
-            <Link to="/profile" className="btn btn-outline-secondary">
-              <i className="bi bi-person me-1"></i> Profile
-            </Link>
-          </div>
-        </div>
+    <div className="min-vh-100 py-5 position-relative overflow-hidden bg-light">
+      {/* Background Elements */}
+      <div className="position-absolute top-0 start-0 w-100 h-100 z-n1 overflow-hidden">
+        <div className="position-absolute top-0 end-0 bg-primary opacity-10 rounded-circle blur-3xl" style={{ width: '600px', height: '600px', transform: 'translate(30%, -30%)' }}></div>
+        <div className="position-absolute bottom-0 start-0 bg-secondary opacity-10 rounded-circle blur-3xl" style={{ width: '500px', height: '500px', transform: 'translate(-30%, 30%)' }}></div>
+      </div>
 
-        {/* Dashboard Tabs */}
-        <ul className="nav nav-tabs mb-4">
-          {['overview', 'bmi', 'sleep', 'anxiety', 'recommendations'].map(tab => (
-            <li key={tab} className="nav-item">
-              <button
-                className={`nav-link ${activeTab === tab ? 'active' : ''}`}
-                onClick={() => setActiveTab(tab)}
+      <div className="container position-relative z-1">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          {/* Header Section */}
+          <div className="glass-card p-4 mb-5 border-0">
+            <div className="row align-items-center">
+              <div className="col-lg-8">
+                <h1 className="display-6 fw-bold mb-2 text-gradient-primary">Welcome back, {user?.name}!</h1>
+                <p className="lead text-muted mb-3">Here's your health overview for today.</p>
+                <motion.div
+                  initial={{ scale: 0.95 }}
+                  animate={{ scale: 1 }}
+                  className={`d-inline-flex align-items-center px-3 py-2 rounded-pill bg-white bg-opacity-50 border ${healthStatus.status === 'good' ? 'border-success text-success' : healthStatus.status === 'caution' ? 'border-warning text-warning' : 'border-danger text-danger'}`}
+                >
+                  <i className={`bi ${healthStatus.status === 'good' ? 'bi-check-circle-fill' :
+                    healthStatus.status === 'caution' ? 'bi-exclamation-triangle-fill' :
+                      healthStatus.status === 'attention' ? 'bi-exclamation-circle-fill' :
+                        'bi-question-circle-fill'} me-2`}></i>
+                  <span className="fw-medium">{healthStatus.message}</span>
+                </motion.div>
+              </div>
+              <div className="col-lg-4 text-lg-end mt-4 mt-lg-0">
+                <div className="d-flex gap-2 justify-content-lg-end flex-wrap">
+                  <Link to="/nutritional-prediction" className="btn btn-primary rounded-pill px-4 shadow-glow">
+                    <i className="bi bi-clipboard2-pulse me-2"></i>New Analysis
+                  </Link>
+                  <Link to="/profile" className="btn btn-outline-primary rounded-pill px-4">
+                    <i className="bi bi-person me-2"></i>Profile
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Dashboard Tabs */}
+          <div className="mb-4 overflow-auto">
+            <div className="d-flex gap-2 pb-2">
+              {['overview', 'bmi', 'sleep', 'anxiety', 'recommendations'].map(tab => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`btn rounded-pill px-4 py-2 fw-medium transition-all ${activeTab === tab
+                      ? 'btn-primary shadow-glow'
+                      : 'btn-light text-muted hover-lift'
+                    }`}
+                >
+                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Tab Content */}
+          <AnimatePresence mode="wait">
+            {activeTab === 'overview' && (
+              <motion.div
+                key="overview"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.3 }}
               >
-                {tab.charAt(0).toUpperCase() + tab.slice(1)}
-              </button>
-            </li>
-          ))}
-        </ul>
-
-        {/* Tab Content */}
-        <AnimatePresence mode="wait">
-          {activeTab === 'overview' && (
-            <motion.div
-              key="overview"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              {/* Quick Stats Cards */}
-              <div className="row g-4 mb-4">
-                {[
-                  { title: 'BMI', value: bmiHistory.length > 0 ? `${bmiHistory[bmiHistory.length - 1].result.bmi} (${bmiHistory[bmiHistory.length - 1].result.predictedCategory})` : '-', icon: 'bi-clipboard2-pulse', color: 'border-primary', updated: bmiHistory.length > 0 ? new Date(bmiHistory[bmiHistory.length - 1].date).toLocaleDateString() : null },
-                  { title: 'Sleep Quality', value: sleepHistory.length > 0 ? `${sleepHistory[sleepHistory.length - 1].qualityOfSleep}/10` : '-', icon: 'bi-moon-stars', color: 'border-info', updated: sleepHistory.length > 0 ? new Date(sleepHistory[sleepHistory.length - 1].createdAt).toLocaleDateString() : null },
-                  { title: 'Sleep Duration', value: sleepHistory.length > 0 ? `${sleepHistory[sleepHistory.length - 1].sleepDuration} hrs` : '-', icon: 'bi-alarm', color: 'border-success', updated: sleepHistory.length > 0 ? new Date(sleepHistory[sleepHistory.length - 1].createdAt).toLocaleDateString() : null },
-                  { title: 'Anxiety Score', value: anxietyHistory.length > 0 ? `${anxietyHistory[anxietyHistory.length - 1].anxietyScore}/10` : '-', icon: 'bi-heart-pulse', color: 'border-warning', updated: anxietyHistory.length > 0 ? new Date(anxietyHistory[anxietyHistory.length - 1].createdAt).toLocaleDateString() : null }
-                ].map((stat, idx) => (
-                  <div key={stat.title} className="col-md-3">
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: idx * 0.1 }}
-                      className={`card shadow-sm h-100 border-left-${stat.color.split('-')[1]}`}
-                    >
-                      <div className="card-body">
-                        <div className="d-flex justify-content-between align-items-center mb-2">
-                          <h6 className="text-muted mb-0">{stat.title}</h6>
-                          <div className={`rounded-circle bg-${stat.color.split('-')[1]} bg-opacity-10 p-2`}>
-                            <i className={`bi ${stat.icon} text-${stat.color.split('-')[1]}`}></i>
-                          </div>
+                {/* Quick Stats Cards */}
+                <div className="row g-4 mb-5">
+                  {[
+                    { title: 'BMI', value: bmiHistory.length > 0 ? `${bmiHistory[bmiHistory.length - 1].result.bmi}` : '-', sub: bmiHistory.length > 0 ? bmiHistory[bmiHistory.length - 1].result.predictedCategory : 'No data', icon: 'bi-clipboard2-pulse', color: 'primary' },
+                    { title: 'Sleep Quality', value: sleepHistory.length > 0 ? `${sleepHistory[sleepHistory.length - 1].qualityOfSleep}/10` : '-', sub: 'Last Night', icon: 'bi-moon-stars', color: 'info' },
+                    { title: 'Sleep Duration', value: sleepHistory.length > 0 ? `${sleepHistory[sleepHistory.length - 1].sleepDuration}h` : '-', sub: 'Hours Slept', icon: 'bi-alarm', color: 'success' },
+                    { title: 'Anxiety Score', value: anxietyHistory.length > 0 ? `${anxietyHistory[anxietyHistory.length - 1].anxietyScore}/10` : '-', sub: 'Recent Check', icon: 'bi-heart-pulse', color: 'warning' }
+                  ].map((stat, idx) => (
+                    <div key={stat.title} className="col-md-3">
+                      <motion.div
+                        whileHover={{ y: -5 }}
+                        className="glass-card p-4 h-100 position-relative overflow-hidden"
+                      >
+                        <div className={`position-absolute top-0 end-0 p-3 opacity-10 text-${stat.color}`}>
+                          <i className={`bi ${stat.icon} display-1`}></i>
                         </div>
-                        <div className="h3 mb-0">{stat.value}</div>
-                        <div className="small text-muted mt-2">{stat.updated ? `Last updated: ${stat.updated}` : 'No data available'}</div>
-                      </div>
-                    </motion.div>
-                  </div>
-                ))}
-              </div>
+                        <div className="position-relative z-1">
+                          <h6 className="text-muted mb-2 text-uppercase fs-7 fw-bold tracking-wider">{stat.title}</h6>
+                          <div className="d-flex align-items-baseline">
+                            <h3 className="display-6 fw-bold mb-0 text-dark">{stat.value}</h3>
+                          </div>
+                          <p className={`mb-0 mt-2 small text-${stat.color} fw-medium`}>
+                            {stat.sub}
+                          </p>
+                        </div>
+                      </motion.div>
+                    </div>
+                  ))}
+                </div>
 
-              {/* Health Overview Chart */}
-              <div className="card shadow-sm mb-4">
-                <div className="card-header bg-white d-flex justify-content-between align-items-center">
-                  <h5 className="mb-0">Health Metrics Overview</h5>
-                  <div className="btn-group btn-group-sm">
-                    <button type="button" className="btn btn-outline-secondary active">Week</button>
-                    <button type="button" className="btn btn-outline-secondary">Month</button>
-                    <button type="button" className="btn btn-outline-secondary">Year</button>
+                {/* Health Overview Chart */}
+                <div className="glass-card p-4 mb-5">
+                  <div className="d-flex justify-content-between align-items-center mb-4">
+                    <h5 className="mb-0 fw-bold">Health Trends</h5>
+                    <div className="btn-group">
+                      <button className="btn btn-sm btn-outline-light text-dark active">Week</button>
+                      <button className="btn btn-sm btn-outline-light text-dark">Month</button>
+                    </div>
+                  </div>
+                  <div style={{ height: '400px' }}>
+                    {healthOverviewChart ? (
+                      <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart data={healthOverviewChart}>
+                          <defs>
+                            <linearGradient id="colorBmi" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor="#0d6efd" stopOpacity={0.3} />
+                              <stop offset="95%" stopColor="#0d6efd" stopOpacity={0} />
+                            </linearGradient>
+                            <linearGradient id="colorSleep" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor="#6610f2" stopOpacity={0.3} />
+                              <stop offset="95%" stopColor="#6610f2" stopOpacity={0} />
+                            </linearGradient>
+                          </defs>
+                          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e9ecef" />
+                          <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: '#6c757d' }} />
+                          <YAxis axisLine={false} tickLine={false} tick={{ fill: '#6c757d' }} />
+                          <Tooltip
+                            contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.9)', borderRadius: '12px', border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}
+                          />
+                          <Legend />
+                          {bmiHistory.length > 0 && <Area type="monotone" dataKey="bmi" stroke="#0d6efd" strokeWidth={3} fillOpacity={1} fill="url(#colorBmi)" name="BMI" />}
+                          {sleepHistory.length > 0 && <Area type="monotone" dataKey="sleepQuality" stroke="#6610f2" strokeWidth={3} fillOpacity={1} fill="url(#colorSleep)" name="Sleep Quality" />}
+                          {anxietyHistory.length > 0 && <Line type="monotone" dataKey="anxietyScore" stroke="#dc3545" strokeWidth={3} dot={{ r: 4 }} name="Anxiety Score" />}
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    ) : (
+                      <div className="d-flex flex-column align-items-center justify-content-center h-100 text-center">
+                        <div className="bg-light rounded-circle p-4 mb-3">
+                          <i className="bi bi-bar-chart-line fs-1 text-muted"></i>
+                        </div>
+                        <h5 className="text-muted">No data available yet</h5>
+                        <p className="text-muted small mb-3">Complete assessments to see your trends</p>
+                        <Link to="/nutritional-prediction" className="btn btn-sm btn-primary rounded-pill px-3">
+                          Start Assessment
+                        </Link>
+                      </div>
+                    )}
                   </div>
                 </div>
-                <div className="card-body" style={{ height: '400px' }}>
-                  {healthOverviewChart ? (
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={healthOverviewChart}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="date" />
-                        <YAxis domain={[0, 12]} />
-                        <Tooltip />
-                        <Legend />
-                        {bmiHistory.length > 0 && <Line type="monotone" dataKey="bmi" stroke="#0d6efd" name="BMI" />}
-                        {sleepHistory.length > 0 && <Line type="monotone" dataKey="sleepQuality" stroke="#6610f2" name="Sleep Quality" />}
-                        {anxietyHistory.length > 0 && <Line type="monotone" dataKey="anxietyScore" stroke="#dc3545" name="Anxiety Score" />}
-                      </LineChart>
-                    </ResponsiveContainer>
-                  ) : (
-                    <div className="text-center py-5">
-                      <i className="bi bi-bar-chart-line fs-1 text-muted mb-3 d-block"></i>
-                      <p className="text-muted mb-3">No health data available yet</p>
-                      <div className="d-flex justify-content-center gap-2">
-                        <Link to="/nutritional-prediction" className="btn btn-primary">BMI Analysis</Link>
-                        <Link to="/sleep-disorder" className="btn btn-success">Sleep Analysis</Link>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
 
-              {/* Quick Actions & Recent Assessments */}
-              <div className="row g-4">
-                <div className="col-lg-4">
-                  <div className="card shadow-sm h-100">
-                    <div className="card-header bg-white">
-                      <h5 className="mb-0">Quick Actions</h5>
-                    </div>
-                    <div className="card-body">
-                      <div className="d-grid gap-2">
-                        {[
-                          { to: '/nutritional-prediction', text: 'BMI Analysis', icon: 'bi-clipboard2-pulse', color: 'btn-primary' },
-                          { to: '/sleep-disorder', text: 'Sleep Analysis', icon: 'bi-moon-stars', color: 'btn-success' },
-                          { to: '/anxiety-prediction', text: 'Anxiety Assessment', icon: 'bi-heart-pulse', color: 'btn-warning' },
-                          { to: '/depression-prediction', text: 'Depression Screening', icon: 'bi-emoji-frown', color: 'btn-danger' }
-                        ].map(action => (
-                          <Link
-                            key={action.to}
-                            to={action.to}
-                            className={`btn ${action.color} d-flex align-items-center justify-content-between`}
-                          >
-                            <span>
-                              <i className={`bi ${action.icon} me-2`}></i>
-                              {action.text}
-                            </span>
-                            <i className="bi bi-chevron-right"></i>
-                          </Link>
-                        ))}
+                {/* Recent Activity & Quick Actions */}
+                <div className="row g-4">
+                  <div className="col-lg-8">
+                    <div className="glass-card p-0 h-100 overflow-hidden">
+                      <div className="p-4 border-bottom border-light">
+                        <div className="d-flex justify-content-between align-items-center">
+                          <h5 className="mb-0 fw-bold">Recent Activity</h5>
+                          <Link to="/health-history" className="btn btn-sm btn-light rounded-pill">View All</Link>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="col-lg-8">
-                  <div className="card shadow-sm h-100">
-                    <div className="card-header bg-white d-flex justify-content-between align-items-center">
-                      <h5 className="mb-0">Recent Assessments</h5>
-                      <Link to="/health-history" className="text-decoration-none small">View All</Link>
-                    </div>
-                    <div className="card-body p-0">
                       <div className="list-group list-group-flush">
-                        {[...bmiHistory.slice(0, 2), ...sleepHistory.slice(0, 2), ...anxietyHistory.slice(0, 2)].map(assessment => (
+                        {[...bmiHistory.slice(0, 2), ...sleepHistory.slice(0, 2), ...anxietyHistory.slice(0, 2)].map((assessment, idx) => (
                           <motion.div
-                            key={assessment._id}
+                            key={assessment._id || idx}
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.3 }}
-                            className="list-group-item list-group-item-action"
+                            transition={{ delay: idx * 0.1 }}
+                            className="list-group-item border-light p-3 hover-bg-light transition-all"
                           >
+                            {/* Logic to render different assessment types */}
                             {assessment.result ? (
-                              <Link to={`/bmi-results/${assessment._id}`} className="d-flex justify-content-between align-items-center">
-                                <div className="d-flex align-items-center">
-                                  <div className="rounded-circle bg-primary bg-opacity-10 p-2 me-2">
-                                    <i className="bi bi-clipboard2-pulse text-primary"></i>
-                                  </div>
-                                  <div>
-                                    <span className="fw-bold text-primary">BMI Assessment</span>
-                                    <small className="text-muted d-block">{new Date(assessment.date).toLocaleDateString()}</small>
-                                  </div>
+                              <Link to={`/bmi-results/${assessment._id}`} className="d-flex align-items-center text-decoration-none text-dark">
+                                <div className="rounded-circle bg-primary bg-opacity-10 p-3 me-3">
+                                  <i className="bi bi-clipboard2-pulse text-primary fs-5"></i>
+                                </div>
+                                <div className="flex-grow-1">
+                                  <h6 className="mb-0 fw-bold">BMI Assessment</h6>
+                                  <small className="text-muted">{new Date(assessment.date).toLocaleDateString()}</small>
                                 </div>
                                 <div className="text-end">
-                                  <span className={`badge ${assessment.result.healthRiskLevel >= 4 ? 'bg-danger' : 'bg-success'} rounded-pill`}>
+                                  <span className={`badge rounded-pill ${assessment.result.healthRiskLevel >= 4 ? 'bg-danger' : 'bg-success'}`}>
                                     {assessment.result.predictedCategory}
                                   </span>
-                                  <small className="d-block text-muted mt-1">BMI: {assessment.result.bmi}</small>
                                 </div>
                               </Link>
                             ) : assessment.qualityOfSleep ? (
-                              <Link to={`/sleep-results/${assessment._id}`} className="d-flex justify-content-between align-items-center">
-                                <div className="d-flex align-items-center">
-                                  <div className="rounded-circle bg-success bg-opacity-10 p-2 me-2">
-                                    <i className="bi bi-moon-stars text-success"></i>
-                                  </div>
-                                  <div>
-                                    <span className="fw-bold text-success">Sleep Assessment</span>
-                                    <small className="text-muted d-block">{new Date(assessment.createdAt).toLocaleDateString()}</small>
-                                  </div>
+                              <Link to={`/sleep-results/${assessment._id}`} className="d-flex align-items-center text-decoration-none text-dark">
+                                <div className="rounded-circle bg-info bg-opacity-10 p-3 me-3">
+                                  <i className="bi bi-moon-stars text-info fs-5"></i>
+                                </div>
+                                <div className="flex-grow-1">
+                                  <h6 className="mb-0 fw-bold">Sleep Analysis</h6>
+                                  <small className="text-muted">{new Date(assessment.createdAt).toLocaleDateString()}</small>
                                 </div>
                                 <div className="text-end">
-                                  <span className={`badge ${assessment.hasDisorder ? 'bg-warning' : 'bg-success'} rounded-pill`}>
-                                    {assessment.hasDisorder ? `${assessment.predictionConfidence.toFixed(0)}% Risk` : 'Healthy'}
+                                  <span className={`badge rounded-pill ${assessment.hasDisorder ? 'bg-warning' : 'bg-success'}`}>
+                                    {assessment.hasDisorder ? 'Risk Detected' : 'Healthy'}
                                   </span>
-                                  <small className="d-block text-muted mt-1">Quality: {assessment.qualityOfSleep}/10</small>
                                 </div>
                               </Link>
                             ) : (
-                              <Link to={`/anxiety-results/${assessment._id}`} className="d-flex justify-content-between align-items-center">
-                                <div className="d-flex align-items-center">
-                                  <div className="rounded-circle bg-warning bg-opacity-10 p-2 me-2">
-                                    <i className="bi bi-heart-pulse text-warning"></i>
-                                  </div>
-                                  <div>
-                                    <span className="fw-bold text-warning">Anxiety Assessment</span>
-                                    <small className="text-muted d-block">{new Date(assessment.createdAt).toLocaleDateString()}</small>
-                                  </div>
+                              <Link to={`/anxiety-results/${assessment._id}`} className="d-flex align-items-center text-decoration-none text-dark">
+                                <div className="rounded-circle bg-warning bg-opacity-10 p-3 me-3">
+                                  <i className="bi bi-heart-pulse text-warning fs-5"></i>
+                                </div>
+                                <div className="flex-grow-1">
+                                  <h6 className="mb-0 fw-bold">Anxiety Check</h6>
+                                  <small className="text-muted">{new Date(assessment.createdAt).toLocaleDateString()}</small>
                                 </div>
                                 <div className="text-end">
-                                  <span className={`badge ${assessment.anxietyScore > 7 ? 'bg-warning' : 'bg-success'} rounded-pill`}>
-                                    {assessment.anxietyScore > 7 ? 'Elevated' : 'Normal'}
+                                  <span className={`badge rounded-pill ${assessment.anxietyScore > 7 ? 'bg-warning' : 'bg-success'}`}>
+                                    Score: {assessment.anxietyScore}
                                   </span>
-                                  <small className="d-block text-muted mt-1">Score: {assessment.anxietyScore}/10</small>
                                 </div>
                               </Link>
                             )}
                           </motion.div>
                         ))}
                         {!bmiHistory.length && !sleepHistory.length && !anxietyHistory.length && (
-                          <div className="text-center py-4">
-                            <p className="text-muted mb-3">No assessments completed yet</p>
-                            <div className="d-flex justify-content-center gap-2">
-                              <Link to="/nutritional-prediction" className="btn btn-primary">BMI Analysis</Link>
-                              <Link to="/sleep-disorder" className="btn btn-success">Sleep Analysis</Link>
-                            </div>
+                          <div className="p-5 text-center">
+                            <p className="text-muted mb-0">No recent activity</p>
                           </div>
                         )}
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
-            </motion.div>
-          )}
 
-          {/* BMI Tab */}
-          {activeTab === 'bmi' && (
-            <motion.div
-              key="bmi"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="card shadow-sm mb-4">
-                <div className="card-header bg-white d-flex justify-content-between align-items-center">
-                  <h5 className="mb-0">BMI History</h5>
-                  <div className="btn-group btn-group-sm">
-                    <button type="button" className="btn btn-outline-secondary active">Week</button>
-                    <button type="button" className="btn btn-outline-secondary">Month</button>
-                    <button type="button" className="btn btn-outline-secondary">Year</button>
+                  <div className="col-lg-4">
+                    <div className="glass-card p-4 h-100">
+                      <h5 className="mb-4 fw-bold">Quick Actions</h5>
+                      <div className="d-grid gap-3">
+                        {[
+                          { to: '/nutritional-prediction', text: 'BMI Analysis', icon: 'bi-clipboard2-pulse', color: 'primary' },
+                          { to: '/sleep-disorder', text: 'Sleep Analysis', icon: 'bi-moon-stars', color: 'info' },
+                          { to: '/anxiety-prediction', text: 'Anxiety Check', icon: 'bi-heart-pulse', color: 'warning' },
+                          { to: '/depression-prediction', text: 'Depression Screen', icon: 'bi-emoji-frown', color: 'danger' }
+                        ].map(action => (
+                          <Link
+                            key={action.to}
+                            to={action.to}
+                            className={`btn btn-outline-${action.color} text-start p-3 rounded-xl d-flex align-items-center hover-lift transition-all`}
+                          >
+                            <div className={`rounded-circle bg-${action.color} text-white p-2 me-3 d-flex align-items-center justify-content-center`} style={{ width: '40px', height: '40px' }}>
+                              <i className={`bi ${action.icon}`}></i>
+                            </div>
+                            <span className="fw-medium">{action.text}</span>
+                            <i className="bi bi-chevron-right ms-auto"></i>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div className="card-body" style={{ height: '400px' }}>
-                  {bmiChart ? (
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={bmiChart}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="date" />
-                        <YAxis domain={[0, 40]} />
-                        <Tooltip />
-                        <Legend />
-                        <Line type="monotone" dataKey="bmi" stroke="#0d6efd" name="BMI" />
-                        <Line type="monotone" dataKey="healthRiskLevel" stroke="#dc3545" name="Health Risk Level" />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  ) : (
-                    <div className="text-center py-5">
-                      <i className="bi bi-bar-chart-line fs-1 text-muted mb-3 d-block"></i>
-                      <p className="text-muted mb-3">No BMI data available yet</p>
-                      <Link to="/nutritional-prediction" className="btn btn-primary">Start BMI Analysis</Link>
-                    </div>
-                  )}
-                </div>
-              </div>
-              <div className="card shadow-sm">
-                <div className="card-header bg-white">
-                  <h5 className="mb-0">Recent BMI Assessments</h5>
-                </div>
-                <div className="card-body p-0">
-                  <div className="list-group list-group-flush">
-                    {bmiHistory.slice(0, 5).map(assessment => (
-                      <motion.div
-                        key={assessment._id}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="list-group-item list-group-item-action"
-                      >
-                        <Link to={`/bmi-results/${assessment._id}`} className="d-flex justify-content-between align-items-center">
-                          <div className="d-flex align-items-center">
-                            <div className="rounded-circle bg-primary bg-opacity-10 p-2 me-2">
-                              <i className="bi bi-clipboard2-pulse text-primary"></i>
-                            </div>
-                            <div>
-                              <span className="fw-bold text-primary">BMI Assessment</span>
-                              <small className="text-muted d-block">{new Date(assessment.date).toLocaleDateString()}</small>
-                            </div>
-                          </div>
-                          <div className="text-end">
-                            <span className={`badge ${assessment.result.healthRiskLevel >= 4 ? 'bg-danger' : 'bg-success'} rounded-pill`}>
-                              {assessment.result.predictedCategory}
-                            </span>
-                            <small className="d-block text-muted mt-1">BMI: {assessment.result.bmi}</small>
-                          </div>
-                        </Link>
-                      </motion.div>
-                    ))}
-                    {!bmiHistory.length && (
-                      <div className="text-center py-4">
-                        <p className="text-muted mb-3">No BMI assessments yet</p>
-                        <Link to="/nutritional-prediction" className="btn btn-primary">Start BMI Analysis</Link>
+              </motion.div>
+            )}
+
+            {/* Other Tabs (BMI, Sleep, Anxiety) - Using similar glassmorphism structure */}
+            {activeTab === 'bmi' && (
+              <motion.div
+                key="bmi"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="glass-card p-4 mb-4">
+                  <h5 className="mb-4 fw-bold">BMI History</h5>
+                  <div style={{ height: '400px' }}>
+                    {bmiChart ? (
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={bmiChart}>
+                          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e9ecef" />
+                          <XAxis dataKey="date" axisLine={false} tickLine={false} />
+                          <YAxis axisLine={false} tickLine={false} />
+                          <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }} />
+                          <Legend />
+                          <Line type="monotone" dataKey="bmi" stroke="#0d6efd" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 8 }} name="BMI" />
+                          <Line type="monotone" dataKey="healthRiskLevel" stroke="#dc3545" strokeWidth={2} strokeDasharray="5 5" name="Risk Level" />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    ) : (
+                      <div className="text-center py-5">
+                        <p className="text-muted">No BMI data available</p>
+                        <Link to="/nutritional-prediction" className="btn btn-primary rounded-pill">Start Analysis</Link>
                       </div>
                     )}
                   </div>
                 </div>
-              </div>
-            </motion.div>
-          )}
+              </motion.div>
+            )}
 
-          {/* Sleep Tab */}
-          {activeTab === 'sleep' && (
-            <motion.div
-              key="sleep"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="card shadow-sm mb-4">
-                <div className="card-header bg-white d-flex justify-content-between align-items-center">
-                  <h5 className="mb-0">Sleep History</h5>
-                  <div className="btn-group btn-group-sm">
-                    <button type="button" className="btn btn-outline-secondary active">Week</button>
-                    <button type="button" className="btn btn-outline-secondary">Month</button>
-                    <button type="button" className="btn btn-outline-secondary">Year</button>
-                  </div>
-                </div>
-                <div className="card-body" style={{ height: '400px' }}>
-                  {sleepQualityChart ? (
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={sleepQualityChart}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="date" />
-                        <YAxis domain={[0, 12]} />
-                        <Tooltip />
-                        <Legend />
-                        <Line type="monotone" dataKey="qualityOfSleep" stroke="#6610f2" name="Sleep Quality" />
-                        <Line type="monotone" dataKey="sleepDuration" stroke="#198754" name="Sleep Duration" />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  ) : (
-                    <div className="text-center py-5">
-                      <i className="bi bi-bar-chart-line fs-1 text-muted mb-3 d-block"></i>
-                      <p className="text-muted mb-3">No sleep data available yet</p>
-                      <Link to="/sleep-disorder" className="btn btn-success">Start Sleep Analysis</Link>
-                    </div>
-                  )}
-                </div>
-              </div>
-              <div className="card shadow-sm">
-                <div className="card-header bg-white">
-                  <h5 className="mb-0">Recent Sleep Assessments</h5>
-                </div>
-                <div className="card-body p-0">
-                  <div className="list-group list-group-flush">
-                    {sleepHistory.slice(0, 5).map(assessment => (
-                      <motion.div
-                        key={assessment._id}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="list-group-item list-group-item-action"
-                      >
-                        <Link to={`/sleep-results/${assessment._id}`} className="d-flex justify-content-between align-items-center">
-                          <div className="d-flex align-items-center">
-                            <div className="rounded-circle bg-success bg-opacity-10 p-2 me-2">
-                              <i className="bi bi-moon-stars text-success"></i>
-                            </div>
-                            <div>
-                              <span className="fw-bold text-success">Sleep Assessment</span>
-                              <small className="text-muted d-block">{new Date(assessment.createdAt).toLocaleDateString()}</small>
-                            </div>
-                          </div>
-                          <div className="text-end">
-                            <span className={`badge ${assessment.hasDisorder ? 'bg-warning' : 'bg-success'} rounded-pill`}>
-                              {assessment.hasDisorder ? `${assessment.predictionConfidence.toFixed(0)}% Risk` : 'Healthy'}
-                            </span>
-                            <small className="d-block text-muted mt-1">Quality: {assessment.qualityOfSleep}/10</small>
-                          </div>
-                        </Link>
-                      </motion.div>
-                    ))}
-                    {!sleepHistory.length && (
-                      <div className="text-center py-4">
-                        <p className="text-muted mb-3">No sleep assessments yet</p>
-                        <Link to="/sleep-disorder" className="btn btn-success">Start Sleep Analysis</Link>
+            {activeTab === 'sleep' && (
+              <motion.div
+                key="sleep"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="glass-card p-4 mb-4">
+                  <h5 className="mb-4 fw-bold">Sleep Patterns</h5>
+                  <div style={{ height: '400px' }}>
+                    {sleepQualityChart ? (
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={sleepQualityChart}>
+                          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e9ecef" />
+                          <XAxis dataKey="date" axisLine={false} tickLine={false} />
+                          <YAxis axisLine={false} tickLine={false} />
+                          <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }} />
+                          <Legend />
+                          <Line type="monotone" dataKey="qualityOfSleep" stroke="#6610f2" strokeWidth={3} dot={{ r: 4 }} name="Sleep Quality" />
+                          <Line type="monotone" dataKey="sleepDuration" stroke="#198754" strokeWidth={3} dot={{ r: 4 }} name="Duration (hrs)" />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    ) : (
+                      <div className="text-center py-5">
+                        <p className="text-muted">No sleep data available</p>
+                        <Link to="/sleep-disorder" className="btn btn-primary rounded-pill">Start Analysis</Link>
                       </div>
                     )}
                   </div>
                 </div>
-              </div>
-            </motion.div>
-          )}
+              </motion.div>
+            )}
 
-          {/* Anxiety Tab */}
-          {activeTab === 'anxiety' && (
-            <motion.div
-              key="anxiety"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="card shadow-sm mb-4">
-                <div className="card-header bg-white d-flex justify-content-between align-items-center">
-                  <h5 className="mb-0">Anxiety History</h5>
-                  <div className="btn-group btn-group-sm">
-                    <button type="button" className="btn btn-outline-secondary active">Week</button>
-                    <button type="button" className="btn btn-outline-secondary">Month</button>
-                    <button type="button" className="btn btn-outline-secondary">Year</button>
-                  </div>
-                </div>
-                <div className="card-body" style={{ height: '400px' }}>
-                  {anxietyChart ? (
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={anxietyChart}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="date" />
-                        <YAxis domain={[0, 27]} />
-                        <Tooltip />
-                        <Legend />
-                        <Line type="monotone" dataKey="anxietyScore" stroke="#ffc107" name="Anxiety Score" />
-                        <Line type="monotone" dataKey="phq_score" stroke="#6f42c1" name="PHQ-9 Score" />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  ) : (
-                    <div className="text-center py-5">
-                      <i className="bi bi-bar-chart-line fs-1 text-muted mb-3 d-block"></i>
-                      <p className="text-muted mb-3">No anxiety data available yet</p>
-                      <Link to="/anxiety-prediction" className="btn btn-warning">Start Anxiety Assessment</Link>
-                    </div>
-                  )}
-                </div>
-              </div>
-              <div className="card shadow-sm">
-                <div className="card-header bg-white">
-                  <h5 className="mb-0">Recent Anxiety Assessments</h5>
-                </div>
-                <div className="card-body p-0">
-                  <div className="list-group list-group-flush">
-                    {anxietyHistory.slice(0, 5).map(assessment => (
-                      <motion.div
-                        key={assessment._id}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="list-group-item list-group-item-action"
-                      >
-                        <Link to={`/anxiety-results/${assessment._id}`} className="d-flex justify-content-between align-items-center">
-                          <div className="d-flex align-items-center">
-                            <div className="rounded-circle bg-warning bg-opacity-10 p-2 me-2">
-                              <i className="bi bi-heart-pulse text-warning"></i>
-                            </div>
-                            <div>
-                              <span className="fw-bold text-warning">Anxiety Assessment</span>
-                              <small className="text-muted d-block">{new Date(assessment.createdAt).toLocaleDateString()}</small>
-                            </div>
-                          </div>
-                          <div className="text-end">
-                            <span className={`badge ${assessment.anxietyScore > 7 ? 'bg-warning' : 'bg-success'} rounded-pill`}>
-                              {assessment.anxietyScore > 7 ? 'Elevated' : 'Normal'}
-                            </span>
-                            <small className="d-block text-muted mt-1">Score: {assessment.anxietyScore}/10</small>
-                          </div>
-                        </Link>
-                      </motion.div>
-                    ))}
-                    {!anxietyHistory.length && (
-                      <div className="text-center py-4">
-                        <p className="text-muted mb-3">No anxiety assessments yet</p>
-                        <Link to="/anxiety-prediction" className="btn btn-warning">Start Anxiety Assessment</Link>
+            {activeTab === 'anxiety' && (
+              <motion.div
+                key="anxiety"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="glass-card p-4 mb-4">
+                  <h5 className="mb-4 fw-bold">Anxiety Trends</h5>
+                  <div style={{ height: '400px' }}>
+                    {anxietyChart ? (
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={anxietyChart}>
+                          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e9ecef" />
+                          <XAxis dataKey="date" axisLine={false} tickLine={false} />
+                          <YAxis axisLine={false} tickLine={false} />
+                          <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }} />
+                          <Legend />
+                          <Line type="monotone" dataKey="anxietyScore" stroke="#ffc107" strokeWidth={3} dot={{ r: 4 }} name="Anxiety Score" />
+                          <Line type="monotone" dataKey="phq_score" stroke="#6f42c1" strokeWidth={3} dot={{ r: 4 }} name="PHQ-9 Score" />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    ) : (
+                      <div className="text-center py-5">
+                        <p className="text-muted">No anxiety data available</p>
+                        <Link to="/anxiety-prediction" className="btn btn-primary rounded-pill">Start Analysis</Link>
                       </div>
                     )}
                   </div>
                 </div>
-              </div>
-            </motion.div>
-          )}
+              </motion.div>
+            )}
 
-          {/* Recommendations Tab */}
-          {activeTab === 'recommendations' && (
-            <motion.div
-              key="recommendations"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="card shadow-sm">
-                <div className="card-header bg-white d-flex justify-content-between align-items-center">
-                  <h5 className="mb-0">Personalized Recommendations</h5>
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="btn btn-success"
-                    onClick={downloadSummaryReport}
-                  >
-                    Download Summary
-                  </motion.button>
-                </div>
-                <div className="card-body">
-                  <div className="row row-cols-1 row-cols-md-2 g-4">
+            {activeTab === 'recommendations' && (
+              <motion.div
+                key="recommendations"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="glass-card p-4">
+                  <div className="d-flex justify-content-between align-items-center mb-4">
+                    <h5 className="mb-0 fw-bold">Personalized Recommendations</h5>
+                    <button onClick={downloadSummaryReport} className="btn btn-success rounded-pill px-4 shadow-glow">
+                      <i className="bi bi-download me-2"></i>Download Report
+                    </button>
+                  </div>
+                  <div className="row g-4">
                     {recommendations.map((rec, idx) => (
-                      <motion.div
-                        key={idx}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: idx * 0.1 }}
-                        className="col"
-                      >
-                        <div className="card h-100 bg-light">
-                          <div className="card-body">
-                            <div className="d-flex align-items-center mb-2">
-                              <i className={`bi ${rec.icon} me-2 text-primary`}></i>
-                              <h6 className="card-title mb-0">{rec.title}</h6>
-                            </div>
-                            <p className="card-text small">{rec.description}</p>
+                      <div key={idx} className="col-md-6">
+                        <motion.div
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: idx * 0.1 }}
+                          className="p-4 rounded-xl bg-white border border-light shadow-sm h-100 position-relative overflow-hidden"
+                        >
+                          <div className={`position-absolute top-0 end-0 p-3 opacity-10`}>
+                            <i className={`bi ${rec.icon} display-1 text-primary`}></i>
                           </div>
-                        </div>
-                      </motion.div>
+                          <div className="position-relative z-1">
+                            <div className="d-flex align-items-center mb-3">
+                              <div className="rounded-circle bg-primary bg-opacity-10 p-2 me-3">
+                                <i className={`bi ${rec.icon} text-primary fs-5`}></i>
+                              </div>
+                              <h6 className="mb-0 fw-bold">{rec.title}</h6>
+                            </div>
+                            <p className="text-muted mb-0 small">{rec.description}</p>
+                          </div>
+                        </motion.div>
+                      </div>
                     ))}
+                    {recommendations.length === 0 && (
+                      <div className="col-12 text-center py-5">
+                        <p className="text-muted">Complete assessments to get personalized recommendations.</p>
+                      </div>
+                    )}
                   </div>
                 </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+      </div>
     </div>
   );
 };

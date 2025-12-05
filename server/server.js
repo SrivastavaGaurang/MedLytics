@@ -8,6 +8,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import compression from 'compression';
 import helmet from 'helmet';
+import passport from 'passport';
 import rateLimit from 'express-rate-limit';
 
 // Route Imports
@@ -19,6 +20,7 @@ import userRoutes from './routes/userRoutes.js';
 import anxietyRoutes from './routes/anxietyRoutes.js';
 import bmiRoutes from './routes/bmi.js';
 import contactRoutes from './routes/contactRoutes.js';
+import oauthRoutes from './routes/oauth.js';
 import { cacheMiddleware, getCacheStats, clearCache } from './middleware/cache.js';
 
 // Load environment variables
@@ -77,6 +79,7 @@ const limiter = rateLimit({
   app.use('/api/blogs', cacheMiddleware(300), blogRoutes); // Cache for 5 minutes
   app.use('/api/bmi', cacheMiddleware(600), bmiRoutes);
   app.use('/api/contact', contactRoutes);
+app.use('/api/oauth', oauthRoutes);
 
   // Cache management endpoints
   app.get('/api/cache/stats', (req, res) => {

@@ -11,6 +11,16 @@ import auth from '../middleware/auth.js';
 // Models
 import User from '../models/User.js';
 
+import rateLimit from 'express-rate-limit';
+
+// Rate limiter for auth routes
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: 'Too many authentication attempts, please try again later'
+});
+
+
 const router = express.Router();
 
 // @route   GET api/auth
@@ -42,12 +52,10 @@ router.get('/user', auth, async (req, res) => {
 // @route   POST api/auth/register
 // @desc    Register a user
 // @access  Public
-router.post(
-  '/register',
-  [
+router.post('/register', authLimiter, [
     check('name', 'Name is required').not().isEmpty(),
     check('email', 'Please include a valid email').isEmail(),
-    check('password', 'Password must be at least 6 characters').isLength({ min: 6 })
+    check('password', 'Password must be at least 8 characters').isLength({ min: 8 })
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -93,7 +101,7 @@ router.post(
 
       jwt.sign(
         payload,
-        process.env.JWT_SECRET || 'mysecrettoken',
+        process.env.JWT_SECRET,
         { expiresIn: process.env.JWT_EXPIRE || '24h' },
         (err, token) => {
           if (err) throw err;
@@ -110,9 +118,7 @@ router.post(
 // @route   POST api/auth/login
 // @desc    Authenticate user & get token (Email)
 // @access  Public
-router.post(
-  '/login',
-  [
+router.post('/login', authLimiter, [
     check('email', 'Please include a valid email').isEmail(),
     check('password', 'Password is required').exists()
   ],
@@ -149,7 +155,7 @@ router.post(
 
       jwt.sign(
         payload,
-        process.env.JWT_SECRET || 'mysecrettoken',
+        process.env.JWT_SECRET,
         { expiresIn: process.env.JWT_EXPIRE || '24h' },
         (err, token) => {
           if (err) throw err;
@@ -166,9 +172,7 @@ router.post(
 // @route   POST api/auth/login/phone
 // @desc    Authenticate user & get token (Phone)
 // @access  Public
-router.post(
-  '/login/phone',
-  [
+router.post('/login/phone', authLimiter, [
     check('phone', 'Phone number is required').not().isEmpty(),
     check('password', 'Password is required').exists()
   ],
@@ -205,7 +209,7 @@ router.post(
 
       jwt.sign(
         payload,
-        process.env.JWT_SECRET || 'mysecrettoken',
+        process.env.JWT_SECRET,
         { expiresIn: process.env.JWT_EXPIRE || '24h' },
         (err, token) => {
           if (err) throw err;

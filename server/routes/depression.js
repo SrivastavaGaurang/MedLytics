@@ -10,7 +10,7 @@ import User from '../models/User.js';
 
 const router = express.Router();
 
-// Setup Auth0 authentication middleware (optional, can be used for protected routes)
+// Setup Auth0 authentication middleware
 const checkJwt = expressjwt({
   secret: jwksRsa.expressJwtSecret({
     cache: true,
@@ -48,19 +48,19 @@ router.post(
     }
 
     try {
-      const { 
-        authId, 
-        age, 
-        gender, 
-        maritalStatus, 
-        employmentStatus, 
-        stressLevel, 
-        sleepQuality, 
-        socialSupport, 
-        physicalActivity, 
-        dietQuality, 
-        geneticHistory, 
-        medicalConditions 
+      const {
+        authId,
+        age,
+        gender,
+        maritalStatus,
+        employmentStatus,
+        stressLevel,
+        sleepQuality,
+        socialSupport,
+        physicalActivity,
+        dietQuality,
+        geneticHistory,
+        medicalConditions
       } = req.body;
 
       // Try to find existing user
@@ -113,7 +113,7 @@ router.post(
       res.json(depressionAnalysis);
     } catch (err) {
       console.error('Error in depression prediction:', err.message);
-      res.status(500).json({ 
+      res.status(500).json({
         message: 'Server error during depression analysis',
         error: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error'
       });
@@ -127,18 +127,18 @@ router.post(
 router.get('/results/:id', async (req, res) => {
   try {
     const analysis = await DepressionAnalysis.findById(req.params.id);
-    
+
     if (!analysis) {
       return res.status(404).json({ message: 'Depression analysis result not found' });
     }
-    
+
     res.json(analysis);
   } catch (err) {
     console.error('Error fetching depression result:', err.message);
     if (err.kind === 'ObjectId') {
       return res.status(404).json({ message: 'Invalid analysis ID format' });
     }
-    res.status(500).json({ 
+    res.status(500).json({
       message: 'Server error fetching results',
       error: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error'
     });
@@ -151,164 +151,163 @@ router.get('/results/:id', async (req, res) => {
 router.get('/history', checkJwt, async (req, res) => {
   try {
     const authId = req.user.sub;
-    
+
     const user = await User.findOne({ authId });
-    
+
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-    
+
     const analyses = await DepressionAnalysis.find({ user: user._id }).sort({ date: -1 });
     res.json(analyses);
   } catch (err) {
     console.error('Error fetching depression history:', err.message);
-    res.status(500).json({ 
+    res.status(500).json({
       message: 'Server error fetching history',
       error: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error'
     });
   }
 });
 
-// Enhanced Depression analysis algorithm
+// Enhanced Depression analysis algorithm with weighted scoring
 function analyzeDepression(data) {
-  let riskPoints = 0;
-  let keyFactors = [];
-  let recommendations = [];
-  let depressionType = '';
-  let depressionTypeDescription = '';
+  let totalScore = 0;
+  let maxScore = 100; // Normalized scale
+  const keyFactors = [];
+  const recommendations = [];
 
-  // Risk factors analysis with detailed tracking
-  if (data.stressLevel > 7) {
-    riskPoints += 2;
-    keyFactors.push({ name: 'High Stress Level', impact: 'High' });
+  // 1. Stress Level (Weight: 25%)
+  // Scale 1-10: 10 is worst
+  const stressScore = (data.stressLevel / 10) * 25;
+  totalScore += stressScore;
+
+  if (data.stressLevel >= 8) {
+    keyFactors.push({ name: 'Severe Chronic Stress', impact: 'High' });
+  } else if (data.stressLevel >= 6) {
+    keyFactors.push({ name: 'Elevated Stress Levels', impact: 'Moderate' });
   }
-  
-  if (data.sleepQuality < 4) {
-    riskPoints += 2;
-    keyFactors.push({ name: 'Poor Sleep Quality', impact: 'High' });
+
+  // 2. Sleep Quality (Weight: 20%)
+  // Scale 1-10: 1 is worst (inverse)
+  const sleepScore = ((11 - data.sleepQuality) / 10) * 20;
+  totalScore += sleepScore;
+
+  if (data.sleepQuality <= 3) {
+    keyFactors.push({ name: 'Severe Sleep Disturbance', impact: 'High' });
+  } else if (data.sleepQuality <= 5) {
+    keyFactors.push({ name: 'Poor Sleep Quality', impact: 'Moderate' });
   }
-  
-  if (data.socialSupport < 4) {
-    riskPoints += 2;
-    keyFactors.push({ name: 'Limited Social Support', impact: 'High' });
+
+  // 3. Social Support (Weight: 15%)
+  // Scale 1-10: 1 is worst (inverse)
+  const supportScore = ((11 - data.socialSupport) / 10) * 15;
+  totalScore += supportScore;
+
+  if (data.socialSupport <= 3) {
+    keyFactors.push({ name: 'Social Isolation', impact: 'High' });
+  } else if (data.socialSupport <= 5) {
+    keyFactors.push({ name: 'Limited Social Support', impact: 'Moderate' });
   }
-  
-  if (data.physicalActivity < 30) {
-    riskPoints += 1;
-    keyFactors.push({ name: 'Low Physical Activity', impact: 'Moderate' });
+
+  // 4. Physical Activity (Weight: 10%)
+  // Scale 0-100: 0 is worst (inverse)
+  const activityScore = ((100 - data.physicalActivity) / 100) * 10;
+  totalScore += activityScore;
+
+  if (data.physicalActivity < 20) {
+    keyFactors.push({ name: 'Sedentary Lifestyle', impact: 'Moderate' });
   }
-  
-  if (data.dietQuality < 4) {
-    riskPoints += 1;
-    keyFactors.push({ name: 'Poor Diet Quality', impact: 'Moderate' });
-  }
-  
+
+  // 5. Diet Quality (Weight: 10%)
+  // Scale 1-10: 1 is worst (inverse)
+  const dietScore = ((11 - data.dietQuality) / 10) * 10;
+  totalScore += dietScore;
+
+  // 6. Risk Multipliers (Genetic/Medical/Life Events) - Additive up to 20%
+  let riskMultiplier = 0;
+
   if (data.geneticHistory) {
-    riskPoints += 2;
-    keyFactors.push({ name: 'Family History of Mental Health Issues', impact: 'High' });
+    riskMultiplier += 10;
+    keyFactors.push({ name: 'Family History', impact: 'High' });
   }
-  
-  // Age and gender factors
-  if (data.age < 25 || data.age > 65) {
-    riskPoints += 1;
-    keyFactors.push({ name: 'Age Risk Factor', impact: 'Moderate' });
-  }
-  
-  if (data.gender === 'female') {
-    riskPoints += 1;
-  }
-  
-  // Marital and employment status
-  if (data.maritalStatus === 'divorced' || data.maritalStatus === 'widowed') {
-    riskPoints += 1;
-    keyFactors.push({ name: 'Marital Status Impact', impact: 'Moderate' });
-  }
-  
+
   if (data.employmentStatus === 'unemployed') {
-    riskPoints += 2;
-    keyFactors.push({ name: 'Unemployment Stress', impact: 'High' });
+    riskMultiplier += 5;
+    keyFactors.push({ name: 'Unemployment Stress', impact: 'Moderate' });
   }
-  
-  // Medical conditions impact
+
+  if (data.maritalStatus === 'divorced' || data.maritalStatus === 'widowed') {
+    riskMultiplier += 5;
+    keyFactors.push({ name: 'Recent Life Changes', impact: 'Moderate' });
+  }
+
   if (data.medicalConditions && data.medicalConditions.length > 0) {
-    const highRiskConditions = [
-      'hypothyroidism', 'chronic pain', 'fibromyalgia', 'chronic fatigue', 
-      'autoimmune', 'cancer', 'heart disease', 'diabetes', 'parkinsons', 'alzheimers'
-    ];
-    
-    const hasHighRiskCondition = data.medicalConditions.some(condition => 
-      highRiskConditions.some(highRisk => 
-        condition.toLowerCase().includes(highRisk.toLowerCase())
-      )
-    );
-    
-    if (hasHighRiskCondition) {
-      riskPoints += 2;
-      keyFactors.push({ name: 'Medical Conditions', impact: 'High' });
-    }
-    
-    if (data.medicalConditions.length >= 2) {
-      riskPoints += 1;
+    const highRiskConditions = ['chronic pain', 'hypothyroidism', 'fibromyalgia', 'autoimmune'];
+    const hasHighRisk = data.medicalConditions.some(c => highRiskConditions.some(h => c.toLowerCase().includes(h)));
+
+    if (hasHighRisk) {
+      riskMultiplier += 10;
+      keyFactors.push({ name: 'Chronic Health Condition', impact: 'High' });
+    } else {
+      riskMultiplier += 5;
     }
   }
 
-  // Determine risk level and depression type
+  totalScore += Math.min(20, riskMultiplier);
+
+  // Determine Risk Level
   let riskLevel = 'low';
-  
-  if (riskPoints >= 8) {
+  let depressionType = 'Low Risk';
+  let depressionTypeDescription = 'Your profile suggests a low risk of depression. Maintain your healthy habits.';
+
+  if (totalScore >= 70) {
     riskLevel = 'high';
-    depressionType = 'Major Depressive Episode Risk';
-    depressionTypeDescription = 'You show multiple risk factors that may indicate a significant depression risk. Professional evaluation is strongly recommended.';
-  } else if (riskPoints >= 4) {
+    depressionType = 'High Risk Profile';
+    depressionTypeDescription = 'Your combination of stress, sleep issues, and other factors indicates a high risk for depression. Professional evaluation is strongly recommended.';
+  } else if (totalScore >= 40) {
     riskLevel = 'moderate';
-    depressionType = 'Mild to Moderate Depression Risk';
-    depressionTypeDescription = 'You have several risk factors that suggest you may be experiencing some depressive symptoms. Consider speaking with a healthcare provider.';
-  } else {
-    riskLevel = 'low';
-    depressionType = 'Low Depression Risk';
-    depressionTypeDescription = 'Your current risk factors suggest a lower likelihood of depression, but continue monitoring your mental health.';
+    depressionType = 'Moderate Risk Profile';
+    depressionTypeDescription = 'You have several risk factors that may contribute to depressive symptoms. Proactive lifestyle changes and monitoring are advised.';
   }
 
-  // Generate personalized recommendations
-  recommendations.push('Practice regular self-care activities that bring you joy and relaxation');
-  recommendations.push('Maintain a consistent sleep schedule with 7-9 hours of sleep each night');
-  
-  if (data.stressLevel > 6) {
-    recommendations.push('Incorporate stress management techniques such as meditation, deep breathing, or yoga');
-    recommendations.push('Consider time management strategies to reduce daily stressors');
+  // Infer Specific Type/Pattern based on dominant factors
+  if (riskLevel !== 'low') {
+    if (data.stressLevel >= 8 && data.sleepQuality <= 4) {
+      depressionType = 'Stress-Induced Risk';
+      depressionTypeDescription = 'Your symptoms appear strongly linked to chronic stress and sleep deprivation, creating a cycle that affects your mood.';
+    } else if (data.socialSupport <= 3 && (data.maritalStatus === 'divorced' || data.maritalStatus === 'widowed')) {
+      depressionType = 'Situational/Social Risk';
+      depressionTypeDescription = 'Your risk appears connected to social isolation or recent life changes, highlighting the need for community and support.';
+    } else if (data.geneticHistory && riskMultiplier >= 15) {
+      depressionType = 'Biological/Genetic Risk';
+      depressionTypeDescription = 'Your family history and medical factors suggest a biological predisposition that requires careful monitoring.';
+    }
   }
-  
-  if (data.sleepQuality < 6) {
-    recommendations.push('Improve sleep hygiene by limiting screen time before bed and creating a restful environment');
-    recommendations.push('Establish a relaxing bedtime routine');
-  }
-  
-  if (data.socialSupport < 6) {
-    recommendations.push('Connect regularly with supportive friends and family, or consider joining support groups');
-    recommendations.push('Consider volunteering or joining community activities to build social connections');
-  }
-  
-  if (data.physicalActivity < 50) {
-    recommendations.push('Gradually increase physical activity - aim for at least 150 minutes of moderate exercise per week');
-    recommendations.push('Start with short walks and progressively increase activity duration');
-  }
-  
-  if (data.dietQuality < 6) {
-    recommendations.push('Focus on a balanced diet rich in vegetables, fruits, whole grains, and omega-3 fatty acids');
-    recommendations.push('Consider consulting with a nutritionist for personalized dietary advice');
-  }
-  
-  if (data.geneticHistory) {
-    recommendations.push('Be aware of early warning signs of depression and maintain regular mental health check-ins');
-  }
-  
+
+  // Generate Recommendations
   if (riskLevel === 'high') {
-    recommendations.push('Seek professional help from a mental health specialist immediately');
-    recommendations.push('Consider therapy options such as cognitive behavioral therapy (CBT) which is effective for depression');
-    recommendations.push('Discuss medication options with a psychiatrist if appropriate');
+    recommendations.push('Consult a mental health professional (psychiatrist or psychologist) for a comprehensive evaluation.');
+    recommendations.push('If you have thoughts of self-harm, contact emergency services or a crisis hotline immediately.');
+    recommendations.push('Consider evidence-based therapies like CBT to address negative thought patterns.');
   } else if (riskLevel === 'moderate') {
-    recommendations.push('Schedule an appointment with your healthcare provider to discuss your mental health');
-    recommendations.push('Consider counseling or therapy as a preventive measure');
+    recommendations.push('Schedule a check-up with your primary care physician to discuss your mental well-being.');
+    recommendations.push('Start a daily mood journal to track triggers and patterns.');
+  }
+
+  if (data.sleepQuality < 6) {
+    recommendations.push('Prioritize sleep hygiene: consistent schedule, dark room, and no screens before bed.');
+  }
+  if (data.stressLevel > 6) {
+    recommendations.push('Incorporate daily stress reduction techniques like mindfulness meditation or deep breathing.');
+  }
+  if (data.socialSupport < 5) {
+    recommendations.push('Reach out to a trusted friend or family member this week, or consider joining a support group.');
+  }
+  if (data.physicalActivity < 40) {
+    recommendations.push('Aim for 30 minutes of moderate exercise (like brisk walking) at least 5 days a week.');
+  }
+  if (data.dietQuality < 5) {
+    recommendations.push('Focus on a balanced diet rich in omega-3s, vegetables, and whole grains to support brain health.');
   }
 
   return {

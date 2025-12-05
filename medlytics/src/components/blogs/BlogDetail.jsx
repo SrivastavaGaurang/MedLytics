@@ -1,7 +1,7 @@
 // components/blogs/BlogDetail.jsx
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { useAuth0 } from '@auth0/auth0-react';
+import { useAuth } from '../../contexts/useAuth';
 import { getBlogById, deleteBlog } from '../../services/blogService';
 import { FaEdit, FaTrash, FaArrowLeft, FaClock, FaUser, FaTags } from 'react-icons/fa';
 import ReactMarkdown from 'react-markdown';
@@ -12,7 +12,7 @@ const BlogDetail = () => {
   const [blog, setBlog] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { isAuthenticated, user } = useAuth0();
+  const { isAuthenticated, user } = useAuth();
 
   useEffect(() => {
     const fetchBlog = async () => {
@@ -56,7 +56,7 @@ const BlogDetail = () => {
   const handleShare = (platform) => {
     const url = window.location.href;
     const title = blog?.title || 'Medical Blog Article';
-    
+
     switch (platform) {
       case 'twitter':
         window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`, '_blank');
@@ -119,11 +119,11 @@ const BlogDetail = () => {
                   </div>
                 </div>
               </div>
-              
+
               {/* Featured Image */}
               <div className="blog-featured-image mb-5">
-                <img 
-                  src={blog.image || "https://via.placeholder.com/1200x600?text=Medical+Article"} 
+                <img
+                  src={blog.image || "https://via.placeholder.com/1200x600?text=Medical+Article"}
                   className="img-fluid rounded shadow-sm"
                   alt={blog.title}
                   style={{ width: '100%', maxHeight: '500px', objectFit: 'cover' }}
@@ -137,7 +137,7 @@ const BlogDetail = () => {
                 <Link to={`/admin/blog/edit/${blog._id}`} className="btn btn-outline-primary me-2">
                   <FaEdit className="me-1" /> Edit
                 </Link>
-                <button 
+                <button
                   className="btn btn-outline-danger"
                   onClick={handleDelete}
                 >
@@ -171,25 +171,25 @@ const BlogDetail = () => {
                 <div className="blog-share border-top pt-4 mt-4">
                   <p className="text-muted mb-2">Share this article</p>
                   <div className="d-flex">
-                    <button 
-                      className="btn btn-sm btn-outline-primary me-2" 
+                    <button
+                      className="btn btn-sm btn-outline-primary me-2"
                       onClick={() => handleShare('twitter')}
                     >
                       Twitter
                     </button>
-                    <button 
+                    <button
                       className="btn btn-sm btn-outline-primary me-2"
-                      onClick={() => handleShare('facebook')} 
+                      onClick={() => handleShare('facebook')}
                     >
                       Facebook
                     </button>
-                    <button 
+                    <button
                       className="btn btn-sm btn-outline-primary me-2"
                       onClick={() => handleShare('linkedin')}
                     >
                       LinkedIn
                     </button>
-                    <button 
+                    <button
                       className="btn btn-sm btn-outline-secondary"
                       onClick={() => handleShare('copy')}
                     >

@@ -4,19 +4,30 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import TypingText from "./TypingText";
+import { motion } from "framer-motion";
+
+// Import generated assets
+import heroSleep from "../assets/images/hero_sleep_analysis_1764914815525.png";
+import heroMedical from "../assets/images/hero_medical_team_1764914839249.png";
+import heroNutrition from "../assets/images/hero_nutrition_wellness_1764914864064.png";
+import heroMental from "../assets/images/hero_mental_health_1764914887902.png";
+import dashboardMockup from "../assets/images/feature_dashboard_mockup_1764914911010.png";
+import iconSleep from "../assets/images/icon_sleep_analysis_1764914956728.png";
 
 const Home = () => {
   // Carousel settings
   const settings = {
     dots: true,
     infinite: true,
-    speed: 600,
+    speed: 1000,
     slidesToShow: 1,
     slidesToScroll: 1,
     autoplay: true,
-    autoplaySpeed: 3000,
+    autoplaySpeed: 5000,
     arrows: false,
-    pauseOnHover: true,
+    pauseOnHover: false,
+    fade: true,
+    cssEase: "linear"
   };
 
   // Services data
@@ -25,33 +36,37 @@ const Home = () => {
       id: 1,
       title: "Sleep Disorder Analysis",
       description: "Get insights into your sleep patterns and receive personalized recommendations.",
-      icon: "bi-moon-stars",
+      icon: "bi-moon-stars-fill",
       link: "/sleep-disorder",
-      color: "primary"
+      color: "primary",
+      gradient: "linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)"
     },
     {
       id: 2,
       title: "Anxiety Prediction",
       description: "Our AI analyzes your responses to help identify anxiety patterns and provide early intervention.",
-      icon: "bi-heart-pulse",
+      icon: "bi-heart-pulse-fill",
       link: "/anxiety-prediction",
-      color: "info"
+      color: "info",
+      gradient: "linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)"
     },
     {
       id: 3,
       title: "Depression Prediction",
       description: "Advanced algorithms to detect early signs of depression through behavioral patterns.",
-      icon: "bi-emoji-frown",
+      icon: "bi-emoji-frown-fill",
       link: "/depression-prediction",
-      color: "warning"
+      color: "warning",
+      gradient: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)"
     },
     {
       id: 4,
       title: "BMI Prediction",
-      description: "Comprehensive BMI analysis with health metrics assessment and personalized recommendations for optimal body weight management.",
-      icon: "bi-calculator",
+      description: "Comprehensive BMI analysis with health metrics assessment and personalized recommendations.",
+      icon: "bi-calculator-fill",
       link: "/bmi-prediction",
-      color: "success"
+      color: "success",
+      gradient: "linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%)"
     }
   ];
 
@@ -80,145 +95,106 @@ const Home = () => {
   return (
     <>
       {/* Hero Section with Carousel */}
-      <div className="position-relative">
+      <div className="position-relative overflow-hidden">
+        <div className="overlay-gradient position-absolute w-100 h-100" style={{ background: 'linear-gradient(to bottom, rgba(15, 23, 42, 0.3), rgba(15, 23, 42, 0.8))', zIndex: 1, pointerEvents: 'none' }}></div>
         <Slider {...settings}>
-          {/* Slide 1 */}
           <div>
-            <img
-              src="https://res.cloudinary.com/dmilgqv8u/image/upload/v1742818759/sleep_rig5bj.jpg"
-              alt="Sleep Health"
-              className="w-100"
-              style={{ height: "600px", objectFit: "cover", filter: "brightness(0.7)" }}
-            />
+            <img src={heroSleep} alt="Sleep Health" className="w-100 vh-100 object-fit-cover" />
           </div>
-
-          {/* Slide 2 */}
           <div>
-            <img
-              src="https://res.cloudinary.com/dmilgqv8u/image/upload/v1742818725/Doctor_ixnlix.jpg"
-              alt="Healthcare Professionals"
-              className="w-100"
-              style={{ height: "600px", objectFit: "cover", filter: "brightness(0.7)" }}
-            />
+            <img src={heroMedical} alt="Healthcare Professionals" className="w-100 vh-100 object-fit-cover" />
           </div>
-
-          {/* Slide 3 */}
           <div>
-            <img
-              src="https://res.cloudinary.com/dmilgqv8u/image/upload/v1742818739/nutration_qaszvp.jpg"
-              alt="Nutrition"
-              className="w-100"
-              style={{ height: "600px", objectFit: "cover", filter: "brightness(0.7)" }}
-            />
+            <img src={heroNutrition} alt="Nutrition" className="w-100 vh-100 object-fit-cover" />
           </div>
-
-          {/* Slide 4 */}
           <div>
-            <img
-              src="https://res.cloudinary.com/dmilgqv8u/image/upload/v1742818750/food2_oskiwj.jpg"
-              alt="Healthy Food"
-              className="w-100"
-              style={{ height: "600px", objectFit: "cover", filter: "brightness(0.7)" }}
-            />
-          </div>
-
-          {/* Slide 5 */}
-          <div>
-            <img
-              src="https://res.cloudinary.com/dmilgqv8u/image/upload/v1742818737/food_f8azyx.jpg"
-              alt="Balanced Diet"
-              className="w-100"
-              style={{ height: "600px", objectFit: "cover", filter: "brightness(0.7)" }}
-            />
-          </div>
-
-          {/* Slide 6 */}
-          <div>
-            <img
-              src="https://res.cloudinary.com/dmilgqv8u/image/upload/v1742818754/stress_i1ealz.jpg"
-              alt="Mental Wellness"
-              className="w-100"
-              style={{ height: "600px", objectFit: "cover", filter: "brightness(0.7)" }}
-            />
+            <img src={heroMental} alt="Mental Wellness" className="w-100 vh-100 object-fit-cover" />
           </div>
         </Slider>
 
         {/* Hero Content Overlay */}
         <div
-          className="position-absolute top-50 start-50 translate-middle text-center text-white w-75"
+          className="position-absolute top-50 start-50 translate-middle text-center text-white w-100 px-3"
           style={{ zIndex: 2 }}
         >
-          <TypingText />
-          <p className="lead mb-4 fs-4">
-            AI-powered health analytics for personalized wellness insights
-          </p>
-          <div className="d-flex justify-content-center gap-3">
-            <Link to="/sleep-disorder" className="btn btn-primary btn-lg">
-              Try Sleep Analysis
-            </Link>
-            <Link to="/about" className="btn btn-outline-light btn-lg">
-              Learn More
-            </Link>
+          <div className="glass-card p-5 d-inline-block animate-float" style={{ background: 'rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255, 255, 255, 0.2)' }}>
+            <h1 className="display-3 fw-bold mb-3 text-white text-shadow">MedLytics AI</h1>
+            <div className="mb-4">
+              <TypingText />
+            </div>
+            <p className="lead mb-4 fs-4 text-white-50">
+              Advanced health analytics for personalized wellness insights
+            </p>
+            <div className="d-flex justify-content-center gap-3">
+              <Link to="/sleep-disorder" className="btn btn-primary btn-lg rounded-pill px-5 py-3 fw-bold shadow-glow">
+                Start Analysis
+              </Link>
+              <Link to="/about" className="btn btn-outline-light btn-lg rounded-pill px-5 py-3 fw-bold backdrop-blur">
+                Learn More
+              </Link>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Stats Section */}
-      <section className="py-5 bg-light">
+      <section className="py-5 position-relative">
         <div className="container">
           <div className="row g-4 text-center">
-            <div className="col-md-3 col-6">
-              <div className="p-4 bg-white rounded shadow-sm">
-                <h2 className="display-4 fw-bold text-primary">98%</h2>
-                <p className="text-muted mb-0">Accuracy Rate</p>
+            {[
+              { value: "98%", label: "Accuracy Rate", color: "primary" },
+              { value: "10k+", label: "Users Helped", color: "success" },
+              { value: "4", label: "Core Services", color: "info" },
+              { value: "24/7", label: "AI Support", color: "warning" }
+            ].map((stat, index) => (
+              <div key={index} className="col-md-3 col-6">
+                <div className="glass-card p-4 h-100 animate-pulse" style={{ animationDelay: `${index * 0.5}s` }}>
+                  <h2 className={`display-4 fw-bold text-${stat.color}`}>{stat.value}</h2>
+                  <p className="text-muted mb-0 fw-medium">{stat.label}</p>
+                </div>
               </div>
-            </div>
-            <div className="col-md-3 col-6">
-              <div className="p-4 bg-white rounded shadow-sm">
-                <h2 className="display-4 fw-bold text-success">10k+</h2>
-                <p className="text-muted mb-0">Users Helped</p>
-              </div>
-            </div>
-            <div className="col-md-3 col-6">
-              <div className="p-4 bg-white rounded shadow-sm">
-                <h2 className="display-4 fw-bold text-info">4</h2>
-                <p className="text-muted mb-0">Health Services</p>
-              </div>
-            </div>
-            <div className="col-md-3 col-6">
-              <div className="p-4 bg-white rounded shadow-sm">
-                <h2 className="display-4 fw-bold text-warning">24/7</h2>
-                <p className="text-muted mb-0">Support Available</p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* Services Section */}
-      <section className="py-5">
-        <div className="container">
+      <section className="py-5 bg-light position-relative overflow-hidden">
+        <div className="position-absolute top-0 end-0 p-5 opacity-10">
+          <i className="bi bi-activity text-primary display-1"></i>
+        </div>
+        <div className="container position-relative">
           <div className="text-center mb-5">
-            <h2 className="display-5 fw-bold">Our Services</h2>
-            <p className="lead text-muted">
-              Comprehensive health analytics powered by AI technology
+            <span className="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill mb-3">OUR EXPERTISE</span>
+            <h2 className="display-5 fw-bold mb-3">Comprehensive Health Services</h2>
+            <p className="lead text-muted mx-auto" style={{ maxWidth: '700px' }}>
+              Powered by advanced machine learning algorithms to provide accurate health predictions.
             </p>
           </div>
 
           <div className="row g-4">
             {services.map((service) => (
               <div key={service.id} className="col-lg-6 col-md-6">
-                <div className="card h-100 border-0 shadow-sm">
-                  <div className="card-body p-4">
-                    <div className={`d-inline-flex align-items-center justify-content-center bg-${service.color} bg-opacity-10 p-3 rounded-circle mb-3`}>
-                      <i className={`bi ${service.icon} fs-3 text-${service.color}`}></i>
-                    </div>
-                    <h3 className="card-title h4">{service.title}</h3>
-                    <p className="card-text text-muted">{service.description}</p>
-                    <Link to={service.link} className={`btn btn-outline-${service.color} mt-2`}>
-                      Learn More <i className="bi bi-arrow-right"></i>
-                    </Link>
+                <div className="glass-card h-100 p-4 position-relative overflow-hidden group-hover">
+                  <div className="position-absolute top-0 end-0 p-3 opacity-10">
+                    <i className={`bi ${service.icon} display-1 text-${service.color}`}></i>
                   </div>
+                  <div className="d-flex align-items-start mb-4">
+                    <div className="rounded-2xl p-3 text-white me-3 shadow-md" style={{ background: service.gradient }}>
+                      {service.id === 1 ? (
+                        <img src={iconSleep} alt="Sleep Icon" style={{ width: '32px', height: '32px', filter: 'brightness(0) invert(1)' }} />
+                      ) : (
+                        <i className={`bi ${service.icon} fs-3`}></i>
+                      )}
+                    </div>
+                    <div>
+                      <h3 className="h4 fw-bold mb-2">{service.title}</h3>
+                      <p className="text-muted mb-0">{service.description}</p>
+                    </div>
+                  </div>
+                  <Link to={service.link} className={`btn btn-outline-${service.color} rounded-pill w-100 fw-bold`}>
+                    Explore Service <i className="bi bi-arrow-right ms-2"></i>
+                  </Link>
                 </div>
               </div>
             ))}
@@ -227,7 +203,7 @@ const Home = () => {
       </section>
 
       {/* How It Works Section */}
-      <section className="py-5 bg-light">
+      <section className="py-5">
         <div className="container">
           <div className="text-center mb-5">
             <h2 className="display-5 fw-bold">How It Works</h2>
@@ -235,105 +211,63 @@ const Home = () => {
           </div>
 
           <div className="row g-4">
-            <div className="col-md-4">
-              <div className="text-center p-4">
-                <div className="rounded-circle bg-primary text-white fs-3 d-inline-flex align-items-center justify-content-center mb-3" style={{ width: "80px", height: "80px" }}>
-                  <i className="bi bi-1-circle-fill"></i>
+            {[
+              { step: 1, title: "Create Account", desc: "Sign up in seconds to access tools.", icon: "bi-person-plus-fill" },
+              { step: 2, title: "Answer Questions", desc: "Complete scientifically designed questionnaires.", icon: "bi-clipboard-data-fill" },
+              { step: 3, title: "Get Insights", desc: "Receive AI-generated analysis instantly.", icon: "bi-lightning-charge-fill" }
+            ].map((item, index) => (
+              <div key={index} className="col-md-4">
+                <div className="text-center p-4 glass-card h-100 position-relative">
+                  <div className="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-primary fs-5 shadow-sm">
+                    {item.step}
+                  </div>
+                  <div className="rounded-circle bg-gradient-primary text-white fs-2 d-inline-flex align-items-center justify-content-center mb-4 shadow-glow" style={{ width: "80px", height: "80px" }}>
+                    <i className={`bi ${item.icon}`}></i>
+                  </div>
+                  <h3 className="h4 fw-bold">{item.title}</h3>
+                  <p className="text-muted">{item.desc}</p>
                 </div>
-                <h3 className="h4">Create an Account</h3>
-                <p className="text-muted">
-                  Sign up in seconds to access our full suite of health analytics tools.
-                </p>
               </div>
-            </div>
-
-            <div className="col-md-4">
-              <div className="text-center p-4">
-                <div className="rounded-circle bg-primary text-white fs-3 d-inline-flex align-items-center justify-content-center mb-3" style={{ width: "80px", height: "80px" }}>
-                  <i className="bi bi-2-circle-fill"></i>
-                </div>
-                <h3 className="h4">Answer Questions</h3>
-                <p className="text-muted">
-                  Complete our scientifically designed questionnaires about your health.
-                </p>
-              </div>
-            </div>
-
-            <div className="col-md-4">
-              <div className="text-center p-4">
-                <div className="rounded-circle bg-primary text-white fs-3 d-inline-flex align-items-center justify-content-center mb-3" style={{ width: "80px", height: "80px" }}>
-                  <i className="bi bi-3-circle-fill"></i>
-                </div>
-                <h3 className="h4">Get Personalized Insights</h3>
-                <p className="text-muted">
-                  Receive AI-generated analysis and recommendations tailored to you.
-                </p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="py-5">
+      <section className="py-5 bg-light">
         <div className="container">
           <div className="row align-items-center">
             <div className="col-lg-6 mb-4 mb-lg-0">
-              <img 
-                src="https://res.cloudinary.com/dmilgqv8u/image/upload/v1747517504/ChatGPT_Image_May_18_2025_02_59_40_AM_jysenz.png" 
-                alt="Health Analytics Dashboard" 
-                className="img-fluid rounded shadow"
-              />
+              <div className="position-relative animate-float">
+                <div className="position-absolute top-0 start-0 w-100 h-100 bg-gradient-primary opacity-25 rounded-2xl blur-xl" style={{ filter: 'blur(40px)', zIndex: 0 }}></div>
+                <img
+                  src={dashboardMockup}
+                  alt="Health Analytics Dashboard"
+                  className="img-fluid rounded-2xl shadow-lg position-relative"
+                  style={{ zIndex: 1 }}
+                />
+              </div>
             </div>
-            <div className="col-lg-6">
-              <h2 className="display-6 fw-bold mb-4">Why Choose MedLytics?</h2>
-              
-              <div className="d-flex mb-4">
-                <div className="me-3">
-                  <span className="badge rounded-pill bg-primary p-2">
-                    <i className="bi bi-shield-check fs-5"></i>
-                  </span>
-                </div>
-                <div>
-                  <h4>Privacy-Focused</h4>
-                  <p className="text-muted">Your health data is encrypted and never shared without your consent.</p>
-                </div>
-              </div>
-              
-              <div className="d-flex mb-4">
-                <div className="me-3">
-                  <span className="badge rounded-pill bg-primary p-2">
-                    <i className="bi bi-graph-up fs-5"></i>
-                  </span>
-                </div>
-                <div>
-                  <h4>Advanced Analytics</h4>
-                  <p className="text-muted">Cutting-edge AI algorithms analyze your data to provide accurate insights.</p>
-                </div>
-              </div>
-              
-              <div className="d-flex mb-4">
-                <div className="me-3">
-                  <span className="badge rounded-pill bg-primary p-2">
-                    <i className="bi bi-person-check fs-5"></i>
-                  </span>
-                </div>
-                <div>
-                  <h4>Expert-Backed</h4>
-                  <p className="text-muted">Our tools are developed in collaboration with healthcare professionals.</p>
-                </div>
-              </div>
-              
-              <div className="d-flex">
-                <div className="me-3">
-                  <span className="badge rounded-pill bg-primary p-2">
-                    <i className="bi bi-lightning-charge fs-5"></i>
-                  </span>
-                </div>
-                <div>
-                  <h4>Real-Time Updates</h4>
-                  <p className="text-muted">Get immediate feedback and track your progress over time.</p>
-                </div>
+            <div className="col-lg-6 ps-lg-5">
+              <span className="text-primary fw-bold letter-spacing-2">WHY CHOOSE US</span>
+              <h2 className="display-4 fw-bold mb-4">Advanced AI Health Analytics</h2>
+
+              <div className="d-flex flex-column gap-4">
+                {[
+                  { title: "Privacy-Focused", desc: "Your health data is encrypted and never shared.", icon: "bi-shield-lock-fill", color: "primary" },
+                  { title: "Advanced Analytics", desc: "Cutting-edge AI algorithms for accurate insights.", icon: "bi-cpu-fill", color: "secondary" },
+                  { title: "Expert-Backed", desc: "Developed with healthcare professionals.", icon: "bi-award-fill", color: "success" }
+                ].map((feature, idx) => (
+                  <div key={idx} className="d-flex align-items-start">
+                    <div className={`rounded-xl p-3 bg-${feature.color} bg-opacity-10 text-${feature.color} me-3`}>
+                      <i className={`bi ${feature.icon} fs-4`}></i>
+                    </div>
+                    <div>
+                      <h4 className="h5 fw-bold mb-1">{feature.title}</h4>
+                      <p className="text-muted mb-0">{feature.desc}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -341,32 +275,30 @@ const Home = () => {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-5 bg-light">
+      <section className="py-5">
         <div className="container">
           <div className="text-center mb-5">
-            <h2 className="display-5 fw-bold">What Our Users Say</h2>
-            <p className="lead text-muted">Real stories from people who've used MedLytics</p>
+            <h2 className="display-5 fw-bold">User Success Stories</h2>
           </div>
 
           <div className="row g-4">
             {testimonials.map((testimonial) => (
               <div key={testimonial.id} className="col-lg-4 col-md-6">
-                <div className="card h-100 border-0 shadow-sm">
-                  <div className="card-body p-4">
-                    <div className="mb-3">
-                      {[...Array(5)].map((_, i) => (
-                        <i key={i} className="bi bi-star-fill text-warning me-1"></i>
-                      ))}
+                <div className="glass-card h-100 p-4 position-relative">
+                  <i className="bi bi-quote display-1 text-primary opacity-10 position-absolute top-0 start-0 ms-3"></i>
+                  <div className="mb-3 position-relative">
+                    {[...Array(5)].map((_, i) => (
+                      <i key={i} className="bi bi-star-fill text-warning me-1"></i>
+                    ))}
+                  </div>
+                  <p className="card-text mb-4 fst-italic position-relative">&ldquo;{testimonial.text}&rdquo;</p>
+                  <div className="d-flex align-items-center border-top pt-3">
+                    <div className="rounded-circle bg-gradient-medical text-white d-flex align-items-center justify-content-center me-3 shadow-sm" style={{ width: "50px", height: "50px", fontSize: "1.2rem", fontWeight: "bold" }}>
+                      {testimonial.author.charAt(0)}
                     </div>
-                    <p className="card-text mb-4">&ldquo;{testimonial.text}&rdquo;</p>
-                    <div className="d-flex align-items-center">
-                      <div className="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center me-3" style={{ width: "50px", height: "50px" }}>
-                        <i className="bi bi-person-circle fs-4 text-primary"></i>
-                      </div>
-                      <div>
-                        <h6 className="mb-0">{testimonial.author}</h6>
-                        <small className="text-muted">{testimonial.role}</small>
-                      </div>
+                    <div>
+                      <h6 className="mb-0 fw-bold">{testimonial.author}</h6>
+                      <small className="text-primary">{testimonial.role}</small>
                     </div>
                   </div>
                 </div>
@@ -377,21 +309,19 @@ const Home = () => {
       </section>
 
       {/* Call to Action */}
-      <section className="py-5 bg-primary text-white">
-        <div className="container">
-          <div className="row align-items-center">
+      <section className="py-5 position-relative overflow-hidden">
+        <div className="position-absolute top-0 start-0 w-100 h-100 bg-gradient-primary" style={{ zIndex: 0 }}></div>
+        <div className="container position-relative" style={{ zIndex: 1 }}>
+          <div className="row align-items-center text-white">
             <div className="col-lg-8 mb-4 mb-lg-0">
-              <h2 className="display-5 fw-bold mb-2">Ready to gain health insights?</h2>
-              <p className="lead mb-0">
+              <h2 className="display-5 fw-bold mb-2">Ready to transform your health?</h2>
+              <p className="lead mb-0 opacity-75">
                 Join thousands of users who have improved their wellness with MedLytics.
               </p>
             </div>
             <div className="col-lg-4 text-lg-end">
-              <Link to="/login" className="btn btn-light btn-lg me-2">
-                Get Started
-              </Link>
-              <Link to="/contact" className="btn btn-outline-light btn-lg">
-                Contact Us
+              <Link to="/login" className="btn btn-light btn-lg me-2 rounded-pill px-4 shadow-lg text-primary fw-bold">
+                Get Started Now
               </Link>
             </div>
           </div>
@@ -399,67 +329,33 @@ const Home = () => {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-5">
+      <section className="py-5 bg-light">
         <div className="container">
           <div className="text-center mb-5">
-            <h2 className="display-5 fw-bold">Frequently Asked Questions</h2>
-            <p className="lead text-muted">Answers to common questions about our services</p>
+            <h2 className="display-5 fw-bold">FAQ</h2>
           </div>
 
           <div className="row">
             <div className="col-lg-8 mx-auto">
               <div className="accordion" id="faqAccordion">
-                <div className="accordion-item border mb-3 shadow-sm">
-                  <h3 className="accordion-header" id="headingOne">
-                    <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                      How accurate are the health predictions?
-                    </button>
-                  </h3>
-                  <div id="collapseOne" className="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
-                    <div className="accordion-body">
-                      Our AI models have been trained on extensive datasets and validated with healthcare professionals. They offer up to 98% accuracy in predictions, though we always recommend consulting with healthcare providers for definitive diagnoses.
+                {[
+                  { q: "How accurate are the health predictions?", a: "Our AI models have been trained on extensive datasets and validated with healthcare professionals. They offer up to 98% accuracy in predictions." },
+                  { q: "Is my health data secure?", a: "Absolutely. We use industry-standard encryption to protect your data, and we never share your personal information with third parties." },
+                  { q: "Do I need any special equipment?", a: "No special equipment is needed. Our assessments are questionnaire-based and can be completed from any device." }
+                ].map((item, index) => (
+                  <div key={index} className="accordion-item border-0 mb-3 shadow-sm rounded-3 overflow-hidden">
+                    <h3 className="accordion-header" id={`heading${index}`}>
+                      <button className="accordion-button collapsed fw-bold bg-white" type="button" data-bs-toggle="collapse" data-bs-target={`#collapse${index}`} aria-expanded="false">
+                        {item.q}
+                      </button>
+                    </h3>
+                    <div id={`collapse${index}`} className="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                      <div className="accordion-body bg-white text-muted">
+                        {item.a}
+                      </div>
                     </div>
                   </div>
-                </div>
-                
-                <div className="accordion-item border mb-3 shadow-sm">
-                  <h3 className="accordion-header" id="headingTwo">
-                    <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                      Is my health data secure?
-                    </button>
-                  </h3>
-                  <div id="collapseTwo" className="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
-                    <div className="accordion-body">
-                      Absolutely. We use industry-standard encryption to protect your data, and we never share your personal information with third parties without your explicit consent. Your privacy is our top priority.
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="accordion-item border mb-3 shadow-sm">
-                  <h3 className="accordion-header" id="headingThree">
-                    <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                      Do I need any special equipment for the assessments?
-                    </button>
-                  </h3>
-                  <div id="collapseThree" className="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
-                    <div className="accordion-body">
-                      No special equipment is needed. Our assessments are questionnaire-based and can be completed from any device with internet access. For some advanced features, you can optionally connect wearable devices for more detailed analysis.
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="accordion-item border shadow-sm">
-                  <h3 className="accordion-header" id="headingFour">
-                    <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
-                      Can MedLytics replace medical consultations?
-                    </button>
-                  </h3>
-                  <div id="collapseFour" className="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#faqAccordion">
-                    <div className="accordion-body">
-                      MedLytics is designed to complement, not replace, professional medical care. Our tools provide valuable insights and early detection of potential issues, but we always recommend consulting with healthcare professionals for diagnosis and treatment.
-                    </div>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
           </div>

@@ -3,12 +3,13 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getSleepHistory } from '../services/sleepService';
-import { useAuth0 } from '@auth0/auth0-react';
+import { useAuth } from '../contexts/useAuth';
 import './SleepResult.css';
 
 const SleepHistory = () => {
   const navigate = useNavigate();
-  const { user, getAccessTokenSilently, isAuthenticated, loginWithRedirect, isLoading: authLoading } = useAuth0();
+  const { user, isAuthenticated, loginWithRedirect, loading } = useAuth();
+  const navigate = useNavigate();
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -24,7 +25,7 @@ const SleepHistory = () => {
         setLoading(true);
         setError(null);
         console.log('Fetching sleep history for user:', user?.sub);
-        const data = await getSleepHistory(getAccessTokenSilently);
+        const data = await getSleepHistory();
         console.log('Sleep history response:', data);
         const sortedData = data.sort((a, b) => new Date(b.date) - new Date(a.date));
         setHistory(sortedData);
@@ -43,7 +44,7 @@ const SleepHistory = () => {
     if (!authLoading) {
       fetchHistory();
     }
-  }, [isAuthenticated, getAccessTokenSilently, authLoading, user]);
+  }, [isAuthenticated, authLoading, user]);
 
   const getBadgeColor = (risk) => {
     switch (risk?.toLowerCase()) {

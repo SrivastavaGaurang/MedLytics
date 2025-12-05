@@ -3,12 +3,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { analyzeSleep } from '../services/sleepService';
-import { useAuth0 } from '@auth0/auth0-react';
+import { useAuth } from '../contexts/useAuth';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const SleepDisorder = () => {
   const navigate = useNavigate();
-  const { user, isAuthenticated, loginWithRedirect } = useAuth0();
+  const { user, isAuthenticated, loginWithRedirect } = useAuth();
+
   const [formData, setFormData] = useState({
     age: '',
     gender: '',

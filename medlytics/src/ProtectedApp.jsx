@@ -1,20 +1,17 @@
-// ProtectedApp.jsx or .tsx if you're using TypeScript
+// ProtectedApp.jsx
 import React from 'react';
-import { useAuth0 } from '@auth0/auth0-react';
+import { useAuth } from './contexts/useAuth';
+import LoadingFallback from './components/LoadingFallback';
 
 const ProtectedApp = ({ children }) => {
-  const { isLoading, isAuthenticated, loginWithRedirect } = useAuth0();
+  const { isAuthenticated, loading } = useAuth();
 
-  React.useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      loginWithRedirect();
-    }
-  }, [isLoading, isAuthenticated, loginWithRedirect]);
-
-  if (isLoading || !isAuthenticated) {
-    return <div>Loading...</div>; // You can replace this with a spinner or splash screen
+  if (loading) {
+    return <LoadingFallback message="Checking authentication..." />;
   }
 
+  // If not authenticated, the App.jsx routes will handle showing Login
+  // This component just shows loading state during auth check
   return children;
 };
 

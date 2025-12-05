@@ -1,22 +1,14 @@
 // src/services/bmiService.js
-import axios from 'axios';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+import apiClient, { createAuthenticatedClient } from './api';
 
 /**
  * Analyze BMI data by sending it to the backend API
  * @param {Object} bmiData - User's BMI assessment data
- * @param {string|null} token - Optional Auth0 access token
  * @returns {Promise<Object>} - Analyzed BMI data from the server
  */
-export const analyzeBMI = async (bmiData, token = null) => {
+export const analyzeBMI = async (bmiData) => {
   try {
-    let headers = { 'Content-Type': 'application/json' };
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
-    }
-
-    const response = await axios.post(`${API_URL}/bmi/analyze`, bmiData, { headers });
+    const response = await apiClient.post('/bmi/analyze', bmiData);
     return response.data;
   } catch (error) {
     console.error('Error analyzing BMI data:', error);
@@ -31,7 +23,7 @@ export const analyzeBMI = async (bmiData, token = null) => {
  */
 export const getBMIResult = async (id) => {
   try {
-    const response = await axios.get(`${API_URL}/bmi/results/${id}`);
+    const response = await apiClient.get(`/bmi/results/${id}`);
     return response.data;
   } catch (error) {
     console.error('Error fetching BMI result:', error);
@@ -41,17 +33,13 @@ export const getBMIResult = async (id) => {
 
 /**
  * Get BMI history for the current user
- * @param {string} token - Auth0 access token
+ * @param {Function} getAccessTokenSilently - Auth0 token getter
  * @returns {Promise<Array>} - Array of BMI analysis results
  */
-export const getBMIHistory = async (token) => {
+export const getBMIHistory = async (getAccessTokenSilently) => {
   try {
-    const response = await axios.get(`${API_URL}/bmi/history`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
-
+    const client = await createAuthenticatedClient(getAccessTokenSilently);
+    const response = await client.get('/bmi/history');
     return response.data;
   } catch (error) {
     console.error('Error fetching BMI history:', error);

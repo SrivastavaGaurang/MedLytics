@@ -1,7 +1,7 @@
 // routes/blog.js
 import express from 'express';
 import Blog from '../models/Blog.js';
-import { jwtAuth0Check } from '../middleware/auth.js'; // Change to jwtAuth0Check
+import auth from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -30,8 +30,8 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// Create new blog (protected with Auth0)
-router.post('/', jwtAuth0Check, async (req, res) => {
+// Create new blog (protected)
+router.post('/', auth, async (req, res) => {
   try {
     const { title, content, summary, image, author, tags } = req.body;
     const newBlog = new Blog({
@@ -50,8 +50,8 @@ router.post('/', jwtAuth0Check, async (req, res) => {
   }
 });
 
-// Update blog (protected with Auth0)
-router.put('/:id', jwtAuth0Check, async (req, res) => {
+// Update blog (protected)
+router.put('/:id', auth, async (req, res) => {
   try {
     const { title, content, summary, image, author, tags } = req.body;
     const updatedBlog = await Blog.findByIdAndUpdate(
@@ -69,8 +69,8 @@ router.put('/:id', jwtAuth0Check, async (req, res) => {
   }
 });
 
-// Delete blog (protected with Auth0)
-router.delete('/:id', jwtAuth0Check, async (req, res) => {
+// Delete blog (protected)
+router.delete('/:id', auth, async (req, res) => {
   try {
     const deletedBlog = await Blog.findByIdAndDelete(req.params.id);
     if (!deletedBlog) {

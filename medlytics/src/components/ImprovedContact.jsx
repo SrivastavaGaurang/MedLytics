@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 import 'react-toastify/dist/ReactToastify.css';
 import './ContactPage.css';
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"></link>
+
 
 
 const SERVER_URL = 'http://localhost:5000';
@@ -79,8 +79,8 @@ const ImprovedContact = () => {
             <div className="contact-info p-4 rounded-3 shadow-lg">
               <h2 className="h4 mb-4">Contact Details</h2>
               {[
-                 { icon: 'geo-alt-fill', title: 'Location', content: 'Lovely Professional University, Jalandhar, Punjab 144411' },
-                 { icon: 'telephone-fill', title: 'Phone', content: '+91 6389697117', link: 'tel:+916389697117' },                { icon: 'envelope-fill', title: 'Email', content: 'support@medlytics.com', link: 'mailto:support@medlytics.com' },
+                { icon: 'geo-alt-fill', title: 'Location', content: 'Lovely Professional University, Jalandhar, Punjab 144411' },
+                { icon: 'telephone-fill', title: 'Phone', content: '+91 6389697117', link: 'tel:+916389697117' }, { icon: 'envelope-fill', title: 'Email', content: 'support@medlytics.com', link: 'mailto:support@medlytics.com' },
                 { icon: 'clock-fill', title: 'Hours', content: 'Mon–Fri: 9–5, Sat: 10–2, Sun: Closed' }
               ].map(({ icon, title, content, link }, idx) => (
                 <div className="d-flex mb-4" key={idx}>
