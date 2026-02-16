@@ -7,7 +7,7 @@ import {
   FaPlus, FaEdit, FaTrash, FaSearch, FaTags, FaClock,
   FaCalendarAlt, FaBookmark, FaUser, FaEye, FaHeart, FaComment
 } from 'react-icons/fa';
-import './Medblog.css';
+import './MedBlogPage.css';
 
 const MedBlog = () => {
   const [blogs, setBlogs] = useState([]);

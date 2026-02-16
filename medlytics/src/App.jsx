@@ -19,7 +19,7 @@ const AboutUs = lazy(() => import('./components/AboutUs'));
 const Services = lazy(() => import('./components/Services'));
 const Doctors = lazy(() => import('./components/Doctors'));
 const BlogDetail = lazy(() => import('./components/blogs/BlogDetail'));
-const Blog = lazy(() => import('./components/blogs/Medblog'));
+const Blog = lazy(() => import('./components/blogs/MedBlogPage'));
 const CreateBlog = lazy(() => import('./components/blogs/BlogDashboard'));
 const EditBlog = lazy(() => import('./components/blogs/EditBlog'));
 const SleepDisorder = lazy(() => import('./pages/SleepDisorder'));
