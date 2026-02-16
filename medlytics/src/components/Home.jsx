@@ -643,8 +643,7 @@ const Home = () => {
                 </div>
               </div>
             </div>
-          </motion.div>
-            ))}
+          </div>
         </div>
 
         {/* Trust badge */}
@@ -654,11 +653,10 @@ const Home = () => {
             Trusted by 50,000+ users worldwide
           </p>
         </div>
-      </div>
-    </section >
+      </section >
 
-      {/* Call to Action */ }
-      < section className = "section-padding-md position-relative overflow-hidden" >
+      {/* Call to Action */}
+      < section className="section-padding-md position-relative overflow-hidden" >
         <div className="position-absolute top-0 start-0 w-100 h-100 bg-gradient-primary" style={{ zIndex: 0 }}></div>
         <div className="container max-content-width position-relative" style={{ zIndex: 1 }}>
           <div className="row align-items-center text-white">
@@ -677,38 +675,38 @@ const Home = () => {
         </div>
       </section >
 
-  {/* FAQ Section */ }
-  < section className = "section-padding-md bg-gradient-section" >
-    <div className="container max-content-width">
-      <div className="text-center mb-5">
-        <h2 className="display-5 fw-bold">FAQ</h2>
-      </div>
+      {/* FAQ Section */}
+      < section className="section-padding-md bg-gradient-section" >
+        <div className="container max-content-width">
+          <div className="text-center mb-5">
+            <h2 className="display-5 fw-bold">FAQ</h2>
+          </div>
 
-      <div className="row">
-        <div className="col-lg-8 mx-auto">
-          <div className="accordion" id="faqAccordion">
-            {[
-              { q: "How accurate are the health predictions?", a: "Our AI models have been trained on extensive datasets and validated with healthcare professionals. They offer up to 98% accuracy in predictions." },
-              { q: "Is my health data secure?", a: "Absolutely. We use industry-standard encryption to protect your data, and we never share your personal information with third parties." },
-              { q: "Do I need any special equipment?", a: "No special equipment is needed. Our assessments are questionnaire-based and can be completed from any device." }
-            ].map((item, index) => (
-              <div key={index} className="accordion-item border-0 mb-3 shadow-sm rounded-3 overflow-hidden">
-                <h3 className="accordion-header" id={`heading${index}`}>
-                  <button className="accordion-button collapsed fw-bold bg-white" type="button" data-bs-toggle="collapse" data-bs-target={`#collapse${index}`} aria-expanded="false">
-                    {item.q}
-                  </button>
-                </h3>
-                <div id={`collapse${index}`} className="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                  <div className="accordion-body bg-white text-muted">
-                    {item.a}
+          <div className="row">
+            <div className="col-lg-8 mx-auto">
+              <div className="accordion" id="faqAccordion">
+                {[
+                  { q: "How accurate are the health predictions?", a: "Our AI models have been trained on extensive datasets and validated with healthcare professionals. They offer up to 98% accuracy in predictions." },
+                  { q: "Is my health data secure?", a: "Absolutely. We use industry-standard encryption to protect your data, and we never share your personal information with third parties." },
+                  { q: "Do I need any special equipment?", a: "No special equipment is needed. Our assessments are questionnaire-based and can be completed from any device." }
+                ].map((item, index) => (
+                  <div key={index} className="accordion-item border-0 mb-3 shadow-sm rounded-3 overflow-hidden">
+                    <h3 className="accordion-header" id={`heading${index}`}>
+                      <button className="accordion-button collapsed fw-bold bg-white" type="button" data-bs-toggle="collapse" data-bs-target={`#collapse${index}`} aria-expanded="false">
+                        {item.q}
+                      </button>
+                    </h3>
+                    <div id={`collapse${index}`} className="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                      <div className="accordion-body bg-white text-muted">
+                        {item.a}
+                      </div>
+                    </div>
                   </div>
-                </div>
+                ))}
               </div>
-            ))}
+            </div>
           </div>
         </div>
-      </div>
-    </div>
       </section >
     </>
   );
