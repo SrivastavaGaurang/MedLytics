@@ -58,7 +58,7 @@ const AnxietyAnalysisSchema = new Schema({
   result: {
     anxietySeverity: {
       type: String,
-      enum: ['Minimal', 'Mild', 'Moderate', 'Severe'],
+      enum: ['Minimal', 'Mild', 'Moderate', 'Moderate-Severe', 'Severe'],
       default: null
     },
     anxietyType: {

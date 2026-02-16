@@ -3,13 +3,12 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getSleepHistory } from '../services/sleepService';
-import { useAuth } from '../contexts/useAuth';
+import { useAuth } from '../contexts/AuthContext';
 import './SleepResult.css';
 
 const SleepHistory = () => {
   const navigate = useNavigate();
-  const { user, isAuthenticated, loginWithRedirect, loading } = useAuth();
-  const navigate = useNavigate();
+  const { user, isAuthenticated, loading: authLoading } = useAuth();
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -109,7 +108,7 @@ const SleepHistory = () => {
             <p className="mb-4">Login to access your personal sleep analysis history and track your progress over time.</p>
             <button
               className="btn btn-primary"
-              onClick={() => loginWithRedirect({ appState: { returnTo: '/sleep-history' } })}
+              onClick={() => navigate('/login')}
             >
               Log In
             </button>

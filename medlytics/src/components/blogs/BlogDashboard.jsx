@@ -2,13 +2,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createBlog } from '../../services/blogService';
-import { useAuth } from '../../contexts/useAuth';
+import { useAuth } from '../../contexts/AuthContext';
 import { FaSave, FaTimes, FaPlus, FaImage, FaEye, FaEdit } from 'react-icons/fa';
 import ReactMarkdown from 'react-markdown';
 
 const BlogDashboard = () => {
   const navigate = useNavigate();
-  const { user, isAuthenticated, loginWithRedirect } = useAuth();
+  const { user, isAuthenticated } = useAuth();
 
 
   const [formData, setFormData] = useState({
@@ -27,11 +27,9 @@ const BlogDashboard = () => {
   // Redirect to login if not authenticated
   React.useEffect(() => {
     if (!isAuthenticated) {
-      loginWithRedirect({
-        appState: { returnTo: window.location.pathname }
-      });
+      navigate('/login');
     }
-  }, [isAuthenticated, loginWithRedirect]);
+  }, [isAuthenticated, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

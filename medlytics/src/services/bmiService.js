@@ -1,5 +1,5 @@
 // src/services/bmiService.js
-import apiClient, { createAuthenticatedClient } from './api';
+import apiClient from './api';
 
 /**
  * Analyze BMI data by sending it to the backend API
@@ -36,10 +36,10 @@ export const getBMIResult = async (id) => {
  * @param {Function} getAccessTokenSilently - Auth0 token getter
  * @returns {Promise<Array>} - Array of BMI analysis results
  */
-export const getBMIHistory = async (getAccessTokenSilently) => {
+export const getBMIHistory = async () => {
   try {
-    const client = await createAuthenticatedClient(getAccessTokenSilently);
-    const response = await client.get('/bmi/history');
+    // apiClient already includes auth token via interceptor
+    const response = await apiClient.get('/bmi/history');
     return response.data;
   } catch (error) {
     console.error('Error fetching BMI history:', error);

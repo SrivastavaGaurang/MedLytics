@@ -2,7 +2,6 @@
 import express from 'express';
 import { check, validationResult } from 'express-validator';
 import Contact from '../models/Contact.js';
-import auth from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -27,7 +26,7 @@ router.post(
     try {
       // Create new contact form submission
       const { firstName, lastName, email, phone, subject, message } = req.body;
-      
+
       const newContact = new Contact({
         firstName,
         lastName,
@@ -57,9 +56,9 @@ router.post(
 );
 
 // @route   GET api/contact
-// @desc    Get all contact submissions (admin only)
-// @access  Private
-router.get('/', auth, async (req, res) => {
+// @desc    Get all contact submissions
+// @access  Public
+router.get('/', async (req, res) => {
   try {
     // Check if user has admin role (you'll need to implement this)
     // if (!req.user.isAdmin) {
@@ -75,12 +74,12 @@ router.get('/', auth, async (req, res) => {
 });
 
 // @route   GET api/contact/:id
-// @desc    Get contact by ID (admin only)
-// @access  Private
-router.get('/:id', auth, async (req, res) => {
+// @desc    Get contact by ID
+// @access  Public
+router.get('/:id', async (req, res) => {
   try {
     const contact = await Contact.findById(req.params.id);
-    
+
     if (!contact) {
       return res.status(404).json({ message: 'Contact not found' });
     }
@@ -88,33 +87,33 @@ router.get('/:id', auth, async (req, res) => {
     res.json(contact);
   } catch (err) {
     console.error('Error fetching contact:', err.message);
-    
+
     if (err.kind === 'ObjectId') {
       return res.status(404).json({ message: 'Contact not found' });
     }
-    
+
     res.status(500).json({ message: 'Server error' });
   }
 });
 
 // @route   PUT api/contact/:id
-// @desc    Update contact status (admin only)
-// @access  Private
-router.put('/:id', auth, async (req, res) => {
+// @desc    Update contact status
+// @access  Public
+router.put('/:id', async (req, res) => {
   try {
     const { status } = req.body;
-    
+
     // Find and update the contact
     const contact = await Contact.findByIdAndUpdate(
       req.params.id,
       { status, updatedAt: Date.now() },
       { new: true }
     );
-    
+
     if (!contact) {
       return res.status(404).json({ message: 'Contact not found' });
     }
-    
+
     res.json(contact);
   } catch (err) {
     console.error('Error updating contact:', err.message);

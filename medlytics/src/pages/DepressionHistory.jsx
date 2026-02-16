@@ -1,7 +1,7 @@
 // src/components/DepressionHistory.jsx
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../contexts/useAuth';
+import { useAuth } from '../contexts/AuthContext';
 import { getDepressionHistory } from '../services/depressionService';
 import { FaExclamationTriangle, FaCheckCircle, FaInfoCircle, FaCalendarAlt, FaChartLine } from 'react-icons/fa';
 
@@ -9,7 +9,7 @@ const DepressionHistory = () => {
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const {, isAuthenticated, loginWithRedirect } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -33,9 +33,7 @@ const DepressionHistory = () => {
   }, [isAuthenticated]);
 
   const handleLoginRedirect = () => {
-    loginWithRedirect({
-      appState: { returnTo: window.location.pathname }
-    });
+    navigate('/login');
   };
 
   // Function to render risk level badge with appropriate color
@@ -134,8 +132,8 @@ const DepressionHistory = () => {
                   <td>{renderRiskBadge(item.result.riskLevel)}</td>
                   <td>{item.result.depressionType || 'N/A'}</td>
                   <td>
-                    <Link 
-                      to={`/depression-results/${item._id}`} 
+                    <Link
+                      to={`/depression-results/${item._id}`}
                       className="btn btn-sm btn-outline-primary"
                     >
                       <FaChartLine className="me-1" /> View Details

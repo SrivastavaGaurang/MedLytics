@@ -1,12 +1,12 @@
 // src/pages/AnxietyPrediction.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/useAuth';
+import { useAuth } from '../contexts/AuthContext';
 import { analyzeAnxiety } from '../services/anxietyService';
 
 const AnxietyPrediction = () => {
   const navigate = useNavigate();
-  const { user, isAuthenticated, loginWithRedirect } = useAuth();
+  const { user, isAuthenticated } = useAuth();
 
   const [formData, setFormData] = useState({
     school_year: 1,
@@ -88,19 +88,11 @@ const AnxietyPrediction = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!isAuthenticated) {
-      setShowAuthPrompt(true);
-      return;
-    }
-
     setLoading(true);
     setError(null);
 
     try {
-      const authId = user?.sub;
-      if (!authId) {
-        throw new Error('Authentication required to analyze anxiety data');
-      }
+      const authId = user ? user._id : 'guest_' + Date.now();
 
       const payload = { ...formData, authId };
       const data = await analyzeAnxiety(payload);

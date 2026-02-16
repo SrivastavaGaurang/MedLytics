@@ -1,5 +1,5 @@
 // src/services/sleepService.js
-import apiClient, { createAuthenticatedClient } from './api';
+import apiClient from './api';
 
 /**
  * Send sleep data to the server for analysis
@@ -39,10 +39,10 @@ export const getSleepResult = async (id) => {
  * @param {Function} getAccessTokenSilently - Auth0 token getter
  * @returns {Promise<Array>} - Array of sleep analysis results
  */
-export const getSleepHistory = async (getAccessTokenSilently) => {
+export const getSleepHistory = async () => {
   try {
-    const client = await createAuthenticatedClient(getAccessTokenSilently);
-    const response = await client.get('/sleep/history');
+    // apiClient already includes auth token via interceptor
+    const response = await apiClient.get('/sleep/history');
     return response.data;
   } catch (error) {
     console.error('Error fetching sleep history:', error);

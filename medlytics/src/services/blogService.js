@@ -1,110 +1,83 @@
-// src/services/blogService.js
-import apiClient from './api';
+// services/blogService.js
+import axios from 'axios';
 
-/**
- * Get all blog posts
- */
-export const getAllBlogs = async () => {
-  try {
-    const response = await apiClient.get('/blogs');
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching blogs:', error);
-    throw error;
-  }
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
+// Get auth token from localStorage
+const getAuthHeader = () => {
+  const token = localStorage.getItem('token');
+  return token ? { headers: { Authorization: `Bearer ${token}` } } : {};
 };
 
-/**
- * Get a single blog post by ID
- * @param {string} id - Blog post ID
- */
+// Get all blogs with pagination
+export const getAllBlogs = async (page = 1, limit = 10) => {
+  const response = await axios.get(`${API_URL}/blog?page=${page}&limit=${limit}`);
+  return response.data;
+};
+
+// Get single blog by ID
 export const getBlogById = async (id) => {
-  try {
-    const response = await apiClient.get(`/blogs/${id}`);
-    return response.data;
-  } catch (error) {
-    console.error(`Error fetching blog with ID ${id}:`, error);
-    throw error;
-  }
+  const response = await axios.get(`${API_URL}/blog/${id}`);
+  return response.data;
 };
 
-/**
- * Create a new blog post
- * @param {Object} blogData - Blog data object
- */
+// Create new blog (requires authentication)
 export const createBlog = async (blogData) => {
-  try {
-    const response = await apiClient.post('/blogs', blogData);
-    return response.data;
-  } catch (error) {
-    console.error('Error creating blog:', error);
-    throw error;
-  }
+  const response = await axios.post(`${API_URL}/blog`, blogData, getAuthHeader());
+  return response.data;
 };
 
-/**
- * Update an existing blog post
- * @param {string} id - Blog post ID
- * @param {Object} blogData - Updated blog data
- */
+// Update blog (requires authentication and ownership)
 export const updateBlog = async (id, blogData) => {
-  try {
-    const response = await apiClient.put(`/blogs/${id}`, blogData);
-    return response.data;
-  } catch (error) {
-    console.error(`Error updating blog with ID ${id}:`, error);
-    throw error;
-  }
+  const response = await axios.put(`${API_URL}/blog/${id}`, blogData, getAuthHeader());
+  return response.data;
 };
 
-/**
- * Delete a blog post
- * @param {string} id - Blog post ID
- */
+// Delete blog (requires authentication and ownership)
 export const deleteBlog = async (id) => {
-  try {
-    const response = await apiClient.delete(`/blogs/${id}`);
-    return response.data;
-  } catch (error) {
-    console.error(`Error deleting blog with ID ${id}:`, error);
-    throw error;
-  }
+  const response = await axios.delete(`${API_URL}/blog/${id}`, getAuthHeader());
+  return response.data;
 };
 
-/**
- * Get blogs filtered by tag
- * @param {string} tag - Tag to filter by
- */
+// Like/Unlike blog
+export const toggleLikeBlog = async (id) => {
+  const response = await axios.post(`${API_URL}/blog/${id}/like`, {}, getAuthHeader());
+  return response.data;
+};
+
+// Add comment to blog
+export const addComment = async (id, content) => {
+  const response = await axios.post(
+    `${API_URL}/blog/${id}/comment`,
+    { content },
+    getAuthHeader()
+  );
+  return response.data;
+};
+
+// Delete comment
+export const deleteComment = async (blogId, commentId) => {
+  const response = await axios.delete(
+    `${API_URL}/blog/${blogId}/comment/${commentId}`,
+    getAuthHeader()
+  );
+  return response.data;
+};
+
+// Get blogs by tag
 export const getBlogsByTag = async (tag) => {
-  try {
-    const response = await apiClient.get(`/blogs/tag/${tag}`);
-    return response.data;
-  } catch (error) {
-    console.error(`Error fetching blogs with tag ${tag}:`, error);
-    throw error;
-  }
+  const response = await axios.get(`${API_URL}/blog/tag/${tag}`);
+  return response.data;
 };
 
-/**
- * Search blogs by term
- * @param {string} term - Search term
- */
-export const searchBlogs = async (term) => {
-  try {
-    const response = await apiClient.get(`/blogs/search?term=${term}`);
-    return response.data;
-  } catch (error) {
-    console.error(`Error searching blogs with term ${term}:`, error);
-    throw error;
-  }
+// Get user's own blogs
+export const getMyBlogs = async () => {
+  const response = await axios.get(`${API_URL}/blog/my/blogs`, getAuthHeader());
+  return response.data;
 };
 
-export default {
-  getAllBlogs,
-  getBlogById,
-  createBlog,
-  updateBlog,
-  deleteBlog,
-  getBlogsByTag,
-  searchBlogs
+// Search blogs
+export const searchBlogs = async (searchTerm) => {
+  const response = await axios.get(`${API_URL}/blog/search/query?term=${encodeURIComponent(searchTerm)}`);
+  return response.data;
 };

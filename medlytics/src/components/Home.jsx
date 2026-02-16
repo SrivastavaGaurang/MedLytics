@@ -95,41 +95,111 @@ const Home = () => {
   return (
     <>
       {/* Hero Section with Carousel */}
-      <div className="position-relative overflow-hidden">
-        <div className="overlay-gradient position-absolute w-100 h-100" style={{ background: 'linear-gradient(to bottom, rgba(15, 23, 42, 0.3), rgba(15, 23, 42, 0.8))', zIndex: 1, pointerEvents: 'none' }}></div>
+      <div className="position-relative overflow-hidden" style={{ minHeight: '650px', height: '85vh', maxHeight: '800px' }}>
+        {/* Enhanced gradient overlay for better text readability */}
+        <div
+          className="overlay-gradient position-absolute w-100 h-100"
+          style={{
+            background: 'linear-gradient(to bottom, rgba(15, 23, 42, 0.5) 0%, rgba(15, 23, 42, 0.7) 50%, rgba(15, 23, 42, 0.85) 100%)',
+            zIndex: 1,
+            pointerEvents: 'none'
+          }}
+        ></div>
+
         <Slider {...settings}>
           <div>
-            <img src={heroSleep} alt="Sleep Health" className="w-100 vh-100 object-fit-cover" />
+            <img src={heroSleep} alt="Sleep Health" className="w-100" style={{ height: '85vh', maxHeight: '800px', minHeight: '650px', objectFit: 'cover' }} />
           </div>
           <div>
-            <img src={heroMedical} alt="Healthcare Professionals" className="w-100 vh-100 object-fit-cover" />
+            <img src={heroMedical} alt="Healthcare Professionals" className="w-100" style={{ height: '85vh', maxHeight: '800px', minHeight: '650px', objectFit: 'cover' }} />
           </div>
           <div>
-            <img src={heroNutrition} alt="Nutrition" className="w-100 vh-100 object-fit-cover" />
+            <img src={heroNutrition} alt="Nutrition" className="w-100" style={{ height: '85vh', maxHeight: '800px', minHeight: '650px', objectFit: 'cover' }} />
           </div>
           <div>
-            <img src={heroMental} alt="Mental Wellness" className="w-100 vh-100 object-fit-cover" />
+            <img src={heroMental} alt="Mental Wellness" className="w-100" style={{ height: '85vh', maxHeight: '800px', minHeight: '650px', objectFit: 'cover' }} />
           </div>
         </Slider>
 
-        {/* Hero Content Overlay */}
+        {/* Hero Content Overlay - Enhanced */}
         <div
           className="position-absolute top-50 start-50 translate-middle text-center text-white w-100 px-3"
           style={{ zIndex: 2 }}
         >
-          <div className="glass-card p-5 d-inline-block animate-float" style={{ background: 'rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255, 255, 255, 0.2)' }}>
-            <h1 className="display-3 fw-bold mb-3 text-white text-shadow">MedLytics AI</h1>
-            <div className="mb-4">
+          <div
+            className="hero-glass-card p-5 d-inline-block animate-float"
+            style={{
+              background: 'rgba(255, 255, 255, 0.15)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              border: '2px solid rgba(255, 255, 255, 0.25)',
+              borderRadius: '24px',
+              boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
+              maxWidth: '900px'
+            }}
+          >
+            {/* Main Heading with better hierarchy */}
+            <h1
+              className="fw-bold mb-4 text-white"
+              style={{
+                fontSize: 'clamp(2.5rem, 6vw, 4.5rem)',
+                textShadow: '0 4px 20px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3)',
+                letterSpacing: '-0.02em',
+                lineHeight: '1.1'
+              }}
+            >
+              MedLytics AI
+            </h1>
+
+            {/* Typing text animation */}
+            <div className="mb-4" style={{ minHeight: '60px' }}>
               <TypingText />
             </div>
-            <p className="lead mb-4 fs-4 text-white-50">
-              Advanced health analytics for personalized wellness insights
+
+            {/* Subheading with better contrast */}
+            <p
+              className="lead mb-5"
+              style={{
+                fontSize: 'clamp(1.1rem, 2vw, 1.4rem)',
+                color: 'rgba(255, 255, 255, 0.95)',
+                textShadow: '0 2px 10px rgba(0, 0, 0, 0.3)',
+                fontWeight: '400',
+                maxWidth: '700px',
+                margin: '0 auto 2rem',
+                lineHeight: '1.6'
+              }}
+            >
+              Advanced health analytics powered by AI for personalized wellness insights
             </p>
-            <div className="d-flex justify-content-center gap-3">
-              <Link to="/sleep-disorder" className="btn btn-primary btn-lg rounded-pill px-5 py-3 fw-bold shadow-glow">
+
+            {/* CTA Buttons - Enhanced */}
+            <div className="d-flex justify-content-center gap-3 flex-wrap">
+              <Link
+                to="/sleep-disorder"
+                className="btn btn-primary btn-lg rounded-pill px-5 py-3 fw-bold"
+                style={{
+                  background: 'linear-gradient(135deg, #4361ee 0%, #7209b7 100%)',
+                  border: 'none',
+                  boxShadow: '0 8px 24px rgba(67, 97, 238, 0.5)',
+                  fontSize: '1.1rem',
+                  transition: 'all 0.3s ease',
+                  minWidth: '200px'
+                }}
+              >
                 Start Analysis
               </Link>
-              <Link to="/about" className="btn btn-outline-light btn-lg rounded-pill px-5 py-3 fw-bold backdrop-blur">
+              <Link
+                to="/about"
+                className="btn btn-outline-light btn-lg rounded-pill px-5 py-3 fw-bold"
+                style={{
+                  border: '2px solid rgba(255, 255, 255, 0.8)',
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  backdropFilter: 'blur(10px)',
+                  fontSize: '1.1rem',
+                  transition: 'all 0.3s ease',
+                  minWidth: '200px'
+                }}
+              >
                 Learn More
               </Link>
             </div>
@@ -138,8 +208,8 @@ const Home = () => {
       </div>
 
       {/* Stats Section */}
-      <section className="py-5 position-relative">
-        <div className="container">
+      <section className="section-padding-md position-relative">
+        <div className="container max-content-width">
           <div className="row g-4 text-center">
             {[
               { value: "98%", label: "Accuracy Rate", color: "primary" },
@@ -147,7 +217,7 @@ const Home = () => {
               { value: "4", label: "Core Services", color: "info" },
               { value: "24/7", label: "AI Support", color: "warning" }
             ].map((stat, index) => (
-              <div key={index} className="col-md-3 col-6">
+              <div key={index} className="col-sm-6 col-lg-3">
                 <div className="glass-card p-4 h-100 animate-pulse" style={{ animationDelay: `${index * 0.5}s` }}>
                   <h2 className={`display-4 fw-bold text-${stat.color}`}>{stat.value}</h2>
                   <p className="text-muted mb-0 fw-medium">{stat.label}</p>
@@ -159,15 +229,15 @@ const Home = () => {
       </section>
 
       {/* Services Section */}
-      <section className="py-5 bg-light position-relative overflow-hidden">
+      <section className="section-padding-md bg-gradient-section position-relative overflow-hidden">
         <div className="position-absolute top-0 end-0 p-5 opacity-10">
           <i className="bi bi-activity text-primary display-1"></i>
         </div>
-        <div className="container position-relative">
+        <div className="container max-content-width position-relative">
           <div className="text-center mb-5">
             <span className="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill mb-3">OUR EXPERTISE</span>
             <h2 className="display-5 fw-bold mb-3">Comprehensive Health Services</h2>
-            <p className="lead text-muted mx-auto" style={{ maxWidth: '700px' }}>
+            <p className="lead text-muted max-text-width">
               Powered by advanced machine learning algorithms to provide accurate health predictions.
             </p>
           </div>
@@ -203,11 +273,11 @@ const Home = () => {
       </section>
 
       {/* How It Works Section */}
-      <section className="py-5">
-        <div className="container">
+      <section className="section-padding-md">
+        <div className="container max-content-width">
           <div className="text-center mb-5">
             <h2 className="display-5 fw-bold">How It Works</h2>
-            <p className="lead text-muted">Simple steps to better health insights</p>
+            <p className="lead text-muted max-text-width">Simple steps to better health insights</p>
           </div>
 
           <div className="row g-4">
@@ -234,8 +304,8 @@ const Home = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-5 bg-light">
-        <div className="container">
+      <section className="section-padding-md bg-gradient-section">
+        <div className="container max-content-width">
           <div className="row align-items-center">
             <div className="col-lg-6 mb-4 mb-lg-0">
               <div className="position-relative animate-float">
@@ -275,8 +345,8 @@ const Home = () => {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-5">
-        <div className="container">
+      <section className="section-padding-md">
+        <div className="container max-content-width">
           <div className="text-center mb-5">
             <h2 className="display-5 fw-bold">User Success Stories</h2>
           </div>
@@ -309,9 +379,9 @@ const Home = () => {
       </section>
 
       {/* Call to Action */}
-      <section className="py-5 position-relative overflow-hidden">
+      <section className="section-padding-md position-relative overflow-hidden">
         <div className="position-absolute top-0 start-0 w-100 h-100 bg-gradient-primary" style={{ zIndex: 0 }}></div>
-        <div className="container position-relative" style={{ zIndex: 1 }}>
+        <div className="container max-content-width position-relative" style={{ zIndex: 1 }}>
           <div className="row align-items-center text-white">
             <div className="col-lg-8 mb-4 mb-lg-0">
               <h2 className="display-5 fw-bold mb-2">Ready to transform your health?</h2>
@@ -329,8 +399,8 @@ const Home = () => {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-5 bg-light">
-        <div className="container">
+      <section className="section-padding-md bg-gradient-section">
+        <div className="container max-content-width">
           <div className="text-center mb-5">
             <h2 className="display-5 fw-bold">FAQ</h2>
           </div>

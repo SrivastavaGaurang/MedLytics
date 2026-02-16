@@ -28,6 +28,7 @@
   --gradient-medical: linear-gradient(135deg, #4cc9f0 0%, #4361ee 100%);
   --gradient-calm: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
   --gradient-dark: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  --gradient-section-bg: linear-gradient(135deg, #f5f7fa 0%, #e3e8ef 100%);
 
   /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -40,6 +41,27 @@
   --glass-border: 1px solid rgba(255, 255, 255, 0.5);
   --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
   --backdrop-blur: blur(12px);
+
+  /* Professional Spacing System */
+  --section-padding-sm: 3rem;
+  --section-padding-md: 5rem;
+  --section-padding-lg: 7rem;
+  --section-padding-xl: 10rem;
+
+  /* Card System */
+  --card-radius: 16px;
+  --card-padding: 2rem;
+  --card-gap: 1.5rem;
+
+  /* Typography */
+  --max-text-width: 750px;
+  --max-content-width: 1200px;
+
+  /* Responsive Breakpoints */
+  --breakpoint-sm: 576px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 992px;
+  --breakpoint-xl: 1200px;
 }
 
 body {
@@ -86,6 +108,7 @@ h6 {
 .display-4 {
   font-weight: 800;
   background: var(--gradient-primary);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -233,6 +256,7 @@ footer::before {
 /* Custom Utilities */
 .text-gradient {
   background: var(--gradient-primary);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -279,4 +303,142 @@ footer::before {
   height: 50%;
   background: radial-gradient(circle, rgba(247, 37, 133, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
   z-index: 0;
+}
+
+/* Professional Utility Classes */
+.section-padding-sm {
+  padding: var(--section-padding-sm) 0;
+}
+
+.section-padding-md {
+  padding: var(--section-padding-md) 0;
+}
+
+.section-padding-lg {
+  padding: var(--section-padding-lg) 0;
+}
+
+.section-padding-xl {
+  padding: var(--section-padding-xl) 0;
+}
+
+.bg-gradient-section {
+  background: var(--gradient-section-bg);
+}
+
+.max-text-width {
+  max-width: var(--max-text-width);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.max-content-width {
+  max-width: var(--max-content-width);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Standard Card */
+.standard-card {
+  background: white;
+  border-radius: var(--card-radius);
+  padding: var(--card-padding);
+  box-shadow: var(--shadow-md);
+  transition: all 0.3s ease;
+}
+
+.standard-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-5px);
+}
+
+/* Responsive Typography */
+@media (max-width: 768px) {
+  .display-2 {
+    font-size: 2.5rem !important;
+  }
+
+  .display-3 {
+    font-size: 2.25rem !important;
+  }
+
+  .display-4 {
+    font-size: 2rem !important;
+  }
+
+  .display-5 {
+    font-size: 1.75rem !important;
+  }
+
+  .section-padding-sm {
+    padding: 2rem 0;
+  }
+
+  .section-padding-md {
+    padding: 3rem 0;
+  }
+
+  .section-padding-lg {
+    padding: 4rem 0;
+  }
+
+  .section-padding-xl {
+    padding: 5rem 0;
+  }
+}
+
+/* Hero Section Specific Styles */
+.hero-glass-card {
+  animation: fadeIn 1s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Hero Button Hover Effects */
+.hero-glass-card .btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(67, 97, 238, 0.6) !important;
+  background: linear-gradient(135deg, #3a0ca3 0%, #7209b7 100%) !important;
+}
+
+.hero-glass-card .btn-outline-light:hover {
+  background: rgba(255, 255, 255, 0.25) !important;
+  border-color: white !important;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(255, 255, 255, 0.3);
+}
+
+/* Responsive Hero Section */
+@media (max-width: 768px) {
+  .hero-glass-card {
+    padding: 2rem !important;
+    max-width: 95% !important;
+  }
+
+  .hero-glass-card .btn {
+    min-width: 150px !important;
+    padding: 0.75rem 2rem !important;
+    font-size: 1rem !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .hero-glass-card {
+    padding: 1.5rem !important;
+  }
+
+  .hero-glass-card .btn {
+    width: 100%;
+    min-width: auto !important;
+  }
 }

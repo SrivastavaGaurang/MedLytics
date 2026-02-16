@@ -1,24 +1,8 @@
-// routes/bmiRoutes.js - Fixed version following anxiety pattern
+// routes/bmiRoutes.js
 import express from 'express';
-import { expressjwt } from 'express-jwt';
-import jwksRsa from 'jwks-rsa';
 import BMIAnalysis from '../models/BMIAnalysis.js';
-import User from '../models/User.js';
 
 const router = express.Router();
-
-// Setup Auth0 authentication middleware
-const checkJwt = expressjwt({
-  secret: jwksRsa.expressJwtSecret({
-    cache: true,
-    rateLimit: true,
-    jwksRequestsPerMinute: 5,
-    jwksUri: `https://${process.env.AUTH0_DOMAIN || 'YOUR_AUTH0_DOMAIN'}/.well-known/jwks.json`
-  }),
-  audience: process.env.AUTH0_AUDIENCE || 'YOUR_API_IDENTIFIER',
-  issuer: `https://${process.env.AUTH0_DOMAIN || 'YOUR_AUTH0_DOMAIN'}/`,
-  algorithms: ['RS256']
-});
 
 // Route to analyze BMI data and store results
 router.post('/analyze', async (req, res) => {
@@ -38,29 +22,10 @@ router.post('/analyze', async (req, res) => {
       dailySteps
     } = req.body;
 
-    if (!authId) {
-      return res.status(400).json({ message: 'Auth ID is required' });
-    }
-
     // Validate required fields
     if (!age || !gender || !height || !weight || !sleepDuration || !qualityOfSleep ||
       !physicalActivityLevel || !stressLevel || !bloodPressure || !heartRate || !dailySteps) {
       return res.status(400).json({ message: 'All fields are required' });
-    }
-
-    // Try to find existing user
-    let user = await User.findOne({ authId });
-
-    // If not found, create a new user
-    if (!user) {
-      user = new User({
-        authId,
-        name: 'Anonymous',
-        email: `${authId}@auth0.com`,
-        password: 'Auth0User'
-      });
-
-      await user.save();
     }
 
     // Calculate BMI
@@ -77,7 +42,6 @@ router.post('/analyze', async (req, res) => {
 
     // Create new BMI analysis record
     const newAnalysis = new BMIAnalysis({
-      user: user._id,
       authId,
       age,
       gender,
@@ -126,10 +90,14 @@ router.get('/results/:id', async (req, res) => {
   }
 });
 
-// Route to get BMI history for a user (requires authentication)
-router.get('/history', checkJwt, async (req, res) => {
+// Route to get BMI history for a user
+router.get('/history', async (req, res) => {
   try {
-    const authId = req.user.sub; // Get Auth0 ID from JWT
+    const authId = req.query.authId; // Get authId from query paramsinstead of JWT
+
+    if (!authId) {
+      return res.status(400).json({ message: 'Auth ID required as query parameter' });
+    }
 
     const analyses = await BMIAnalysis.find({ authId })
       .sort({ date: -1 }); // Sort by date, newest first
@@ -141,18 +109,13 @@ router.get('/history', checkJwt, async (req, res) => {
   }
 });
 
-// Route to delete a BMI analysis (requires authentication)
-router.delete('/:id', checkJwt, async (req, res) => {
+// Route to delete a BMI analysis
+router.delete('/:id', async (req, res) => {
   try {
-    const authId = req.user.sub;
     const analysis = await BMIAnalysis.findById(req.params.id);
 
     if (!analysis) {
       return res.status(404).json({ message: 'BMI analysis not found' });
-    }
-
-    if (analysis.authId !== authId) {
-      return res.status(401).json({ message: 'User not authorized' });
     }
 
     await analysis.deleteOne();
@@ -165,65 +128,62 @@ router.delete('/:id', checkJwt, async (req, res) => {
 
 // Helper functions for BMI analysis
 
-// Determine BMI category based on calculated BMI
+// Determine BMI category based on calculated BMI (WHO Standards + Class I/II/III Obesity)
 function determineBMICategory(bmi) {
-  if (bmi < 18.5) {
-    return 'Underweight';
+  if (bmi < 16) {
+    return 'Severe Thinness';
+  } else if (bmi >= 16 && bmi < 17) {
+    return 'Moderate Thinness';
+  } else if (bmi >= 17 && bmi < 18.5) {
+    return 'Mild Thinness';
   } else if (bmi >= 18.5 && bmi < 25) {
     return 'Normal';
   } else if (bmi >= 25 && bmi < 30) {
     return 'Overweight';
+  } else if (bmi >= 30 && bmi < 35) {
+    return 'Obese Class I';
+  } else if (bmi >= 35 && bmi < 40) {
+    return 'Obese Class II';
   } else {
-    return 'Obese';
+    return 'Obese Class III';
   }
 }
 
-// Determine health risk based on BMI and other factors
+// Determine health risk based on BMI and modified factors
 function determineHealthRisk(bmi, age, bloodPressure, physicalActivityLevel) {
   let riskScore = 0;
 
-  // BMI risk factor
-  if (bmi < 18.5 || bmi >= 30) {
-    riskScore += 3;
-  } else if (bmi >= 25) {
-    riskScore += 2;
-  } else {
-    riskScore += 0;
-  }
+  // BMI risk factor (Granular)
+  if (bmi < 18.5) riskScore += 2;
+  else if (bmi >= 25 && bmi < 30) riskScore += 1;
+  else if (bmi >= 30 && bmi < 35) riskScore += 2;
+  else if (bmi >= 35 && bmi < 40) riskScore += 3;
+  else if (bmi >= 40) riskScore += 4;
 
-  // Age risk factor
-  if (age >= 65) {
-    riskScore += 2;
-  } else if (age >= 45) {
-    riskScore += 1;
-  }
+  // Age risk factor (Adjusted)
+  if (age >= 65) riskScore += 2;
+  else if (age >= 50) riskScore += 1;
 
   // Blood pressure risk factor
-  if (bloodPressure.systolic >= 140 || bloodPressure.diastolic >= 90) {
-    riskScore += 3;
-  } else if (bloodPressure.systolic >= 130 || bloodPressure.diastolic >= 80) {
-    riskScore += 2;
-  } else if (bloodPressure.systolic >= 120) {
-    riskScore += 1;
-  }
+  if (bloodPressure.systolic >= 160 || bloodPressure.diastolic >= 100) riskScore += 4; // Stage 2 Hypertension
+  else if (bloodPressure.systolic >= 140 || bloodPressure.diastolic >= 90) riskScore += 3; // Stage 1
+  else if (bloodPressure.systolic >= 130 || bloodPressure.diastolic >= 80) riskScore += 2; // Elevated
+  else if (bloodPressure.systolic >= 120) riskScore += 1; // Pre-hypertension
 
   // Physical activity protective factor
-  if (physicalActivityLevel >= 70) {
-    riskScore -= 1;
-  } else if (physicalActivityLevel < 30) {
-    riskScore += 1;
-  }
+  if (physicalActivityLevel >= 70) riskScore -= 2; // Highly active
+  else if (physicalActivityLevel >= 40) riskScore -= 1; // Moderately active
+  else if (physicalActivityLevel < 20) riskScore += 2; // Sedentary
+
+  // Normalize Risk Check
+  if (riskScore < 0) riskScore = 0;
 
   // Determine risk level
-  if (riskScore >= 6) {
-    return 'Very High';
-  } else if (riskScore >= 4) {
-    return 'High';
-  } else if (riskScore >= 2) {
-    return 'Moderate';
-  } else {
-    return 'Low';
-  }
+  if (riskScore >= 7) return 'Very High';
+  if (riskScore >= 5) return 'High';
+  if (riskScore >= 3) return 'Moderate';
+  if (riskScore >= 1) return 'Low';
+  return 'Minimal';
 }
 
 // Determine key factors affecting BMI and health
@@ -232,91 +192,56 @@ function determineKeyFactors(bmi, age, sleepDuration, qualityOfSleep, physicalAc
 
   // BMI factor
   if (bmi < 18.5) {
-    factors.push({
-      name: 'Underweight',
-      impact: 'High',
-      value: `BMI: ${Math.round(bmi * 100) / 100}`
-    });
+    factors.push({ name: 'Underweight', impact: 'High', value: `BMI: ${Math.round(bmi * 100) / 100}` });
   } else if (bmi >= 30) {
-    factors.push({
-      name: 'Obesity',
-      impact: 'High',
-      value: `BMI: ${Math.round(bmi * 100) / 100}`
-    });
+    factors.push({ name: 'Obesity', impact: 'High', value: `BMI: ${Math.round(bmi * 100) / 100}` });
   } else if (bmi >= 25) {
-    factors.push({
-      name: 'Overweight',
-      impact: 'Medium',
-      value: `BMI: ${Math.round(bmi * 100) / 100}`
-    });
+    factors.push({ name: 'Overweight', impact: 'Medium', value: `BMI: ${Math.round(bmi * 100) / 100}` });
   }
 
   // Sleep factors
-  if (sleepDuration < 6 || sleepDuration > 9) {
-    factors.push({
-      name: 'Sleep Duration',
-      impact: sleepDuration < 5 || sleepDuration > 10 ? 'High' : 'Medium',
-      value: `${sleepDuration} hours`
-    });
+  if (sleepDuration < 6) {
+    factors.push({ name: 'Insufficient Sleep', impact: 'Medium', value: `${sleepDuration} hours` });
+  } else if (sleepDuration > 9) {
+    factors.push({ name: 'Excessive Sleep', impact: 'Low', value: `${sleepDuration} hours` });
   }
 
   if (qualityOfSleep <= 4) {
-    factors.push({
-      name: 'Poor Sleep Quality',
-      impact: qualityOfSleep <= 2 ? 'High' : 'Medium',
-      value: `${qualityOfSleep}/10`
-    });
+    factors.push({ name: 'Poor Sleep Quality', impact: 'High', value: `${qualityOfSleep}/10` });
   }
 
   // Physical activity
-  if (physicalActivityLevel < 30) {
-    factors.push({
-      name: 'Low Physical Activity',
-      impact: physicalActivityLevel < 15 ? 'High' : 'Medium',
-      value: `${physicalActivityLevel}%`
-    });
+  if (physicalActivityLevel < 20) {
+    factors.push({ name: 'Sedentary Lifestyle', impact: 'High', value: `${physicalActivityLevel}%` });
+  } else if (physicalActivityLevel < 40) {
+    factors.push({ name: 'Low Activity', impact: 'Medium', value: `${physicalActivityLevel}%` });
   }
 
   // Stress level
-  if (stressLevel >= 7) {
-    factors.push({
-      name: 'High Stress',
-      impact: stressLevel >= 9 ? 'High' : 'Medium',
-      value: `${stressLevel}/10`
-    });
+  if (stressLevel >= 8) {
+    factors.push({ name: 'Severe Stress', impact: 'High', value: `${stressLevel}/10` });
+  } else if (stressLevel >= 6) {
+    factors.push({ name: 'Elevated Stress', impact: 'Medium', value: `${stressLevel}/10` });
   }
 
   // Blood pressure
   if (bloodPressure.systolic >= 140 || bloodPressure.diastolic >= 90) {
-    factors.push({
-      name: 'High Blood Pressure',
-      impact: 'High',
-      value: `${bloodPressure.systolic}/${bloodPressure.diastolic} mmHg`
-    });
-  } else if (bloodPressure.systolic >= 130 || bloodPressure.diastolic >= 80) {
-    factors.push({
-      name: 'Elevated Blood Pressure',
-      impact: 'Medium',
-      value: `${bloodPressure.systolic}/${bloodPressure.diastolic} mmHg`
-    });
+    factors.push({ name: 'Hypertension', impact: 'High', value: `${bloodPressure.systolic}/${bloodPressure.diastolic} mmHg` });
   }
 
-  // Heart rate
-  if (heartRate > 100 || heartRate < 60) {
-    factors.push({
-      name: 'Abnormal Heart Rate',
-      impact: heartRate > 120 || heartRate < 50 ? 'High' : 'Medium',
-      value: `${heartRate} bpm`
-    });
+  // Heart rate (Resting typically)
+  if (heartRate > 100) {
+    factors.push({ name: 'Tachycardia (High HR)', impact: 'High', value: `${heartRate} bpm` });
+  } else if (heartRate < 50 && physicalActivityLevel < 60) {
+    // Low HR is only bad if not an athlete
+    factors.push({ name: 'Bradycardia (Low HR)', impact: 'Medium', value: `${heartRate} bpm` });
   }
 
   // Daily steps
-  if (dailySteps < 5000) {
-    factors.push({
-      name: 'Low Daily Activity',
-      impact: dailySteps < 2000 ? 'High' : 'Medium',
-      value: `${dailySteps} steps`
-    });
+  if (dailySteps < 3000) {
+    factors.push({ name: 'Very Low Steps', impact: 'High', value: `${dailySteps} steps` });
+  } else if (dailySteps < 6000) {
+    factors.push({ name: 'Low Steps', impact: 'Medium', value: `${dailySteps} steps` });
   }
 
   return factors;
@@ -327,98 +252,60 @@ function generateRecommendations(category, healthRisk, keyFactors) {
   const recommendations = [];
 
   // Category-specific recommendations
-  if (category === 'Underweight') {
-    recommendations.push('Consult with a healthcare provider or nutritionist to develop a healthy weight gain plan.');
-    recommendations.push('Focus on nutrient-dense, calorie-rich foods and consider strength training to build muscle mass.');
-    recommendations.push('Monitor for underlying health conditions that may be causing weight loss.');
-  } else if (category === 'Overweight' || category === 'Obese') {
-    recommendations.push('Aim for gradual, sustainable weight loss of 1-2 pounds per week through diet and exercise.');
-    recommendations.push('Focus on portion control and incorporate more fruits, vegetables, and lean proteins into your diet.');
-    recommendations.push('Increase physical activity to at least 150 minutes of moderate-intensity exercise per week.');
-  } else {
-    recommendations.push('Maintain your current healthy weight through balanced nutrition and regular exercise.');
-    recommendations.push('Continue monitoring your health metrics and lifestyle habits.');
+  if (category.includes('Thinness')) {
+    recommendations.push('Consult a nutritionist to create a caloric surplus plan with nutrient-dense foods.');
+    recommendations.push('Incorporate strength training to build muscle mass rather than just fat.');
+  } else if (category.includes('Obese')) {
+    recommendations.push('Prioritize a structured weight loss program under medical supervision.');
+    recommendations.push('Focus on low-impact cardio (swimming, walking) to protect joints while burning calories.');
+  } else if (category === 'Overweight') {
+    recommendations.push('Aim for a slight caloric deficit and increase daily steps to manage weight.');
   }
 
   // Factor-specific recommendations
   if (keyFactors.some(f => f.name.includes('Sleep'))) {
-    recommendations.push('Prioritize 7-9 hours of quality sleep per night and maintain a consistent sleep schedule.');
-    recommendations.push('Create a relaxing bedtime routine and limit screen time before sleep.');
+    recommendations.push('Establish a consistent sleep schedule: same wake and bedtimes every day.');
+  }
+  if (keyFactors.some(f => f.name.includes('Stress'))) {
+    recommendations.push('Practice daily mindfulness or deep breathing exercises (e.g., box breathing) for 10 minutes.');
+  }
+  if (keyFactors.some(f => f.name.includes('Hypertension') || f.name.includes('Blood Pressure'))) {
+    recommendations.push('Reduce sodium intake immediately and monitor blood pressure daily.');
+  }
+  if (keyFactors.some(f => f.name.includes('Sedentary') || f.name.includes('Low Steps'))) {
+    recommendations.push('Set a timer to stand up and stretch every hour used computer/desk work.');
   }
 
-  if (keyFactors.some(f => f.name === 'Low Physical Activity')) {
-    recommendations.push('Gradually increase your daily physical activity - start with short walks and build up intensity.');
-    recommendations.push('Aim for at least 10,000 steps per day and incorporate strength training 2-3 times per week.');
+  // General check
+  if (recommendations.length === 0) {
+    recommendations.push('Maintain your current healthy lifestyle habits!');
   }
-
-  if (keyFactors.some(f => f.name === 'High Stress')) {
-    recommendations.push('Practice stress management techniques such as meditation, deep breathing, or yoga.');
-    recommendations.push('Consider counseling or therapy if stress levels remain persistently high.');
-  }
-
-  if (keyFactors.some(f => f.name.includes('Blood Pressure'))) {
-    recommendations.push('Monitor your blood pressure regularly and consult with a healthcare provider.');
-    recommendations.push('Reduce sodium intake and increase consumption of potassium-rich foods.');
-  }
-
-  if (keyFactors.some(f => f.name === 'Abnormal Heart Rate')) {
-    recommendations.push('Consult with a healthcare provider about your heart rate patterns.');
-    recommendations.push('Monitor your heart rate during exercise and at rest.');
-  }
-
-  // Risk-based recommendations
-  if (healthRisk === 'High' || healthRisk === 'Very High') {
-    recommendations.push('Schedule a comprehensive health evaluation with your healthcare provider.');
-    recommendations.push('Consider working with a team of healthcare professionals including a dietitian and exercise physiologist.');
-  }
-
-  // General health recommendations
-  recommendations.push('Stay hydrated by drinking plenty of water throughout the day.');
-  recommendations.push('Focus on whole, minimally processed foods and limit added sugars and saturated fats.');
 
   return recommendations;
 }
 
-// Calculate confidence score based on data completeness and consistency
+// Calculate confidence score based on data consistency
 function calculateConfidence(keyFactors) {
-  let confidence = 85; // Base confidence
+  let confidence = 90; // Higher base confidence with improved logic
 
-  // Reduce confidence for high-impact negative factors
-  const highImpactFactors = keyFactors.filter(f => f.impact === 'High').length;
-  confidence -= highImpactFactors * 5;
+  // If too many high impact negative factors, logic might be conflicting or case is complex
+  const highImpact = keyFactors.filter(f => f.impact === 'High').length;
+  if (highImpact > 3) confidence -= 10;
 
-  // Reduce confidence for multiple concerning factors
-  if (keyFactors.length > 5) {
-    confidence -= 10;
-  } else if (keyFactors.length > 3) {
-    confidence -= 5;
-  }
-
-  // Ensure confidence stays within bounds
-  return Math.max(60, Math.min(95, confidence));
+  return Math.max(70, Math.min(99, confidence));
 }
 
 // Generate detailed explanation
 function generateExplanation(category, bmi, risk) {
-  const bmiFixed = bmi.toFixed(1);
-  let text = `Your BMI is ${bmiFixed}, which falls into the ${category} category. `;
+  const bmiFixed = bmi.toFixed(2);
+  let text = `Your BMI is ${bmiFixed}, placing you in the **${category}** category. `;
 
-  if (category === 'Normal') {
-    text += "This indicates a healthy weight for your height. ";
-  } else if (category === 'Overweight') {
-    text += "This suggests you are carrying excess weight relative to your height. ";
-  } else if (category === 'Obese') {
-    text += "This indicates a significantly high body weight relative to your height. ";
-  } else {
-    text += "This suggests you may be below the healthy weight range for your height. ";
-  }
-
-  if (risk === 'High' || risk === 'Very High') {
-    text += `Combined with your other health metrics, your overall health risk is assessed as ${risk}. It is important to address this to prevent long-term health issues.`;
+  if (risk === 'Very High' || risk === 'High') {
+    text += `Your overall health risk profile is **${risk}**, which requires immediate attention to prevent chronic conditions. `;
   } else if (risk === 'Moderate') {
-    text += `Your overall health risk is Moderate. Making positive lifestyle changes now can help prevent future complications.`;
+    text += `Your health risk is **Moderate**, suggesting that proactive lifestyle changes now can prevent future issues. `;
   } else {
-    text += `Your overall health risk is currently Low. Keep up the good work maintaining your health!`;
+    text += `Your health risk is **${risk}**, which is excellent. Keep maintaining your habits! `;
   }
 
   return text;

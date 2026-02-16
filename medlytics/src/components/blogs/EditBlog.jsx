@@ -2,14 +2,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getBlogById, updateBlog } from '../../services/blogService';
-import { useAuth } from '../../contexts/useAuth';
-import { FaSave, FaTimes, FaArrowLeft, FaImage, FaEye, FaEdit } from 'react-icons/fa';
+import { useAuth } from '../../contexts/AuthContext';
+import { FaSave, FaTimes, FaArrowLeft, FaImage, FaEye, FaEdit, FaPlus } from 'react-icons/fa';
 import ReactMarkdown from 'react-markdown';
 
 const EditBlog = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { isAuthenticated, loginWithRedirect } = useAuth();
+  const { isAuthenticated } = useAuth();
 
 
   const [formData, setFormData] = useState({
@@ -30,11 +30,9 @@ const EditBlog = () => {
   // Redirect to login if not authenticated
   useEffect(() => {
     if (!isAuthenticated) {
-      loginWithRedirect({
-        appState: { returnTo: window.location.pathname }
-      });
+      navigate('/login');
     }
-  }, [isAuthenticated, loginWithRedirect]);
+  }, [isAuthenticated, navigate]);
 
   // Fetch blog data
   useEffect(() => {

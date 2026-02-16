@@ -50,17 +50,10 @@ const apiClient = axios.create({
 
 /**
  * Request interceptor
- * - Add auth token
  * - Implement request deduplication
  */
 apiClient.interceptors.request.use(
   (config) => {
-    // Add auth token if available
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers['x-auth-token'] = token;
-    }
-
     // Request deduplication for GET requests
     if (config.method === 'get') {
       const requestKey = generateRequestKey(config);
@@ -114,13 +107,6 @@ apiClient.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    // Handle 401 Unauthorized - Token expired
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      localStorage.removeItem('token');
-      window.location.href = '/login';
-      return Promise.reject(error);
-    }
-
     // Implement retry logic for network errors
     if (!error.response && !originalRequest._retry) {
       originalRequest._retry = true;
@@ -169,21 +155,7 @@ apiClient.interceptors.response.use(
   }
 );
 
-/**
- * API client factory for Auth0 authenticated requests
- */
-export const createAuthenticatedClient = async (getAccessTokenSilently) => {
-  const token = await getAccessTokenSilently();
 
-  return axios.create({
-    baseURL: API_BASE_URL,
-    timeout: 30000,
-    headers: {
-      'Content-Type': 'application/json',
-      'x-auth-token': token
-    }
-  });
-};
 
 export default apiClient;
 export { API_BASE_URL };

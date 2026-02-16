@@ -2,7 +2,6 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import analyzeSleepDisorder from '../utils/analyzeSleepDisorder.js';
-import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -13,10 +12,13 @@ const router = express.Router();
 const sleepSchema = new mongoose.Schema({
   authId: { type: String, required: true },
   date: { type: Date, default: Date.now },
+  // Basic Info
   age: Number,
   gender: String,
+  // Core Sleep Metrics
   sleepDuration: Number,
   qualityOfSleep: Number,
+  // Lifestyle Factors
   physicalActivity: Number,
   stressLevel: Number,
   bmi: Number,
@@ -26,32 +28,38 @@ const sleepSchema = new mongoose.Schema({
   },
   heartRate: Number,
   dailySteps: Number,
+  // Enhanced Fields
+  sleepEnvironment: { type: Number, default: 5 },
+  screenTimeBeforeBed: { type: Number, default: 2 },
+  caffeineIntake: { type: Number, default: 2 },
+  alcoholIntake: { type: Number, default: 1 },
+  shiftWork: { type: Boolean, default: false },
+  chronicPain: { type: Boolean, default: false },
+  snoring: { type: Boolean, default: false },
+  breathingInterruptions: { type: Boolean, default: false },
+  restlessLegs: { type: Boolean, default: false },
+  nightmares: { type: Boolean, default: false },
+  sleepingPills: { type: Boolean, default: false },
+  napsDuringDay: { type: Number, default: 1 },
+  bedtimeConsistency: { type: Number, default: 5 },
+  // Results
   result: {
+    sleepScore: Number,
     riskLevel: String,
+    riskFactors: [String],
     possibleDisorders: [String],
     recommendations: [String],
+    professionalHelpNeeded: Boolean,
+    detailedAnalysis: {
+      durationScore: String,
+      qualityRating: String,
+      environmentRating: String,
+      lifestyleImpact: String
+    }
   },
 });
 
 const Sleep = mongoose.model('Sleep', sleepSchema);
-
-// Middleware to verify JWT token
-const authenticateToken = async (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-
-  if (!token) {
-    return res.status(401).json({ message: 'Authentication token required' });
-  }
-
-  try {
-    const decoded = jwt.verify(token, process.env.AUTH0_SECRET || 'your-auth0-secret');
-    req.user = decoded;
-    next();
-  } catch (err) {
-    return res.status(403).json({ message: 'Invalid or expired token' });
-  }
-};
 
 // POST /api/sleep/analyze
 router.post('/analyze', async (req, res) => {
@@ -101,9 +109,14 @@ router.get('/results/:id', async (req, res) => {
 });
 
 // GET /api/sleep/history
-router.get('/history', authenticateToken, async (req, res) => {
+router.get('/history', async (req, res) => {
   try {
-    const authId = req.user.sub; // Auth0 user ID
+    const authId = req.query.authId; // Get authId from query params
+
+    if (!authId) {
+      return res.status(400).json({ message: 'Auth ID required as query parameter' });
+    }
+
     const history = await Sleep.find({ authId }).sort({ date: -1 });
     res.json(history);
   } catch (error) {

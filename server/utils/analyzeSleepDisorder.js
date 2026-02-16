@@ -1,449 +1,295 @@
 // utils/analyzeSleepDisorder.js
 /**
- * Enhanced sleep disorder analysis with weighted risk scoring
- * @param {Object} data - Sleep and health metrics
- * @returns {Object} - Comprehensive assessment with risk level, disorders, factors, and recommendations
+ * Enhanced Sleep Disorder Analysis Algorithm
+ * Provides comprehensive assessment with detailed recommendations
  */
-const analyzeSleepDisorder = (data) => {
-  // Destructure input data with defaults
+
+const analyzeSleepDisorder = (formData) => {
   const {
-    age = 30,
-    gender = 'other',
-    sleepDuration = 7,
-    qualityOfSleep = 7,
-    physicalActivity = 50,
-    stressLevel = 5,
-    bmi = 22,
-    bloodPressure = { systolic: 120, diastolic: 80 },
-    heartRate = 70,
-    dailySteps = 7000
-  } = data;
+    age,
+    gender,
+    sleepDuration,
+    qualityOfSleep,
+    physicalActivity,
+    stressLevel,
+    bmi,
+    bloodPressure,
+    heartRate,
+    dailySteps,
+    // New enhanced fields
+    sleepEnvironment = 5,
+    screenTimeBeforeBed = 2,
+    caffeineIntake = 2,
+    alcoholIntake = 1,
+    shiftWork = false,
+    chronicPain = false,
+    snoring = false,
+    breathingInterruptions = false,
+    restlessLegs = false,
+    nightmares = false,
+    sleepingPills = false,
+    napsDuringDay = 1,
+    bedtimeConsistency = 5
+  } = formData;
 
-  // Initialize scoring variables
-  let totalRiskScore = 0;
-  let maxPossibleScore = 0;
-  const possibleDisorders = [];
-  const keyFactors = [];
-  const recommendations = new Set();
+  // Calculate comprehensive sleep quality score (0-100)
+  let sleepScore = 0;
+  let riskFactors = [];
+  let possibleDisorders = [];
+  let recommendations = [];
+  let professionalHelp = false;
 
-  // Weight constants for different risk factors
-  const WEIGHTS = {
-    CRITICAL: 3.0,  // Most important factors
-    HIGH: 2.0,      // Very important factors
-    MEDIUM: 1.5,    // Moderately important
-    LOW: 1.0        // Less critical but still relevant
-  };
-
-  // ========== WEIGHTED RISK FACTOR ANALYSIS ==========
-
-  // 1. SLEEP DURATION (CRITICAL - Weight: 3.0)
-  maxPossibleScore += WEIGHTS.CRITICAL * 10;
-  if (sleepDuration < 5) {
-    totalRiskScore += WEIGHTS.CRITICAL * 10;
-    possibleDisorders.push({
-      name: 'Severe Insomnia',
-      severity: 'High',
-      probability: 85
-    });
-    keyFactors.push({
-      name: 'Critically Short Sleep Duration',
-      impact: 'Critical',
-      value: `${sleepDuration} hours`
-    });
-    recommendations.add('URGENT: Aim for 7-9 hours of sleep per night - severe sleep deprivation detected');
-    recommendations.add('Consider consulting a sleep specialist immediately for insomnia evaluation');
-  } else if (sleepDuration < 6) {
-    totalRiskScore += WEIGHTS.CRITICAL * 7;
-    possibleDisorders.push({
-      name: 'Insomnia',
-      severity: 'Moderate',
-      probability: 70
-    });
-    keyFactors.push({
-      name: 'Insufficient Sleep Duration',
-      impact: 'High',
-      value: `${sleepDuration} hours`
-    });
-    recommendations.add('Gradually increase sleep duration to 7-9 hours per night');
-  } else if (sleepDuration < 7) {
-    totalRiskScore += WEIGHTS.CRITICAL * 4;
-    keyFactors.push({
-      name: 'Below Optimal Sleep Duration',
-      impact: 'Medium',
-      value: `${sleepDuration} hours`
-    });
-    recommendations.add('Aim for at least 7 hours of sleep for optimal health');
-  } else if (sleepDuration > 9) {
-    totalRiskScore += WEIGHTS.CRITICAL * 5;
-    possibleDisorders.push({
-      name: 'Hypersomnia',
-      severity: 'Moderate',
-      probability: 60
-    });
-    keyFactors.push({
-      name: 'Excessive Sleep Duration',
-      impact: 'Medium',
-      value: `${sleepDuration} hours`
-    });
-    recommendations.add('Excessive sleep may indicate underlying conditions - consult a healthcare provider');
+  // 1. Sleep Duration Analysis (20 points)
+  if (sleepDuration >= 7 && sleepDuration <= 9) {
+    sleepScore += 20;
+  } else if (sleepDuration >= 6 && sleepDuration < 7) {
+    sleepScore += 15;
+    riskFactors.push('Insufficient sleep duration');
+    recommendations.push('Aim for 7-9 hours of sleep per night');
+  } else if (sleepDuration > 9 && sleepDuration <= 10) {
+    sleepScore += 15;
+    riskFactors.push('Excessive sleep duration');
+  } else {
+    sleepScore += 10;
+    riskFactors.push('Severe sleep duration abnormality');
+    recommendations.push('Consult a sleep specialist about your sleep duration');
+    professionalHelp = true;
   }
 
-  // 2. SLEEP QUALITY (CRITICAL - Weight: 3.0)
-  maxPossibleScore += WEIGHTS.CRITICAL * 10;
-  if (qualityOfSleep <= 3) {
-    totalRiskScore += WEIGHTS.CRITICAL * 10;
-    keyFactors.push({
-      name: 'Very Poor Sleep Quality',
-      impact: 'Critical',
-      value: `${qualityOfSleep}/10`
-    });
-    recommendations.add('Create optimal sleep environment: dark, quiet, cool (60-67°F)');
-    recommendations.add('Consider sleep study to identify quality issues');
-  } else if (qualityOfSleep <= 5) {
-    totalRiskScore += WEIGHTS.CRITICAL * 6;
-    keyFactors.push({
-      name: 'Poor Sleep Quality',
-      impact: 'High',
-      value: `${qualityOfSleep}/10`
-    });
-    recommendations.add('Improve sleep environment: reduce noise, light, and maintain comfortable temperature');
-    recommendations.add('Establish a relaxing bedtime routine');
-  } else if (qualityOfSleep <= 7) {
-    totalRiskScore += WEIGHTS.CRITICAL * 3;
-    recommendations.add('Continue improving sleep hygiene to enhance sleep quality');
+  // 2. Sleep Quality (20 points)
+  if (qualityOfSleep >= 8) {
+    sleepScore += 20;
+  } else if (qualityOfSleep >= 6) {
+    sleepScore += 15;
+    recommendations.push('Consider improving sleep environment (darkness, quiet, comfortable temperature)');
+  } else if (qualityOfSleep >= 4) {
+    sleepScore += 10;
+    riskFactors.push('Poor sleep quality');
+    recommendations.push('Establish a consistent bedtime routine');
+  } else {
+    sleepScore += 5;
+    riskFactors.push('Very poor sleep quality');
+    possibleDisorders.push('Insomnia');
+    recommendations.push('Seek evaluation for possible sleep disorders');
+    professionalHelp = true;
   }
 
-  // 3. STRESS LEVEL (HIGH - Weight: 2.0)
-  maxPossibleScore += WEIGHTS.HIGH * 10;
-  if (stressLevel >= 9) {
-    totalRiskScore += WEIGHTS.HIGH * 10;
-    possibleDisorders.push({
-      name: 'Severe Stress-Induced Insomnia',
-      severity: 'High',
-      probability: 85
-    });
-    keyFactors.push({
-      name: 'Extremely High Stress Level',
-      impact: 'Critical',
-      value: `${stressLevel}/10`
-    });
-    recommendations.add('URGENT: Practice daily stress management - meditation, deep breathing, or yoga');
-    recommendations.add('Consider professional counseling for stress management');
-  } else if (stressLevel >= 7) {
-    totalRiskScore += WEIGHTS.HIGH * 7;
-    possibleDisorders.push({
-      name: 'Stress-Induced Insomnia',
-      severity: 'Moderate',
-      probability: 70
-    });
-    keyFactors.push({
-      name: 'High Stress Level',
-      impact: 'High',
-      value: `${stressLevel}/10`
-    });
-    recommendations.add('Implement stress reduction techniques: mindfulness, meditation, or progressive muscle relaxation');
-  } else if (stressLevel >= 5) {
-    totalRiskScore += WEIGHTS.HIGH * 4;
-    keyFactors.push({
-      name: 'Moderate Stress Level',
-      impact: 'Medium',
-      value: `${stressLevel}/10`
-    });
-    recommendations.add('Monitor stress levels and practice regular relaxation exercises');
+  // 3. Sleep Environment (10 points)
+  if (sleepEnvironment >= 8) {
+    sleepScore += 10;
+  } else if (sleepEnvironment >= 6) {
+    sleepScore += 7;
+    recommendations.push('Optimize bedroom environment: darker curtains, white noise machine, or temperature control');
+  } else {
+    sleepScore += 4;
+    riskFactors.push('Poor sleep environment');
+    recommendations.push('Invest in blackout curtains, earplugs, or a better mattress');
   }
 
-  // 4. BMI AND SLEEP APNEA RISK (HIGH - Weight: 2.0)
-  maxPossibleScore += WEIGHTS.HIGH * 10;
-  if (bmi >= 35) {
-    totalRiskScore += WEIGHTS.HIGH * 10;
-    possibleDisorders.push({
-      name: 'Obstructive Sleep Apnea',
-      severity: 'High',
-      probability: 90
-    });
-    keyFactors.push({
-      name: 'Severe Obesity (Class II/III)',
-      impact: 'Critical',
-      value: `BMI: ${bmi.toFixed(1)}`
-    });
-    recommendations.add('URGENT: Consult sleep specialist for sleep apnea screening (high risk)');
-    recommendations.add('Develop medically supervised weight management plan');
-  } else if (bmi >= 30) {
-    totalRiskScore += WEIGHTS.HIGH * 7;
-    possibleDisorders.push({
-      name: 'Sleep Apnea',
-      severity: 'Moderate',
-      probability: 70
-    });
-    keyFactors.push({
-      name: 'Obesity',
-      impact: 'High',
-      value: `BMI: ${bmi.toFixed(1)}`
-    });
-    recommendations.add('Weight management may significantly reduce sleep apnea risk');
-    recommendations.add('Consider sleep apnea screening if experiencing snoring or daytime fatigue');
-  } else if (bmi >= 25) {
-    totalRiskScore += WEIGHTS.HIGH * 3;
-    recommendations.add('Maintain healthy weight to prevent future sleep-related issues');
+  // 4. Screen Time Before Bed (10 points)
+  if (screenTimeBeforeBed === 0) {
+    sleepScore += 10;
+  } else if (screenTimeBeforeBed === 1) {
+    sleepScore += 7;
+    recommendations.push('Try to avoid screens 30 minutes before bed');
+  } else if (screenTimeBeforeBed === 2) {
+    sleepScore += 4;
+    riskFactors.push('Excessive screen time before bed');
+    recommendations.push('Blue light from screens can disrupt melatonin production. Use night mode or blue light filters');
+  } else {
+    sleepScore += 2;
+    riskFactors.push('Very high screen exposure before sleep');
+    recommendations.push('Establish a screen-free bedtime routine at least 1 hour before sleep');
+  }
+
+  // 5. Stress Level (10 points)
+  if (stressLevel <= 3) {
+    sleepScore += 10;
+  } else if (stressLevel <= 5) {
+    sleepScore += 7;
+    recommendations.push('Practice stress-reduction techniques: meditation, deep breathing, or journaling');
+  } else if (stressLevel <= 7) {
+    sleepScore += 4;
+    riskFactors.push('High stress levels');
+    recommendations.push('Consider professional stress management counseling');
+  } else {
+    sleepScore += 2;
+    riskFactors.push('Severe stress');
+    recommendations.push('Seek professional help for stress and anxiety management');
+    professionalHelp = true;
+  }
+
+  // 6. Physical Activity (10 points)
+  if (physicalActivity >= 150) {
+    sleepScore += 10;
+  } else if (physicalActivity >= 75) {
+    sleepScore += 7;
+    recommendations.push('Aim for 150 minutes of moderate exercise per week for better sleep');
+  } else {
+    sleepScore += 3;
+    riskFactors.push('Insufficient physical activity');
+    recommendations.push('Regular exercise improves sleep quality - start with 20-30 minutes of walking daily');
+  }
+
+  // 7. Substance Use Analysis (10 points)
+  let substanceScore = 10;
+  if (caffeineIntake >= 3) {
+    substanceScore -= 3;
+    riskFactors.push('High caffeine consumption');
+    recommendations.push('Limit caffeine intake, especially after 2 PM');
+  } else if (caffeineIntake === 2) {
+    substanceScore -= 1;
+    recommendations.push('Consider reducing afternoon caffeine consumption');
+  }
+
+  if (alcoholIntake >= 2) {
+    substanceScore -= 3;
+    riskFactors.push('Alcohol affecting sleep architecture');
+    recommendations.push('Alcohol disrupts REM sleep - limit consumption, especially before bedtime');
+  }
+
+  if (sleepingPills) {
+    substanceScore -= 2;
+    riskFactors.push('Dependence on sleep medications');
+    recommendations.push('Consult your doctor about gradually reducing sleep medication dependency');
+  }
+
+  sleepScore += Math.max(0, substanceScore);
+
+  // 8. Health Indicators (10 points)
+  let healthScore = 10;
+
+  // BMI analysis
+  if (bmi >= 18.5 && bmi < 25) {
+    // Normal weight - full points
   } else if (bmi < 18.5) {
-    totalRiskScore += WEIGHTS.MEDIUM * 4;
-    keyFactors.push({
-      name: 'Underweight',
-      impact: 'Medium',
-      value: `BMI: ${bmi.toFixed(1)}`
-    });
-    recommendations.add('Consult healthcare provider about healthy weight gain strategies');
+    healthScore -= 2;
+    riskFactors.push('Underweight status');
+  } else if (bmi >= 25 && bmi < 30) {
+    healthScore -= 2;
+    riskFactors.push('Overweight - increased sleep apnea risk');
+    recommendations.push('Maintaining a healthy weight can improve sleep quality');
+  } else if (bmi >= 30) {
+    healthScore -= 4;
+    riskFactors.push('Obesity - high sleep apnea risk');
+    possibleDisorders.push('Obstructive Sleep Apnea');
+    recommendations.push('Weight loss can significantly improve sleep apnea symptoms');
+    professionalHelp = true;
   }
 
-  // 5. PHYSICAL ACTIVITY (MEDIUM - Weight: 1.5)
-  maxPossibleScore += WEIGHTS.MEDIUM * 10;
-  if (physicalActivity < 20) {
-    totalRiskScore += WEIGHTS.MEDIUM * 8;
-    keyFactors.push({
-      name: 'Very Low Physical Activity',
-      impact: 'High',
-      value: `${physicalActivity}%`
-    });
-    recommendations.add('Start with light activity: 10-minute walks, gradually increase to 30 min/day');
-  } else if (physicalActivity < 40) {
-    totalRiskScore += WEIGHTS.MEDIUM * 5;
-    keyFactors.push({
-      name: 'Low Physical Activity',
-      impact: 'Medium',
-      value: `${physicalActivity}%`
-    });
-    recommendations.add('Increase daily physical activity to 30+ minutes of moderate exercise');
-  } else if (physicalActivity > 90) {
-    totalRiskScore += WEIGHTS.MEDIUM * 3;
-    recommendations.add('Ensure intense exercise is completed at least 3-4 hours before bedtime');
+  // Blood pressure
+  if (bloodPressure.systolic > 140 || bloodPressure.diastolic > 90) {
+    healthScore -= 2;
+    riskFactors.push('Hypertension');
+    recommendations.push('Poor sleep can worsen blood pressure - consult your doctor');
   }
 
-  // 6. CARDIOVASCULAR METRICS (MEDIUM - Weight: 1.5)
-  maxPossibleScore += WEIGHTS.MEDIUM * 10;
-
-  // Blood Pressure
-  if (bloodPressure.systolic >= 140 || bloodPressure.diastolic >= 90) {
-    totalRiskScore += WEIGHTS.MEDIUM * 7;
-    keyFactors.push({
-      name: 'Hypertension (High Blood Pressure)',
-      impact: 'High',
-      value: `${bloodPressure.systolic}/${bloodPressure.diastolic} mmHg`
-    });
-    recommendations.add('Monitor blood pressure regularly and consult healthcare provider');
-    recommendations.add('High BP can indicate sleep apnea - consider screening');
-  } else if (bloodPressure.systolic >= 130 || bloodPressure.diastolic >= 85) {
-    totalRiskScore += WEIGHTS.MEDIUM * 4;
-    keyFactors.push({
-      name: 'Elevated Blood Pressure',
-      impact: 'Medium',
-      value: `${bloodPressure.systolic}/${bloodPressure.diastolic} mmHg`
-    });
-    recommendations.add('Monitor blood pressure and maintain healthy lifestyle to prevent hypertension');
+  // Heart rate
+  if (heartRate > 100 || heartRate < 50) {
+    healthScore -= 2;
+    riskFactors.push('Abnormal resting heart rate');
   }
 
-  // Heart Rate
-  if (heartRate > 100) {
-    totalRiskScore += WEIGHTS.MEDIUM * 6;
-    keyFactors.push({
-      name: 'Elevated Resting Heart Rate',
-      impact: 'Medium',
-      value: `${heartRate} bpm`
-    });
-    recommendations.add('Elevated heart rate may indicate poor sleep quality or stress - consult healthcare provider');
-  } else if (heartRate < 50 && physicalActivity < 70) { // Low HR without being athletic
-    totalRiskScore += WEIGHTS.MEDIUM * 5;
-    keyFactors.push({
-      name: 'Low Resting Heart Rate',
-      impact: 'Medium',
-      value: `${heartRate} bpm`
-    });
-    recommendations.add('Unusually low heart rate warrants cardiovascular evaluation');
+  sleepScore += Math.max(0, healthScore);
+
+  // 9. Sleep Disorder Screening
+
+  // Sleep Apnea Screen
+  if (snoring && breathingInterruptions) {
+    possibleDisorders.push('Obstructive Sleep Apnea');
+    riskFactors.push('Snoring with breathing interruptions');
+    recommendations.push('URGENT: Get evaluated for sleep apnea with a sleep study');
+    professionalHelp = true;
+  } else if (snoring && bmi >= 30) {
+    possibleDisorders.push('Possible Sleep Apnea');
+    recommendations.push('Consider a sleep study to rule out sleep apnea');
   }
 
-  // 7. DAILY ACTIVITY LEVEL (LOW - Weight: 1.0)
-  maxPossibleScore += WEIGHTS.LOW * 10;
-  if (dailySteps < 3000) {
-    totalRiskScore += WEIGHTS.LOW * 8;
-    keyFactors.push({
-      name: 'Sedentary Lifestyle',
-      impact: 'Medium',
-      value: `${dailySteps} steps/day`
-    });
-    recommendations.add('Aim to gradually increase daily steps to at least 7,000-10,000');
-  } else if (dailySteps < 5000) {
-    totalRiskScore += WEIGHTS.LOW * 5;
-    recommendations.add('Increase daily activity by taking short walks throughout the day');
+  // Restless Leg Syndrome
+  if (restlessLegs) {
+    possibleDisorders.push('Restless Leg Syndrome');
+    riskFactors.push('Restless leg symptoms');
+    recommendations.push('Check iron levels and consult a neurologist about restless leg syndrome');
   }
 
-  // 8. AGE-RELATED FACTORS (LOW - Weight: 1.0)
-  maxPossibleScore += WEIGHTS.LOW * 10;
-  if (age > 65) {
-    totalRiskScore += WEIGHTS.LOW * 6;
-    keyFactors.push({
-      name: 'Age-Related Sleep Changes',
-      impact: 'Low',
-      value: `${age} years`
-    });
-    recommendations.add('Age-appropriate sleep strategies: earlier bedtime, daytime naps if needed');
-  } else if (age > 50) {
-    totalRiskScore += WEIGHTS.LOW * 3;
-    recommendations.add('Monitor for age-related sleep pattern changes');
+  // Shift Work Disorder
+  if (shiftWork) {
+    riskFactors.push('Irregular sleep schedule');
+    recommendations.push('For shift workers: use bright light therapy during work hours, keep bedroom dark during day sleep');
   }
 
-  // ========== SPECIAL DISORDER DETECTION ==========
-
-  // Restless Leg Syndrome (RLS) indicators
-  if (age > 40 && stressLevel > 6 && physicalActivity < 40 && qualityOfSleep < 6) {
-    possibleDisorders.push({
-      name: 'Restless Leg Syndrome',
-      severity: 'Moderate',
-      probability: 55
-    });
-    recommendations.add('Try leg stretches and massage before bed for potential RLS symptoms');
-    recommendations.add('Consider iron level screening if symptoms persist');
+  // Chronic Pain
+  if (chronicPain) {
+    riskFactors.push('Chronic pain affecting sleep');
+    recommendations.push('Work with your doctor on pain management to improve sleep');
   }
 
-  // Circadian Rhythm Disorder indicators
-  if (qualityOfSleep < 6 && sleepDuration < 7 && stressLevel > 5) {
-    possibleDisorders.push({
-      name: 'Circadian Rhythm Disorder',
-      severity: 'Moderate',
-      probability: 60
-    });
-    recommendations.add('Maintain consistent sleep/wake times, even on weekends');
-    recommendations.add('Get 30+ minutes of natural daylight within 2 hours of waking');
-    recommendations.add('Avoid bright lights and screens 2 hours before bedtime');
+  // Nightmares/Sleep Terrors
+  if (nightmares) {
+    riskFactors.push('Frequent nightmares');
+    recommendations.push('Nightmare frequency may indicate stress or trauma - consider counseling');
   }
 
-  // Periodic Limb Movement Disorder (PLMD) - correlated with poor quality
-  if (qualityOfSleep <= 4 && age > 50 && heartRate > 75) {
-    possibleDisorders.push({
-      name: 'Periodic Limb Movement Disorder',
-      severity: 'Low',
-      probability: 40
-    });
-    recommendations.add('Discuss sleep quality concerns with healthcare provider for potential PLMD evaluation');
+  // Bedtime Consistency
+  if (bedtimeConsistency < 5) {
+    riskFactors.push('Inconsistent sleep schedule');
+    recommendations.push('Maintain a consistent sleep schedule, even on weekends (within 1-2 hours)');
   }
 
-  // ========== CALCULATE SLEEP EFFICIENCY & CONFIDENCE ==========
+  // Excessive Daytime Napping
+  if (napsDuringDay >= 3) {
+    riskFactors.push('Excessive daytime sleepiness');
+    recommendations.push('Limit naps to 20-30 minutes before 3 PM');
+  }
 
-  // Sleep efficiency estimation (simplified calculation)
-  const expectedSleepDuration = 8;
-  const sleepEfficiency = Math.min(100, Math.max(0,
-    (sleepDuration / expectedSleepDuration) * (qualityOfSleep / 10) * 100
-  ));
-
-  // Calculate confidence score (based on data quality and consistency)
-  let confidence = 85; // Base confidence
-
-  // Reduce confidence for extreme or inconsistent values
-  if (sleepDuration < 3 || sleepDuration > 12) confidence -= 10;
-  if (bmi < 15 || bmi > 50) confidence -= 10;
-  if (heartRate < 40 || heartRate > 130) confidence -= 10;
-
-  // Increase confidence if multiple factors align
-  const alignedFactors = [
-    (sleepDuration < 7 && qualityOfSleep < 6),
-    (stressLevel > 7 && qualityOfSleep < 6),
-    (bmi > 30 && heartRate > 80),
-    (physicalActivity < 30 && dailySteps < 5000)
-  ].filter(Boolean).length;
-
-  confidence += alignedFactors * 3;
-  confidence = Math.min(95, Math.max(60, confidence));
-
-  // ========== DETERMINE RISK LEVEL ==========
-
-  const riskPercentage = (totalRiskScore / maxPossibleScore) * 100;
-  let riskLevel, riskDescription;
-
-  if (riskPercentage >= 60) {
-    riskLevel = 'High';
-    riskDescription = 'Significant sleep disorder risk detected. Professional evaluation strongly recommended.';
-  } else if (riskPercentage >= 35) {
-    riskLevel = 'Moderate';
-    riskDescription = 'Moderate sleep concerns identified. Consider lifestyle modifications and monitoring.';
-  } else if (riskPercentage >= 15) {
-    riskLevel = 'Low';
-    riskDescription = 'Minor sleep concerns detected. Focus on preventive measures and healthy sleep habits.';
+  // Final risk level determination
+  let riskLevel;
+  if (sleepScore >= 80) {
+    riskLevel = 'Low Risk';
+  } else if (sleepScore >= 60) {
+    riskLevel = 'Moderate Risk';
+  } else if (sleepScore >= 40) {
+    riskLevel = 'High Risk';
   } else {
-    riskLevel = 'Minimal';
-    riskDescription = 'Sleep patterns appear relatively healthy. Continue maintaining good sleep hygiene.';
+    riskLevel = 'Very High Risk';
+    professionalHelp = true;
   }
 
-  // ========== ADD UNIVERSAL RECOMMENDATIONS ==========
-
-  recommendations.add('Maintain a consistent sleep schedule, even on weekends');
-  recommendations.add('Limit screen time and blue light exposure 1-2 hours before bed');
-  recommendations.add('Avoid caffeine after 2 PM and alcohol close to bedtime');
-  recommendations.add('Create a relaxing bedtime routine (reading, warm bath, gentle stretching)');
-
-  // Prioritize recommendations (move critical ones to top)
-  const prioritizedRecommendations = Array.from(recommendations).sort((a, b) => {
-    const aUrgent = a.includes('URGENT');
-    const bUrgent = b.includes('URGENT');
-    if (aUrgent && !bUrgent) return -1;
-    if (!aUrgent && bUrgent) return 1;
-    return 0;
-  });
-
-  // ========== ESTIMATE SLEEP STAGES ==========
-
-  // Estimate sleep stages based on age and sleep quality
-  // Normal ranges: Light (50-60%), Deep (10-25%), REM (20-25%)
-  let remSleep, deepSleep, lightSleep;
-
-  // Base values adjusted by age
-  if (age < 30) {
-    deepSleep = 20;
-    remSleep = 25;
-  } else if (age < 50) {
-    deepSleep = 15;
-    remSleep = 22;
-  } else {
-    deepSleep = 12;
-    remSleep = 20;
+  // Add general recommendations
+  if (recommendations.length < 3) {
+    recommendations.push('Maintain a regular sleep schedule');
+    recommendations.push('Create a relaxing bedtime routine');
+    recommendations.push('Keep your bedroom cool, dark, and quiet');
   }
 
-  // Adjust based on sleep quality (poor quality reduces deep/REM)
-  if (qualityOfSleep < 5) {
-    deepSleep *= 0.7;
-    remSleep *= 0.8;
-  } else if (qualityOfSleep < 7) {
-    deepSleep *= 0.9;
-    remSleep *= 0.9;
+  // Add professional help recommendation if needed
+  if (professionalHelp) {
+    recommendations.unshift('⚠️ IMPORTANT: Consult a healthcare provider or sleep specialist for professional evaluation');
   }
 
-  // Calculate light sleep as the remainder
-  lightSleep = 100 - (deepSleep + remSleep);
+  // Remove duplicates
+  possibleDisorders = [...new Set(possibleDisorders)];
+  recommendations = [...new Set(recommendations)];
+  riskFactors = [...new Set(riskFactors)];
 
-  // Normalize to ensure sum is 100%
-  const total = deepSleep + remSleep + lightSleep;
-  deepSleep = Math.round((deepSleep / total) * 100);
-  remSleep = Math.round((remSleep / total) * 100);
-  lightSleep = 100 - (deepSleep + remSleep);
-
-  // ========== RETURN COMPREHENSIVE RESULTS ==========
+  // If no specific disorders detected
+  if (possibleDisorders.length === 0 && riskLevel !== 'Low Risk') {
+    possibleDisorders.push('Poor Sleep Hygiene');
+  }
 
   return {
+    sleepScore: Math.round(sleepScore),
     riskLevel,
-    riskDescription,
-    riskScore: Math.round(riskPercentage),
-    confidence: Math.round(confidence),
-    sleepEfficiency: Math.round(sleepEfficiency),
-    sleepStages: {
-      deepSleep,
-      remSleep,
-      lightSleep
-    },
-    possibleDisorders: possibleDisorders.length > 0
-      ? possibleDisorders.sort((a, b) => b.probability - a.probability)
-      : [{ name: 'No specific disorders detected', severity: 'None', probability: 0 }],
-    keyFactors: keyFactors.sort((a, b) => {
-      const impactOrder = { Critical: 4, High: 3, Medium: 2, Low: 1 };
-      return (impactOrder[b.impact] || 0) - (impactOrder[a.impact] || 0);
-    }),
-    recommendations: prioritizedRecommendations
+    riskFactors,
+    possibleDisorders: possibleDisorders.length > 0 ? possibleDisorders : ['No specific disorders detected'],
+    recommendations,
+    professionalHelpNeeded: professionalHelp,
+    detailedAnalysis: {
+      durationScore: sleepDuration >= 7 && sleepDuration <= 9 ? 'Optimal' : sleepDuration < 7 ? 'Too Short' : 'Too Long',
+      qualityRating: qualityOfSleep >= 8 ? 'Excellent' : qualityOfSleep >= 6 ? 'Good' : qualityOfSleep >= 4 ? 'Fair' : 'Poor',
+      environmentRating: sleepEnvironment >= 8 ? 'Excellent' : sleepEnvironment >= 6 ? 'Good' : 'Needs Improvement',
+      lifestyleImpact: stressLevel > 7 || caffeineIntake >= 3 || alcoholIntake >= 2 ? 'Significant' : stressLevel > 5 ? 'Moderate' : 'Minimal'
+    }
   };
 };
 

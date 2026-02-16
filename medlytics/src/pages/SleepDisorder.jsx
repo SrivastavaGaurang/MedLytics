@@ -3,12 +3,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { analyzeSleep } from '../services/sleepService';
-import { useAuth } from '../contexts/useAuth';
+import { useAuth } from '../contexts/AuthContext';
+import { Link } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const SleepDisorder = () => {
   const navigate = useNavigate();
-  const { user, isAuthenticated, loginWithRedirect } = useAuth();
+  const { user, isAuthenticated } = useAuth();
 
   const [formData, setFormData] = useState({
     age: '',
@@ -57,13 +58,11 @@ const SleepDisorder = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!isAuthenticated) {
-      setError('Please log in to submit an analysis.');
-      return;
-    }
+    // Removed auth check
+
     setLoading(true);
     setError(null);
-    const authId = user.sub;
+    const authId = user ? user._id : 'guest_' + Date.now(); // Handle guest users
 
     console.log('Submitting sleep form data:', { ...formData, authId });
     try {
@@ -454,28 +453,10 @@ const SleepDisorder = () => {
     }
   };
 
-  if (!isAuthenticated) {
-    return (
-      <section className="container py-5" aria-labelledby="sleep-disorder-title">
-        <div className="row">
-          <div className="col-lg-8 mx-auto">
-            <div className="card shadow">
-              <div className="card-body text-center p-5">
-                <h3>Please log in to perform a sleep analysis</h3>
-                <p className="mb-4">Login to access the sleep disorder analysis tool and view your history.</p>
-                <button
-                  className="btn btn-primary"
-                  onClick={() => loginWithRedirect({ appState: { returnTo: '/sleep-disorder' } })}
-                >
-                  Log In
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    );
-  }
+  // Removed the authentication check block to allow public access
+
+  // Optional: prompt user to login for history features but don't block
+  const showLoginPrompt = !isAuthenticated && step === 1;
 
   return (
     <section className="container py-5" aria-labelledby="sleep-disorder-title">
@@ -486,6 +467,12 @@ const SleepDisorder = () => {
               <h2 id="sleep-disorder-title" className="mb-0">Sleep Disorder Analysis</h2>
             </div>
             <div className="card-body p-4">
+              {showLoginPrompt && (
+                <div className="alert alert-info alert-dismissible fade show" role="alert">
+                  <strong>Tip:</strong> <Link to="/login" className="alert-link">Log in</Link> to save your results and track your sleep history over time. You can still proceed as a guest.
+                  <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+              )}
               <div className="mb-4">
                 <div className="progress" style={{ height: '8px' }}>
                   <div

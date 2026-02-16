@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: medlytics-backend
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: AUTH0_DOMAIN
+        sync: false
+      - key: AUTH0_AUDIENCE
+        sync: false
+      - key: AUTH0_SECRET
+        sync: false
+      - key: AUTH0_ISSUER_BASE_URL
+        sync: false
+      - key: FRONTEND_URL
+        sync: false

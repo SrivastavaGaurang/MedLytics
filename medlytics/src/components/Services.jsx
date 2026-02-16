@@ -126,8 +126,8 @@ const Services = () => {
       </section>
 
       {/* Services Grid */}
-      <section className="py-5">
-        <div className="container">
+      <section className="section-padding-md">
+        <div className="container max-content-width">
           <div className="row g-4">
             {services.map((service, index) => (
               <motion.div
@@ -137,14 +137,14 @@ const Services = () => {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 className="col-lg-4 col-md-6"
               >
-                <div className={`card h-100 border-0 shadow-sm hover-shadow-lg transition-all`}>
-                  <div className="card-body p-4">
+                <div className="card h-100 border-0 shadow-sm hover-shadow-lg transition-all d-flex flex-column">
+                  <div className="card-body p-4 d-flex flex-column">
                     <div className={`d-inline-flex align-items-center justify-content-center bg-${service.color} bg-opacity-10 rounded-circle p-3 mb-3`}
                       style={{ width: '70px', height: '70px' }}>
                       <i className={`bi ${service.icon} fs-2 text-${service.color}`}></i>
                     </div>
                     <h3 className="h4 mb-3">{service.title}</h3>
-                    <p className="text-muted mb-4">{service.description}</p>
+                    <p className="text-muted mb-4 flex-grow-1">{service.description}</p>
 
                     <ul className="list-unstyled mb-4">
                       {service.features.map((feature, idx) => (
@@ -171,8 +171,8 @@ const Services = () => {
       </section>
 
       {/* How It Works Section */}
-      <section className="py-5 bg-light">
-        <div className="container">
+      <section className="section-padding-md bg-gradient-section">
+        <div className="container max-content-width">
           <div className="text-center mb-5">
             <h2 className="display-6 fw-bold">How It Works</h2>
             <p className="lead text-muted">Simple, fast, and secure health assessments</p>
@@ -226,8 +226,8 @@ const Services = () => {
       </section>
 
       {/* Why Choose Us Section */}
-      <section className="py-5">
-        <div className="container">
+      <section className="section-padding-md">
+        <div className="container max-content-width">
           <div className="row align-items-center g-5">
             <div className="col-lg-6">
               <h2 className="display-6 fw-bold mb-4">Why Choose MedLytics?</h2>
@@ -307,8 +307,8 @@ const Services = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-5 bg-primary text-white">
-        <div className="container">
+      <section className="section-padding-md bg-primary text-white">
+        <div className="container max-content-width">
           <div className="row align-items-center">
             <div className="col-lg-8 mb-4 mb-lg-0">
               <h2 className="display-6 fw-bold mb-2">Ready to start your health journey?</h2>

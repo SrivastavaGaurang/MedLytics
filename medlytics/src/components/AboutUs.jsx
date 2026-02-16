@@ -27,8 +27,8 @@ const About = () => {
   return (
     <>
       {/* Hero Section - Enhanced with parallax effect */}
-      <section 
-        className="text-white py-5 position-relative d-flex align-items-center" 
+      <section
+        className="text-white py-5 position-relative d-flex align-items-center"
         style={{
           backgroundImage: "linear-gradient(rgba(0, 123, 255, 0.85), rgba(0, 123, 255, 0.95)), url(https://res.cloudinary.com/dmilgqv8u/image/upload/v1742818725/Doctor_ixnlix.jpg)",
           backgroundSize: "cover",
@@ -44,15 +44,15 @@ const About = () => {
               <p className="lead fs-3 mb-4">
                 Empowering individuals with AI-driven health analytics for better wellness decisions
               </p>
-              
+
             </div>
           </div>
         </div>
       </section>
 
       {/* Mission Section - Updated with card styling and icons */}
-      <section className="py-5" style={{ background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)' }}>
-        <div className="container">
+      <section className="section-padding-md bg-gradient-section">
+        <div className="container max-content-width">
           <div className="row">
             <div className="col-lg-10 mx-auto">
               <div className="card border-0 shadow-lg rounded-lg mb-5" data-aos="fade-up">
@@ -63,32 +63,32 @@ const About = () => {
                     </div>
                     <h2 className="mb-0 text-primary">Our Mission</h2>
                   </div>
-                  
+
                   <p className="lead mb-4">
                     At Medlytics, we believe that personalized health insights should be accessible to everyone. Our mission is to combine cutting-edge AI technology with medical expertise to provide users with actionable health insights.
                   </p>
-                  
+
                   <div className="bg-light p-4 rounded-3 mb-4">
                     <h4 className="text-primary mb-3">The Problem We're Solving</h4>
                     <p className="mb-0">
                       The youth population presents increasing numbers of mental health conditions including depression due to academic distress, social alienation, and overuse of digital technology. Young individuals often avoid seeking treatment because of social stigma or insufficient knowledge about psychological conditions, leading to condition deterioration. Untreated depression can trigger serious consequences including self-harm, substance use, and suicide. Additionally, patients usually rely on self-assessment when reporting symptoms to doctors, which is problematic for identifying conditions in their early stages.
                     </p>
                   </div>
-                  
+
                   <div className="bg-light p-4 rounded-3 mb-4">
                     <h4 className="text-primary mb-3">Our Technological Approach</h4>
                     <p className="mb-0">
                       Machine learning algorithms provide an effective way to detect depression by analyzing behavioral and physiological indicators. Decision Tree, Logistic Regression, and Random Forest algorithms analyze big data from social media activity, wearable device health data, and voice patterns to recognize patterns associated with depression. These ML techniques empower mental health practitioners to initiate early intervention, potentially preventing mental health conditions from developing into severe crises.
                     </p>
                   </div>
-                  
+
                   <div className="bg-light p-4 rounded-3 mb-4">
                     <h4 className="text-primary mb-3">Research Findings</h4>
                     <p className="mb-0">
                       Our research demonstrates the ability to detect youth depression through analysis of psychological symptoms, lifestyle elements, and physical measurements. Random Forest achieved better performance than other methods, showing that ensemble learning approaches boost predictive accuracy. Stress levels, sleep quality, and anxiety measurements serve as key predictors, confirming the value of multi-tiered data monitoring.
                     </p>
                   </div>
-                  
+
                   <div className="bg-light p-4 rounded-3">
                     <h4 className="text-primary mb-3">Future Direction</h4>
                     <p className="mb-0">
@@ -103,20 +103,20 @@ const About = () => {
       </section>
 
       {/* Team Section - Updated with horizontal layout for all team members */}
-      <section className="py-5 bg-light">
-        <div className="container">
+      <section className="section-padding-md bg-light">
+        <div className="container max-content-width">
           <div className="text-center mb-5" data-aos="fade-up">
             <span className="badge bg-primary px-3 py-2 mb-2">The Experts</span>
             <h2 className="display-4 fw-bold text-primary">Our Team</h2>
-            <p className="lead text-muted mx-auto" style={{ maxWidth: "700px" }}>
+            <p className="lead text-muted max-text-width">
               Meet the innovative minds behind Medlytics who combine expertise in healthcare, technology, and user experience to deliver impactful health solutions
             </p>
           </div>
-          
+
           <div className="row g-4">
             <div className="col-md-3" data-aos="fade-up" data-aos-delay="0">
               <div className="card h-100 shadow-sm border-0 team-card">
-                <div className="card-body text-center p-4">
+                <div className="card-body text-center p-4 d-flex flex-column">
                   {showImages ? (
                     <div className="rounded-circle mx-auto mb-3 overflow-hidden" style={{ width: '150px', height: '150px' }}>
                       <img src="https://res.cloudinary.com/dmilgqv8u/image/upload/v1747418069/WhatsApp_Image_2025-05-16_at_23.01.31_58ea47ee_mya8h1.jpg" alt="Satyam" className="img-fluid" />
@@ -128,8 +128,8 @@ const About = () => {
                   )}
                   <h5 className="card-title mb-1">Satyam</h5>
                   <p className="text-muted mb-3">Research Lead</p>
-                  <p className="card-text">
-                    Specializing in machine learning algorithms for healthcare applications, Satyam leads our research initiatives to develop accurate prediction models for mental health conditions.
+                  <p className="card-text small flex-grow-1">
+                    Machine learning expert leading research on healthcare prediction models.
                   </p>
                   <div className="d-flex justify-content-center mt-3">
                     <a href="#" className="social-icon mx-2"><i className="bi bi-linkedin text-primary fs-5"></i></a>
@@ -139,10 +139,10 @@ const About = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="col-md-3" data-aos="fade-up" data-aos-delay="200">
               <div className="card h-100 shadow-sm border-0 team-card">
-                <div className="card-body text-center p-4">
+                <div className="card-body text-center p-4 d-flex flex-column">
                   {showImages ? (
                     <div className="rounded-circle mx-auto mb-3 overflow-hidden" style={{ width: '150px', height: '150px' }}>
                       <img src="https://res.cloudinary.com/dmilgqv8u/image/upload/v1747418070/WhatsApp_Image_2025-05-16_at_10.13.36_686ea2b8_d9cnch.jpg" alt="Aman Deep" className="img-fluid" />
@@ -154,8 +154,8 @@ const About = () => {
                   )}
                   <h5 className="card-title mb-1">Aman Deep</h5>
                   <p className="text-muted mb-3">Research Lead</p>
-                  <p className="card-text">
-                    With a background in clinical psychology and data analysis, Aman focuses on translating complex mental health research into practical applications.
+                  <p className="card-text small flex-grow-1">
+                    Clinical psychology expert translating research into practical applications.
                   </p>
                   <div className="d-flex justify-content-center mt-3">
                     <a href="#" className="social-icon mx-2"><i className="bi bi-linkedin text-primary fs-5"></i></a>
@@ -165,10 +165,10 @@ const About = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="col-md-3" data-aos="fade-up" data-aos-delay="400">
               <div className="card h-100 shadow-sm border-0 team-card">
-                <div className="card-body text-center p-4">
+                <div className="card-body text-center p-4 d-flex flex-column">
                   {showImages ? (
                     <div className="rounded-circle mx-auto mb-3 overflow-hidden" style={{ width: '150px', height: '150px' }}>
                       <img src="https://res.cloudinary.com/dmilgqv8u/image/upload/v1747418069/WhatsApp_Image_2025-05-16_at_21.11.54_6873b369_rt2xla.jpg" alt="Bharat" className="img-fluid" />
@@ -180,8 +180,8 @@ const About = () => {
                   )}
                   <h5 className="card-title mb-1">Bharat</h5>
                   <p className="text-muted mb-3">User Experience Director</p>
-                  <p className="card-text">
-                    With a passion for creating intuitive and accessible interfaces, Bharat ensures that complex health data is presented in ways that users can easily understand.
+                  <p className="card-text small flex-grow-1">
+                    Creating intuitive interfaces for easy understanding of complex health data.
                   </p>
                   <div className="d-flex justify-content-center mt-3">
                     <a href="#" className="social-icon mx-2"><i className="bi bi-linkedin text-primary fs-5"></i></a>
@@ -191,10 +191,10 @@ const About = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="col-md-3" data-aos="fade-up" data-aos-delay="600">
               <div className="card h-100 shadow-sm border-0 team-card">
-                <div className="card-body text-center p-4">
+                <div className="card-body text-center p-4 d-flex flex-column">
                   {showImages ? (
                     <div className="rounded-circle mx-auto mb-3 overflow-hidden" style={{ width: '150px', height: '150px' }}>
                       <img src="https://res.cloudinary.com/dmilgqv8u/image/upload/v1746040208/ChatGPT_Image_Apr_1_2025_03_33_51_AM_xgki5n.png" alt="Gaurang Srivastav" className="img-fluid" />
@@ -206,8 +206,8 @@ const About = () => {
                   )}
                   <h5 className="card-title mb-1">Gaurang Srivastav</h5>
                   <p className="text-muted mb-3">Site Developer</p>
-                  <p className="card-text">
-                    As the technical architect behind Medlytics, Gaurang combines full-stack development expertise with a deep understanding of healthcare applications.
+                  <p className="card-text small flex-grow-1">
+                    Full-stack developer architecting the technical foundation of Medlytics.
                   </p>
                   <div className="d-flex justify-content-center mt-3">
                     <a href="#" className="social-icon mx-2"><i className="bi bi-linkedin text-primary fs-5"></i></a>
@@ -221,8 +221,8 @@ const About = () => {
         </div>
       </section>
       {/* Developer Spotlight Section - Enhanced styling */}
-      <section className="py-5" style={{ background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)' }}>
-        <div className="container">
+      <section className="section-padding-md bg-gradient-section">
+        <div className="container max-content-width">
           <div className="row align-items-center">
             <div className="col-lg-5 mb-4 mb-lg-0 text-center" data-aos="fade-right">
               {showImages ? (
@@ -330,8 +330,8 @@ const About = () => {
       </section>
 
       {/* Tech Section - Enhanced with better visual elements */}
-      <section className="py-5 bg-light">
-        <div className="container">
+      <section className="section-padding-md bg-light">
+        <div className="container max-content-width">
           <div className="text-center mb-5" data-aos="fade-up">
             <span className="badge bg-primary px-3 py-2 mb-2">Innovation</span>
             <h2 className="display-4 fw-bold text-primary">Our Technology</h2>
@@ -339,7 +339,7 @@ const About = () => {
               Advanced AI systems working for your mental health and wellness
             </p>
           </div>
-          
+
           <div className="row align-items-center">
             <div className="col-lg-6 mb-4 mb-lg-0" data-aos="fade-right">
               <div className="card border-0 shadow-sm h-100">
@@ -399,7 +399,7 @@ const About = () => {
               <div className="card bg-white border-0 shadow-sm">
                 <div className="card-body p-4 p-md-5">
                   <h4 className="mb-4 text-primary text-center">Our Analytics Capabilities</h4>
-                  
+
                   <div className="mb-4">
                     <div className="d-flex justify-content-between mb-2">
                       <h6 className="mb-0">Sleep Pattern Analysis</h6>
@@ -410,7 +410,7 @@ const About = () => {
                     </div>
                     <p className="text-muted mt-2 small">Analyzing sleep cycles, patterns, and disturbances to identify risk factors</p>
                   </div>
-                  
+
                   <div className="mb-4">
                     <div className="d-flex justify-content-between mb-2">
                       <h6 className="mb-0">Anxiety Prediction Analysis</h6>
@@ -421,7 +421,7 @@ const About = () => {
                     </div>
                     <p className="text-muted mt-2 small">Identifying anxiety patterns through behavioral and physiological markers</p>
                   </div>
-                  
+
                   <div className="mb-4">
                     <div className="d-flex justify-content-between mb-2">
                       <h6 className="mb-0">Depression Prediction Analysis</h6>
@@ -432,7 +432,7 @@ const About = () => {
                     </div>
                     <p className="text-muted mt-2 small">Early detection of depression through multi-factorial analysis</p>
                   </div>
-                  
+
                   <div>
                     <div className="d-flex justify-content-between mb-2">
                       <h6 className="mb-0">BMI Prediction Analysis</h6>
@@ -451,8 +451,8 @@ const About = () => {
       </section>
 
       {/* Added Testimonials Section */}
-      <section className="py-5" style={{ background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)' }}>
-        <div className="container">
+      <section className="section-padding-md bg-gradient-section">
+        <div className="container max-content-width">
           <div className="text-center mb-5" data-aos="fade-up">
             <span className="badge bg-primary px-3 py-2 mb-2">Success Stories</span>
             <h2 className="display-4 fw-bold text-primary">User Testimonials</h2>
@@ -460,7 +460,7 @@ const About = () => {
               See how Medlytics has helped people take control of their mental health and wellness
             </p>
           </div>
-          
+
           <div className="row g-4">
             <div className="col-md-4" data-aos="fade-up">
               <div className="card h-100 border-0 shadow-sm testimonial-card">
@@ -487,7 +487,7 @@ const About = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="col-md-4" data-aos="fade-up" data-aos-delay="200">
               <div className="card h-100 border-0 shadow-sm testimonial-card">
                 <div className="card-body p-4">
@@ -513,7 +513,7 @@ const About = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="col-md-4" data-aos="fade-up" data-aos-delay="400">
               <div className="card h-100 border-0 shadow-sm testimonial-card">
                 <div className="card-body p-4">
@@ -574,8 +574,8 @@ const About = () => {
       </section>
 
       {/* Added FAQ Section */}
-      <section className="py-5 bg-light">
-        <div className="container">
+      <section className="section-padding-md bg-light">
+        <div className="container max-content-width">
           <div className="text-center mb-5" data-aos="fade-up">
             <span className="badge bg-primary px-3 py-2 mb-2">Questions</span>
             <h2 className="display-4 fw-bold text-primary">Frequently Asked Questions</h2>
@@ -583,7 +583,7 @@ const About = () => {
               Find answers to common questions about our platform and technology
             </p>
           </div>
-          
+
           <div className="row g-4">
             <div className="col-lg-10 mx-auto">
               <div className="accordion" id="faqAccordion">
@@ -599,7 +599,7 @@ const About = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="accordion-item border-0 mb-3 shadow-sm" data-aos="fade-up" data-aos-delay="100">
                   <h2 className="accordion-header" id="headingTwo">
                     <button className="accordion-button collapsed bg-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
@@ -612,7 +612,7 @@ const About = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="accordion-item border-0 mb-3 shadow-sm" data-aos="fade-up" data-aos-delay="200">
                   <h2 className="accordion-header" id="headingThree">
                     <button className="accordion-button collapsed bg-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
@@ -625,7 +625,7 @@ const About = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="accordion-item border-0 mb-3 shadow-sm" data-aos="fade-up" data-aos-delay="300">
                   <h2 className="accordion-header" id="headingFour">
                     <button className="accordion-button collapsed bg-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
@@ -638,7 +638,7 @@ const About = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="accordion-item border-0 shadow-sm" data-aos="fade-up" data-aos-delay="400">
                   <h2 className="accordion-header" id="headingFive">
                     <button className="accordion-button collapsed bg-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
@@ -658,7 +658,7 @@ const About = () => {
       </section>
 
       {/* Added Custom CSS for hover effects */}
-      <style jsx>{`
+      <style>{`
         .team-card:hover {
           transform: translateY(-10px);
           transition: transform 0.3s ease;

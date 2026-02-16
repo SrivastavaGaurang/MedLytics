@@ -1,5 +1,5 @@
 // src/services/depressionService.js
-import apiClient, { createAuthenticatedClient } from './api';
+import apiClient from './api';
 
 // Submit depression analysis data - doesn't require token
 export const analyzeDepression = async (formData) => {
@@ -55,11 +55,11 @@ export const getDepressionResult = async (id) => {
 };
 
 // Get depression history - requires authentication token
-export const getDepressionHistory = async (getAccessTokenSilently) => {
+export const getDepressionHistory = async () => {
     try {
         console.log('Fetching depression history...');
-        const client = await createAuthenticatedClient(getAccessTokenSilently);
-        const response = await client.get('/depression/history');
+        // apiClient already includes auth token via interceptor
+        const response = await apiClient.get('/depression/history');
         console.log('Depression history response:', response.data);
         return response.data;
     } catch (error) {
@@ -77,7 +77,7 @@ export const getDepressionHistory = async (getAccessTokenSilently) => {
 };
 
 // Delete depression analysis - requires authentication token
-export const deleteDepressionAnalysis = async (id, getAccessTokenSilently) => {
+export const deleteDepressionAnalysis = async (id) => {
     try {
         console.log('Deleting depression analysis with ID:', id);
 
@@ -85,8 +85,8 @@ export const deleteDepressionAnalysis = async (id, getAccessTokenSilently) => {
             throw new Error('Analysis ID is required');
         }
 
-        const client = await createAuthenticatedClient(getAccessTokenSilently);
-        const response = await client.delete(`/depression/analysis/${id}`);
+        // apiClient already includes auth token via interceptor
+        const response = await apiClient.delete(`/depression/analysis/${id}`);
         console.log('Delete depression analysis response:', response.data);
         return response.data;
     } catch (error) {
@@ -110,7 +110,7 @@ export const deleteDepressionAnalysis = async (id, getAccessTokenSilently) => {
 };
 
 // Update depression analysis - requires authentication token
-export const updateDepressionAnalysis = async (id, formData, getAccessTokenSilently) => {
+export const updateDepressionAnalysis = async (id, formData) => {
     try {
         console.log('Updating depression analysis with ID:', id, 'Data:', formData);
 
@@ -118,8 +118,8 @@ export const updateDepressionAnalysis = async (id, formData, getAccessTokenSilen
             throw new Error('Analysis ID is required');
         }
 
-        const client = await createAuthenticatedClient(getAccessTokenSilently);
-        const response = await client.put(`/depression/analysis/${id}`, formData);
+        // apiClient already includes auth token via interceptor
+        const response = await apiClient.put(`/depression/analysis/${id}`, formData);
         console.log('Update depression analysis response:', response.data);
         return response.data;
     } catch (error) {
@@ -145,11 +145,11 @@ export const updateDepressionAnalysis = async (id, formData, getAccessTokenSilen
 };
 
 // Get user's depression statistics - requires authentication token
-export const getDepressionStats = async (getAccessTokenSilently) => {
+export const getDepressionStats = async () => {
     try {
         console.log('Fetching depression statistics...');
-        const client = await createAuthenticatedClient(getAccessTokenSilently);
-        const response = await client.get('/depression/stats');
+        // apiClient already includes auth token via interceptor
+        const response = await apiClient.get('/depression/stats');
         console.log('Depression stats response:', response.data);
         return response.data;
     } catch (error) {

@@ -1,12 +1,11 @@
 // src/pages/AnxietyHistory.jsx
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/useAuth';
+import { useAuth } from '../contexts/AuthContext';
 import { getAnxietyHistory } from '../services/anxietyService';
 
 const AnxietyHistory = () => {
-  const { isAuthenticated, loginWithRedirect } = useAuth();
-  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -14,9 +13,7 @@ const AnxietyHistory = () => {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      loginWithRedirect({
-        appState: { returnTo: window.location.pathname }
-      });
+      navigate('/login');
       return;
     }
 
@@ -46,9 +43,9 @@ const AnxietyHistory = () => {
   };
 
   const formatDate = (dateString) => {
-    const options = { 
-      year: 'numeric', 
-      month: 'short', 
+    const options = {
+      year: 'numeric',
+      month: 'short',
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit'
@@ -57,7 +54,7 @@ const AnxietyHistory = () => {
   };
 
   if (loading) return <div className="text-center my-5"><div className="spinner-border" role="status"></div></div>;
-  
+
   if (error) return (
     <div className="container my-5">
       <div className="alert alert-danger" role="alert">
@@ -123,8 +120,8 @@ const AnxietyHistory = () => {
                           )}
                         </td>
                         <td>
-                          <Link 
-                            to={`/anxiety-results/${item._id}`} 
+                          <Link
+                            to={`/anxiety-results/${item._id}`}
                             className="btn btn-sm btn-outline-primary"
                           >
                             View Details
@@ -135,7 +132,7 @@ const AnxietyHistory = () => {
                   </tbody>
                 </table>
               </div>
-              
+
               <div className="d-flex justify-content-between mt-4">
                 <Link to="/dashboard" className="btn btn-outline-secondary">
                   Back to Dashboard
@@ -148,7 +145,7 @@ const AnxietyHistory = () => {
           )}
         </div>
       </div>
-      
+
       <div className="card mt-4 shadow-sm">
         <div className="card-body">
           <h5 className="card-title">Understanding Your Results</h5>

@@ -5,6 +5,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import { getBMIHistory } from '../services/bmiService';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import './Dashboard.css';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -27,8 +28,8 @@ const Dashboard = () => {
         }
 
         // Fetch user profile
-        const userResponse = await fetch('http://localhost:5000/api/users/me', {
-          headers: { 'x-auth-token': token }
+        const userResponse = await fetch('http://localhost:5000/api/auth/me', {
+          headers: { 'Authorization': `Bearer ${token}` }
         });
         const userData = await userResponse.json();
         if (!userResponse.ok) {
@@ -36,29 +37,50 @@ const Dashboard = () => {
         }
         setUser(userData);
 
-        // Fetch sleep history
-        const sleepResponse = await fetch('http://localhost:5000/api/sleep/history', {
-          headers: { 'x-auth-token': token }
-        });
-        const sleepData = await sleepResponse.json();
-        if (!sleepResponse.ok) {
-          throw new Error(sleepData.message || 'Failed to fetch sleep history');
+        // Fetch sleep history - Don't fail on error
+        try {
+          const sleepResponse = await fetch('http://localhost:5000/api/sleep/history', {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          const sleepData = await sleepResponse.json();
+          if (sleepResponse.ok && Array.isArray(sleepData)) {
+            setSleepHistory(sleepData);
+          } else {
+            setSleepHistory([]);
+          }
+        } catch (sleepError) {
+          console.log('No sleep history available');
+          setSleepHistory([]);
         }
-        setSleepHistory(sleepData);
 
-        // Fetch anxiety history
-        const anxietyResponse = await fetch('http://localhost:5000/api/anxiety/history', {
-          headers: { 'x-auth-token': token }
-        });
-        const anxietyData = await anxietyResponse.json();
-        if (!anxietyResponse.ok) {
-          throw new Error(anxietyData.message || 'Failed to fetch anxiety history');
+        // Fetch anxiety history - Don't fail on error
+        try {
+          const anxietyResponse = await fetch('http://localhost:5000/api/anxiety/history', {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          const anxietyData = await anxietyResponse.json();
+          if (anxietyResponse.ok && Array.isArray(anxietyData)) {
+            setAnxietyHistory(anxietyData);
+          } else {
+            setAnxietyHistory([]);
+          }
+        } catch (anxietyError) {
+          console.log('No anxiety history available');
+          setAnxietyHistory([]);
         }
-        setAnxietyHistory(anxietyData);
 
-        // Fetch BMI history
-        const bmiData = await getBMIHistory(() => Promise.resolve(token));
-        setBMIHistory(bmiData);
+        // Fetch BMI history - Don't fail on error
+        try {
+          const bmiData = await getBMIHistory(() => Promise.resolve(token));
+          if (Array.isArray(bmiData)) {
+            setBMIHistory(bmiData);
+          } else {
+            setBMIHistory([]);
+          }
+        } catch (bmiError) {
+          console.log('No BMI history available');
+          setBMIHistory([]);
+        }
       } catch (err) {
         console.error('Error fetching dashboard data:', err);
         setError(err.message || 'An error occurred while loading dashboard');
@@ -366,8 +388,8 @@ const Dashboard = () => {
                   key={tab}
                   onClick={() => setActiveTab(tab)}
                   className={`btn rounded-pill px-4 py-2 fw-medium transition-all ${activeTab === tab
-                      ? 'btn-primary shadow-glow'
-                      : 'btn-light text-muted hover-lift'
+                    ? 'btn-primary shadow-glow'
+                    : 'btn-light text-muted hover-lift'
                     }`}
                 >
                   {tab.charAt(0).toUpperCase() + tab.slice(1)}

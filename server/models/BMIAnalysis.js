@@ -20,7 +20,7 @@ const BMIAnalysisSchema = new Schema({
   gender: {
     type: String,
     required: true,
-    enum: ['Male', 'Female', 'Other']
+    enum: ['Male', 'Female', 'Other', 'male', 'female', 'other'] // Allow lowercase
   },
   height: {
     type: Number,
@@ -91,12 +91,16 @@ const BMIAnalysisSchema = new Schema({
     },
     predictedCategory: {
       type: String,
-      enum: ['Underweight', 'Normal', 'Overweight', 'Obese'],
+      enum: [
+        'Underweight', 'Normal', 'Overweight', 'Obese',
+        'Severe Thinness', 'Moderate Thinness', 'Mild Thinness',
+        'Obese Class I', 'Obese Class II', 'Obese Class III'
+      ],
       required: true
     },
     healthRisk: {
       type: String,
-      enum: ['Low', 'Moderate', 'High', 'Very High'],
+      enum: ['Low', 'Moderate', 'High', 'Very High', 'Minimal'],
       default: 'Low'
     },
     explanation: {
