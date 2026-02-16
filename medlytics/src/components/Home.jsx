@@ -542,128 +542,123 @@ const Home = () => {
                   </div>
                 ))}
               </div>
-            </div>
-          </div>
-        </div>
-      </section>
+              <div className="card-body p-4 p-lg-5">
+                {/* Stars */}
+                <div className="mb-3">
+                  {[...Array(5)].map((_, i) => (
+                    <svg
+                      key={i}
+                      width="18"
+                      height="18"
+                      viewBox="0 0 20 20"
+                      fill="#fbbf24"
+                      className="me-1"
+                    >
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                  ))}
+                </div>
 
-      {/* Testimonials Section - User Success Stories */}
-      <section className="py-5" style={{ background: 'white' }}>
-        <div className="container py-5">
-          <div className="text-center mb-5">
-            <span
-              className="badge px-4 py-2 rounded-pill mb-3"
-              style={{
-                background: 'linear-gradient(135deg, rgba(102,126,234,0.1) 0%, rgba(118,75,162,0.1) 100%)',
-                color: '#667eea',
-                fontWeight: 600,
-                fontSize: '0.9rem',
-                border: '1px solid rgba(102,126,234,0.2)'
-              }}
-            >
-              TESTIMONIALS
-            </span>
-            <h2 className="display-5 fw-bold">User Success Stories</h2>
-            <p className="lead text-muted mx-auto mt-3" style={{ maxWidth: '700px' }}>
-              Real experiences from people who transformed their health with MedLytics
-            </p>
-          </div>
-
-          <div className="row g-4">
-            {testimonials.map((testimonial) => (
-              <div key={testimonial.id} className="col-lg-4 col-md-6">
-                <div
-                  className="card h-100 border-0 shadow-sm"
+                {/* Quote */}
+                <p
+                  className="mb-4"
                   style={{
-                    borderRadius: '20px',
-                    background: 'white',
-                    transition: 'all 0.3s ease'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-5px)';
-                    e.currentTarget.style.boxShadow = '0 12px 40px rgba(0,0,0,0.12)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = '0 4px 6px rgba(0,0,0,0.07)';
+                    fontSize: '1.05rem',
+                    lineHeight: '1.8',
+                    color: '#475569',
+                    fontStyle: 'normal',
+                    position: 'relative'
                   }}
                 >
-                  <div className="card-body p-4 d-flex flex-column">
-                    {/* Quote icon */}
+                  <span style={{
+                    fontSize: '3rem',
+                    lineHeight: 0,
+                    color: 'rgba(102, 126, 234,0.15)',
+                    fontFamily: 'Georgia, serif',
+                    position: 'relative',
+                    top: '20px',
+                    marginRight: '8px'
+                  }}>"</span>
+                  {testimonial.text}
+                  <span style={{
+                    fontSize: '3rem',
+                    lineHeight: 0,
+                    color: 'rgba(102, 126, 234, 0.15)',
+                    fontFamily: 'Georgia, serif',
+                    position: 'relative',
+                    top: '20px',
+                    marginLeft: '4px'
+                  }}>"</span>
+                </p>
+
+                {/* Author */}
+                <div className="d-flex align-items-center gap-3 pt-3" style={{ borderTop: '1px solid #e2e8f0' }}>
+                  {/* Avatar with gradient */}
+                  <div
+                    className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                    style={{
+                      width: '52px',
+                      height: '52px',
+                      minWidth: '52px',
+                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                      color: 'white',
+                      fontSize: '20px',
+                      fontWeight: '700',
+                      boxShadow: '0 8px 16px rgba(102, 126, 234, 0.25)',
+                      position: 'relative'
+                    }}
+                  >
+                    {testimonial.author.charAt(0)}
+                    {/* Verified badge */}
                     <div
-                      className="mb-3"
                       style={{
-                        fontSize: '48px',
-                        lineHeight: 1,
-                        color: 'rgba(102, 126, 234, 0.1)'
+                        position: 'absolute',
+                        bottom: -2,
+                        right: -2,
+                        width: '18px',
+                        height: '18px',
+                        borderRadius: '50%',
+                        background: '#10b981',
+                        border: '2px solid white',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
                       }}
                     >
-                      "
+                      <svg width="10" height="10" viewBox="0 0 12 12" fill="white">
+                        <path d="M10 3L4.5 8.5L2 6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                      </svg>
                     </div>
+                  </div>
 
-                    {/* Star rating */}
-                    <div className="mb-3">
-                      {[...Array(5)].map((_, i) => (
-                        <i key={i} className="bi bi-star-fill text-warning me-1" style={{ fontSize: '14px' }}></i>
-                      ))}
-                    </div>
-
-                    {/* Testimonial text */}
-                    <p
-                      className="mb-4 flex-grow-1"
-                      style={{
-                        fontSize: '0.95rem',
-                        lineHeight: 1.7,
-                        color: '#475569'
-                      }}
-                    >
-                      "{testimonial.text}"
+                  {/* Name and role */}
+                  <div className="flex-grow-1" style={{ minWidth: 0 }}>
+                    <h6 className="mb-0 fw-bold" style={{ fontSize: '1rem', color: '#1e293b' }}>
+                      {testimonial.author}
+                    </h6>
+                    <p className="mb-0" style={{ fontSize: '0.875rem', color: '#64748b' }}>
+                      {testimonial.role}
                     </p>
-
-                    {/* Author info - FIXED LAYOUT */}
-                    <div
-                      className="d-flex align-items-center gap-3 pt-3"
-                      style={{
-                        borderTop: '1px solid #e2e8f0',
-                        marginTop: 'auto'
-                      }}
-                    >
-                      {/* Avatar */}
-                      <div
-                        className="flex-shrink-0 rounded-circle text-white d-flex align-items-center justify-content-center"
-                        style={{
-                          width: '48px',
-                          height: '48px',
-                          minWidth: '48px',  // Prevent shrinking
-                          fontSize: '18px',
-                          fontWeight: 'bold',
-                          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                          boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)'
-                        }}
-                      >
-                        {testimonial.author.charAt(0)}
-                      </div>
-
-                      {/* Author details */}
-                      <div className="flex-grow-1" style={{ minWidth: 0 }}>  {/* minWidth: 0 allows text truncation */}
-                        <h6 className="mb-0 fw-bold" style={{ fontSize: '0.95rem' }}>
-                          {testimonial.author}
-                        </h6>
-                        <small className="text-muted" style={{ fontSize: '0.85rem' }}>
-                          {testimonial.role}
-                        </small>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
+            </div>
+          </motion.div>
             ))}
-          </div>
         </div>
-      </section>
 
-      {/* Call to Action */}
-      <section className="section-padding-md position-relative overflow-hidden">
+        {/* Trust badge */}
+        <div className="text-center mt-5 pt-4">
+          <p className="text-muted mb-2" style={{ fontSize: '0.9rem' }}>
+            <i className="bi bi-shield-check text-success me-2"></i>
+            Trusted by 50,000+ users worldwide
+          </p>
+        </div>
+      </div>
+    </section >
+
+      {/* Call to Action */ }
+      < section className = "section-padding-md position-relative overflow-hidden" >
         <div className="position-absolute top-0 start-0 w-100 h-100 bg-gradient-primary" style={{ zIndex: 0 }}></div>
         <div className="container max-content-width position-relative" style={{ zIndex: 1 }}>
           <div className="row align-items-center text-white">
@@ -680,41 +675,41 @@ const Home = () => {
             </div>
           </div>
         </div>
-      </section>
+      </section >
 
-      {/* FAQ Section */}
-      <section className="section-padding-md bg-gradient-section">
-        <div className="container max-content-width">
-          <div className="text-center mb-5">
-            <h2 className="display-5 fw-bold">FAQ</h2>
-          </div>
+  {/* FAQ Section */ }
+  < section className = "section-padding-md bg-gradient-section" >
+    <div className="container max-content-width">
+      <div className="text-center mb-5">
+        <h2 className="display-5 fw-bold">FAQ</h2>
+      </div>
 
-          <div className="row">
-            <div className="col-lg-8 mx-auto">
-              <div className="accordion" id="faqAccordion">
-                {[
-                  { q: "How accurate are the health predictions?", a: "Our AI models have been trained on extensive datasets and validated with healthcare professionals. They offer up to 98% accuracy in predictions." },
-                  { q: "Is my health data secure?", a: "Absolutely. We use industry-standard encryption to protect your data, and we never share your personal information with third parties." },
-                  { q: "Do I need any special equipment?", a: "No special equipment is needed. Our assessments are questionnaire-based and can be completed from any device." }
-                ].map((item, index) => (
-                  <div key={index} className="accordion-item border-0 mb-3 shadow-sm rounded-3 overflow-hidden">
-                    <h3 className="accordion-header" id={`heading${index}`}>
-                      <button className="accordion-button collapsed fw-bold bg-white" type="button" data-bs-toggle="collapse" data-bs-target={`#collapse${index}`} aria-expanded="false">
-                        {item.q}
-                      </button>
-                    </h3>
-                    <div id={`collapse${index}`} className="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                      <div className="accordion-body bg-white text-muted">
-                        {item.a}
-                      </div>
-                    </div>
+      <div className="row">
+        <div className="col-lg-8 mx-auto">
+          <div className="accordion" id="faqAccordion">
+            {[
+              { q: "How accurate are the health predictions?", a: "Our AI models have been trained on extensive datasets and validated with healthcare professionals. They offer up to 98% accuracy in predictions." },
+              { q: "Is my health data secure?", a: "Absolutely. We use industry-standard encryption to protect your data, and we never share your personal information with third parties." },
+              { q: "Do I need any special equipment?", a: "No special equipment is needed. Our assessments are questionnaire-based and can be completed from any device." }
+            ].map((item, index) => (
+              <div key={index} className="accordion-item border-0 mb-3 shadow-sm rounded-3 overflow-hidden">
+                <h3 className="accordion-header" id={`heading${index}`}>
+                  <button className="accordion-button collapsed fw-bold bg-white" type="button" data-bs-toggle="collapse" data-bs-target={`#collapse${index}`} aria-expanded="false">
+                    {item.q}
+                  </button>
+                </h3>
+                <div id={`collapse${index}`} className="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                  <div className="accordion-body bg-white text-muted">
+                    {item.a}
                   </div>
-                ))}
+                </div>
               </div>
-            </div>
+            ))}
           </div>
         </div>
-      </section>
+      </div>
+    </div>
+      </section >
     </>
   );
 };
