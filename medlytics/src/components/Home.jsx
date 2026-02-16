@@ -256,7 +256,7 @@ const Home = () => {
               </div>
             </motion.div>
 
-            {/* Right: Hero Image */}
+            {/* Right: Hero Image Carousel */}
             <motion.div
               className="col-lg-6"
               initial={{ opacity: 0, x: 50 }}
@@ -266,29 +266,92 @@ const Home = () => {
               <div
                 className="position-relative"
                 style={{
-                  filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.3))'
+                  filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.3))',
+                  borderRadius: '24px',
+                  overflow: 'hidden'
                 }}
               >
-                <img
-                  src={heroMedical}
-                  alt="MedLytics Health Analytics"
-                  className="img-fluid rounded-4"
-                  style={{
-                    maxWidth: '100%',
-                    height: 'auto',
-                    borderRadius: '24px'
+                {/* Image Carousel */}
+                <Slider
+                  {...{
+                    dots: true,
+                    infinite: true,
+                    speed: 1000,
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                    autoplay: true,
+                    autoplaySpeed: 4000,
+                    arrows: false,
+                    pauseOnHover: false,
+                    fade: true,
+                    cssEase: "ease-in-out"
                   }}
-                />
+                >
+                  <div>
+                    <img
+                      src={heroMedical}
+                      alt="Healthcare Professionals"
+                      className="img-fluid"
+                      style={{
+                        width: '100%',
+                        height: '500px',
+                        objectFit: 'cover',
+                        borderRadius: '24px'
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <img
+                      src={heroSleep}
+                      alt="Sleep Health Analysis"
+                      className="img-fluid"
+                      style={{
+                        width: '100%',
+                        height: '500px',
+                        objectFit: 'cover',
+                        borderRadius: '24px'
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <img
+                      src={heroNutrition}
+                      alt="Nutrition Wellness"
+                      className="img-fluid"
+                      style={{
+                        width: '100%',
+                        height: '500px',
+                        objectFit: 'cover',
+                        borderRadius: '24px'
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <img
+                      src={heroMental}
+                      alt="Mental Health Support"
+                      className="img-fluid"
+                      style={{
+                        width: '100%',
+                        height: '500px',
+                        objectFit: 'cover',
+                        borderRadius: '24px'
+                      }}
+                    />
+                  </div>
+                </Slider>
+
                 {/* Floating badge */}
                 <motion.div
                   className="position-absolute"
                   style={{
-                    bottom: '20px',
-                    right: '20px',
+                    bottom: '30px',
+                    right: '30px',
                     background: 'white',
                     padding: '1rem 1.5rem',
                     borderRadius: '16px',
-                    boxShadow: '0 8px 24px rgba(0,0,0,0.15)'
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
+                    zIndex: 10
                   }}
                   animate={{ y: [0, -10, 0] }}
                   transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}

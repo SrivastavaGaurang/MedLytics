@@ -12,6 +12,7 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import LoadingFallback from './components/LoadingFallback';
 import ErrorBoundary from './components/ErrorBoundary';
+import Chatbot from './components/Chatbot';
 
 // Lazy load route components for code splitting
 const Home = lazy(() => import('./components/Home'));
@@ -78,6 +79,7 @@ function App() {
             </Routes>
           </Suspense>
           <Footer />
+          <Chatbot />
           <ToastContainer
             position="top-right"
             autoClose={3000}
