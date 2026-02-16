@@ -117,14 +117,16 @@ app.get('/', (req, res) => {
 });
 
 // Serve static assets in production
-if (process.env.NODE_ENV === 'production') {
-  const __dirname = path.dirname(fileURLToPath(import.meta.url));
-  app.use(express.static(path.join(__dirname, '../client/build')));
-
-  app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, '../client/build', 'index.html'));
-  });
-}
+// Serve static assets in production
+// Note: Frontend is deployed separately on Vercel, so we don't serve static files from here
+// if (process.env.NODE_ENV === 'production') {
+//   const __dirname = path.dirname(fileURLToPath(import.meta.url));
+//   app.use(express.static(path.join(__dirname, '../client/build')));
+//   
+//   app.get('*', (req, res) => {
+//     res.sendFile(path.resolve(__dirname, '../client/build', 'index.html'));
+//   });
+// }
 
 // Error handling middleware
 app.use((err, req, res, next) => {
