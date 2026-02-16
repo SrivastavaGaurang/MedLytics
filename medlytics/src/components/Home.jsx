@@ -555,6 +555,97 @@ const Home = () => {
         </div>
       </section >
 
+      {/* Testimonials Section - User Success Stories */}
+      <section className="py-5" style={{ background: 'linear-gradient(180deg, #f8fafc 0%, white 100%)' }}>
+        <div className="container py-5">
+          <div className="text-center mb-5">
+            <span
+              className="badge px-4 py-2 rounded-pill mb-3"
+              style={{
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                color: 'white',
+                fontWeight: 600
+              }}
+            >
+              ⭐ TESTIMONIALS
+            </span>
+            <h2 className="display-4 fw-bold mb-3">Loved by Thousands</h2>
+            <p className="lead text-muted">Real stories from people who transformed their health</p>
+          </div>
+
+          <div className="row g-4">
+            {testimonials.map((testimonial) => (
+              <div key={testimonial.id} className="col-lg-4 col-md-6">
+                <div
+                  className="card h-100 border-0"
+                  style={{
+                    borderRadius: '24px',
+                    boxShadow: '0 4px 20px rgba(0,0,0,0.06)',
+                    transition: 'all 0.4s ease',
+                    position: 'relative'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-8px)';
+                    e.currentTarget.style.boxShadow = '0 20px 60px rgba(102, 126, 234, 0.15)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.06)';
+                  }}
+                >
+                  {/* Gradient border */}
+                  <div style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: '4px',
+                    background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)',
+                    borderTopLeftRadius: '24px',
+                    borderTopRightRadius: '24px'
+                  }}></div>
+
+                  <div className="card-body p-4">
+                    {/* Stars */}
+                    <div className="mb-3">
+                      {[...Array(5)].map((_, i) => (
+                        <i key={i} className="bi bi-star-fill text-warning me-1"></i>
+                      ))}
+                    </div>
+
+                    {/* Quote */}
+                    <p className="mb-4" style={{ fontSize: '1rem', lineHeight: 1.7, color: '#475569' }}>
+                      "{testimonial.text}"
+                    </p>
+
+                    {/* Author */}
+                    <div className="d-flex align-items-center gap-3 pt-3" style={{ borderTop: '1px solid #e2e8f0' }}>
+                      <div
+                        className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                        style={{
+                          width: '48px',
+                          height: '48px',
+                          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                          color: 'white',
+                          fontSize: '18px',
+                          fontWeight: 'bold'
+                        }}
+                      >
+                        {testimonial.author.charAt(0)}
+                      </div>
+                      <div>
+                        <h6 className="mb-0 fw-bold">{testimonial.author}</h6>
+                        <small className="text-muted">{testimonial.role}</small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Call to Action */}
       < section className="section-padding-md position-relative overflow-hidden" >
         <div className="position-absolute top-0 start-0 w-100 h-100 bg-gradient-primary" style={{ zIndex: 0 }}></div>
