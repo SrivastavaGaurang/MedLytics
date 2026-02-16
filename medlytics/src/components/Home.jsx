@@ -94,118 +94,222 @@ const Home = () => {
 
   return (
     <>
-      {/* Hero Section with Carousel */}
-      <div className="position-relative overflow-hidden" style={{ minHeight: '650px', height: '85vh', maxHeight: '800px' }}>
-        {/* Enhanced gradient overlay for better text readability */}
+      {/* Hero Section - Stunning Split Screen Design */}
+      <section
+        className="position-relative overflow-hidden"
+        style={{
+          minHeight: '100vh',
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          display: 'flex',
+          alignItems: 'center'
+        }}
+      >
+        {/* Animated background pattern */}
         <div
-          className="overlay-gradient position-absolute w-100 h-100"
+          className="position-absolute w-100 h-100"
           style={{
-            background: 'linear-gradient(to bottom, rgba(15, 23, 42, 0.5) 0%, rgba(15, 23, 42, 0.7) 50%, rgba(15, 23, 42, 0.85) 100%)',
-            zIndex: 1,
-            pointerEvents: 'none'
+            backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(255,255,255,0.1) 0%, transparent 50%)',
+            animation: 'float 20s ease-in-out infinite'
           }}
         ></div>
 
-        <Slider {...settings}>
-          <div>
-            <img src={heroSleep} alt="Sleep Health" className="w-100" style={{ height: '85vh', maxHeight: '800px', minHeight: '650px', objectFit: 'cover' }} />
-          </div>
-          <div>
-            <img src={heroMedical} alt="Healthcare Professionals" className="w-100" style={{ height: '85vh', maxHeight: '800px', minHeight: '650px', objectFit: 'cover' }} />
-          </div>
-          <div>
-            <img src={heroNutrition} alt="Nutrition" className="w-100" style={{ height: '85vh', maxHeight: '800px', minHeight: '650px', objectFit: 'cover' }} />
-          </div>
-          <div>
-            <img src={heroMental} alt="Mental Wellness" className="w-100" style={{ height: '85vh', maxHeight: '800px', minHeight: '650px', objectFit: 'cover' }} />
-          </div>
-        </Slider>
-
-        {/* Hero Content Overlay - Enhanced */}
-        <div
-          className="position-absolute top-50 start-50 translate-middle text-center text-white w-100 px-3"
-          style={{ zIndex: 2 }}
-        >
-          <div
-            className="hero-glass-card p-5 d-inline-block animate-float"
-            style={{
-              background: 'rgba(255, 255, 255, 0.15)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
-              border: '2px solid rgba(255, 255, 255, 0.25)',
-              borderRadius: '24px',
-              boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
-              maxWidth: '900px'
-            }}
-          >
-            {/* Main Heading with better hierarchy */}
-            <h1
-              className="fw-bold mb-4 text-white"
-              style={{
-                fontSize: 'clamp(2.5rem, 6vw, 4.5rem)',
-                textShadow: '0 4px 20px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3)',
-                letterSpacing: '-0.02em',
-                lineHeight: '1.1'
-              }}
+        <div className="container position-relative" style={{ zIndex: 2 }}>
+          <div className="row align-items-center g-5">
+            {/* Left: Content */}
+            <motion.div
+              className="col-lg-6"
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
             >
-              MedLytics AI
-            </h1>
+              <div className="text-white">
+                {/* Badge */}
+                <motion.div
+                  className="mb-4"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <span
+                    className="badge px-4 py-2 rounded-pill"
+                    style={{
+                      background: 'rgba(255,255,255,0.2)',
+                      backdropFilter: 'blur(10px)',
+                      fontSize: '0.9rem',
+                      fontWeight: 600,
+                      border: '1px solid rgba(255,255,255,0.3)'
+                    }}
+                  >
+                    <i className="bi bi-stars me-2"></i>
+                    AI-Powered Health Analytics
+                  </span>
+                </motion.div>
 
-            {/* Typing text animation */}
-            <div className="mb-4" style={{ minHeight: '60px' }}>
-              <TypingText />
-            </div>
+                {/* Main Heading */}
+                <motion.h1
+                  className="display-2 fw-bold mb-4"
+                  style={{
+                    fontSize: 'clamp(2.5rem, 6vw, 4.5rem)',
+                    lineHeight: '1.1',
+                    letterSpacing: '-0.02em'
+                  }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4, duration: 0.6 }}
+                >
+                  Your Health Journey,
+                  <br />
+                  <span style={{
+                    background: 'linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.8) 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text'
+                  }}>
+                    Simplified
+                  </span>
+                </motion.h1>
 
-            {/* Subheading with better contrast */}
-            <p
-              className="lead mb-5"
-              style={{
-                fontSize: 'clamp(1.1rem, 2vw, 1.4rem)',
-                color: 'rgba(255, 255, 255, 0.95)',
-                textShadow: '0 2px 10px rgba(0, 0, 0, 0.3)',
-                fontWeight: '400',
-                maxWidth: '700px',
-                margin: '0 auto 2rem',
-                lineHeight: '1.6'
-              }}
+                {/* Subtitle */}
+                <motion.p
+                  className="lead mb-5"
+                  style={{
+                    fontSize: 'clamp(1.1rem, 2vw, 1.35rem)',
+                    opacity: 0.95,
+                    lineHeight: 1.7,
+                    maxWidth: '540px'
+                  }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 0.95 }}
+                  transition={{ delay: 0.6 }}
+                >
+                  Advanced AI technology meets personalized healthcare. Track sleep, manage anxiety, and optimize your wellness—all in one place.
+                </motion.p>
+
+                {/* CTA Buttons */}
+                <motion.div
+                  className="d-flex gap-3 flex-wrap"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.8 }}
+                >
+                  <Link
+                    to="/sleep-disorder"
+                    className="btn btn-light btn-lg px-5 py-3 rounded-pill fw-bold d-inline-flex align-items-center gap-2"
+                    style={{
+                      fontSize: '1.1rem',
+                      boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
+                      transition: 'all 0.3s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.transform = 'translateY(-2px)';
+                      e.target.style.boxShadow = '0 12px 32px rgba(0,0,0,0.3)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.transform = 'translateY(0)';
+                      e.target.style.boxShadow = '0 8px 24px rgba(0,0,0,0.2)';
+                    }}
+                  >
+                    Get Started Free
+                    <i className="bi bi-arrow-right"></i>
+                  </Link>
+                  <Link
+                    to="/about"
+                    className="btn btn-outline-light btn-lg px-5 py-3 rounded-pill fw-bold"
+                    style={{
+                      fontSize: '1.1rem',
+                      border: '2px solid rgba(255,255,255,0.8)',
+                      transition: 'all 0.3s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.background = 'rgba(255,255,255,0.1)';
+                      e.target.style.transform = 'translateY(-2px)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.background = 'transparent';
+                      e.target.style.transform = 'translateY(0)';
+                    }}
+                  >
+                    Learn More
+                  </Link>
+                </motion.div>
+
+                {/* Stats */}
+                <motion.div
+                  className="row mt-5 pt-4"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 1 }}
+                >
+                  <div className="col-4">
+                    <div className="fw-bold" style={{ fontSize: '2rem' }}>98%</div>
+                    <div style={{ opacity: 0.9, fontSize: '0.9rem' }}>Accuracy</div>
+                  </div>
+                  <div className="col-4">
+                    <div className="fw-bold" style={{ fontSize: '2rem' }}>50K+</div>
+                    <div style={{ opacity: 0.9, fontSize: '0.9rem' }}>Users</div>
+                  </div>
+                  <div className="col-4">
+                    <div className="fw-bold" style={{ fontSize: '2rem' }}>24/7</div>
+                    <div style={{ opacity: 0.9, fontSize: '0.9rem' }}>Support</div>
+                  </div>
+                </motion.div>
+              </div>
+            </motion.div>
+
+            {/* Right: Hero Image */}
+            <motion.div
+              className="col-lg-6"
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
             >
-              Advanced health analytics powered by AI for personalized wellness insights
-            </p>
-
-            {/* CTA Buttons - Enhanced */}
-            <div className="d-flex justify-content-center gap-3 flex-wrap">
-              <Link
-                to="/sleep-disorder"
-                className="btn btn-primary btn-lg rounded-pill px-5 py-3 fw-bold"
+              <div
+                className="position-relative"
                 style={{
-                  background: 'linear-gradient(135deg, #4361ee 0%, #7209b7 100%)',
-                  border: 'none',
-                  boxShadow: '0 8px 24px rgba(67, 97, 238, 0.5)',
-                  fontSize: '1.1rem',
-                  transition: 'all 0.3s ease',
-                  minWidth: '200px'
+                  filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.3))'
                 }}
               >
-                Start Analysis
-              </Link>
-              <Link
-                to="/about"
-                className="btn btn-outline-light btn-lg rounded-pill px-5 py-3 fw-bold"
-                style={{
-                  border: '2px solid rgba(255, 255, 255, 0.8)',
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  backdropFilter: 'blur(10px)',
-                  fontSize: '1.1rem',
-                  transition: 'all 0.3s ease',
-                  minWidth: '200px'
-                }}
-              >
-                Learn More
-              </Link>
-            </div>
+                <img
+                  src={heroMedical}
+                  alt="MedLytics Health Analytics"
+                  className="img-fluid rounded-4"
+                  style={{
+                    maxWidth: '100%',
+                    height: 'auto',
+                    borderRadius: '24px'
+                  }}
+                />
+                {/* Floating badge */}
+                <motion.div
+                  className="position-absolute"
+                  style={{
+                    bottom: '20px',
+                    right: '20px',
+                    background: 'white',
+                    padding: '1rem 1.5rem',
+                    borderRadius: '16px',
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.15)'
+                  }}
+                  animate={{ y: [0, -10, 0] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  <div className="d-flex align-items-center gap-2">
+                    <div
+                      className="rounded-circle"
+                      style={{
+                        width: '12px',
+                        height: '12px',
+                        background: '#10b981'
+                      }}
+                    ></div>
+                    <span className="fw-bold text-dark">AI Active</span>
+                  </div>
+                </motion.div>
+              </div>
+            </motion.div>
           </div>
         </div>
-      </div>
+      </section>
 
       {/* Stats Section */}
       <section className="section-padding-md position-relative">
@@ -218,7 +322,7 @@ const Home = () => {
               { value: "24/7", label: "AI Support", color: "warning" }
             ].map((stat, index) => (
               <div key={index} className="col-sm-6 col-lg-3">
-                <div className="glass-card p-4 h-100 animate-pulse" style={{ animationDelay: `${index * 0.5}s` }}>
+                <div className="glass-card p-4 h-100">
                   <h2 className={`display-4 fw-bold text-${stat.color}`}>{stat.value}</h2>
                   <p className="text-muted mb-0 fw-medium">{stat.label}</p>
                 </div>
@@ -228,43 +332,103 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Services Section */}
-      <section className="section-padding-md bg-gradient-section position-relative overflow-hidden">
-        <div className="position-absolute top-0 end-0 p-5 opacity-10">
-          <i className="bi bi-activity text-primary display-1"></i>
-        </div>
-        <div className="container max-content-width position-relative">
+      {/* Services Section  - Modern & Clean */}
+      <section className="py-5" style={{ background: '#f8fafc' }}>
+        <div className="container py-5">
           <div className="text-center mb-5">
-            <span className="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill mb-3">OUR EXPERTISE</span>
-            <h2 className="display-5 fw-bold mb-3">Comprehensive Health Services</h2>
-            <p className="lead text-muted max-text-width">
-              Powered by advanced machine learning algorithms to provide accurate health predictions.
+            <span
+              className="badge px-4 py-2 rounded-pill mb-3"
+              style={{
+                background: 'linear-gradient(135deg, rgba(102,126,234,0.1) 0%, rgba(118,75,162,0.1) 100%)',
+                color: '#667eea',
+                fontWeight: 600,
+                fontSize: '0.9rem',
+                border: '1px solid rgba(102,126,234,0.2)'
+              }}
+            >
+              OUR SERVICES
+            </span>
+            <h2 className="display-5 fw-bold mb-3">Comprehensive Health Analytics</h2>
+            <p className="lead text-muted mx-auto" style={{ maxWidth: '700px' }}>
+              Advanced AI-powered tools to monitor and optimize your health journey
             </p>
           </div>
 
           <div className="row g-4">
             {services.map((service) => (
-              <div key={service.id} className="col-lg-6 col-md-6">
-                <div className="glass-card h-100 p-4 position-relative overflow-hidden group-hover">
-                  <div className="position-absolute top-0 end-0 p-3 opacity-10">
-                    <i className={`bi ${service.icon} display-1 text-${service.color}`}></i>
-                  </div>
-                  <div className="d-flex align-items-start mb-4">
-                    <div className="rounded-2xl p-3 text-white me-3 shadow-md" style={{ background: service.gradient }}>
-                      {service.id === 1 ? (
-                        <img src={iconSleep} alt="Sleep Icon" style={{ width: '32px', height: '32px', filter: 'brightness(0) invert(1)' }} />
-                      ) : (
-                        <i className={`bi ${service.icon} fs-3`}></i>
-                      )}
+              <div key={service.id} className="col-lg-6">
+                <div
+                  className="card h-100 border-0 shadow-sm position-relative overflow-hidden"
+                  style={{
+                    borderRadius: '20px',
+                    transition: 'all 0.3s ease',
+                    background: 'white'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-8px)';
+                    e.currentTarget.style.boxShadow = '0 12px 40px rgba(0,0,0,0.12)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 4px 6px rgba(0,0,0,0.07)';
+                  }}
+                >
+                  {/* Colored top border */}
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      height: '4px',
+                      background: service.gradient
+                    }}
+                  ></div>
+
+                  <div className="card-body p-4">
+                    <div className="d-flex align-items-start mb-3">
+                      {/* Icon */}
+                      <div
+                        className="rounded-3 p-3 text-white me-3"
+                        style={{
+                          background: service.gradient,
+                          boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                        }}
+                      >
+                        {service.id === 1 ? (
+                          <img
+                            src={iconSleep}
+                            alt="Sleep Icon"
+                            style={{
+                              width: '32px',
+                              height: '32px',
+                              filter: 'brightness(0) invert(1)'
+                            }}
+                          />
+                        ) : (
+                          <i className={`bi ${service.icon} fs-3`}></i>
+                        )}
+                      </div>
+
+                      <div className="flex-grow-1">
+                        <h3 className="h4 fw-bold mb-2">{service.title}</h3>
+                        <p className="text-muted mb-0" style={{ lineHeight: 1.6 }}>
+                          {service.description}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="h4 fw-bold mb-2">{service.title}</h3>
-                      <p className="text-muted mb-0">{service.description}</p>
-                    </div>
+
+                    <Link
+                      to={service.link}
+                      className="btn btn-outline-primary w-100 rounded-pill fw-bold py-2"
+                      style={{
+                        borderWidth: '2px',
+                        transition: 'all 0.3s ease'
+                      }}
+                    >
+                      Explore Service <i className="bi bi-arrow-right ms-2"></i>
+                    </Link>
                   </div>
-                  <Link to={service.link} className={`btn btn-outline-${service.color} rounded-pill w-100 fw-bold`}>
-                    Explore Service <i className="bi bi-arrow-right ms-2"></i>
-                  </Link>
                 </div>
               </div>
             ))}
