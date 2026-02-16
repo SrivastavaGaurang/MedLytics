@@ -47,3 +47,12 @@
         bottom: 90px !important;
     }
 }
+
+/* Carousel hover effect */
+.hero-carousel-container:hover .carousel-image {
+    transform: scale(1.05);
+}
+
+.carousel-image {
+    transition: transform 0.5s ease !important;
+}

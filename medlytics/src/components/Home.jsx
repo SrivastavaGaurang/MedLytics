@@ -264,7 +264,7 @@ const Home = () => {
               transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
             >
               <div
-                className="position-relative"
+                className="position-relative hero-carousel-container"
                 style={{
                   filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.3))',
                   borderRadius: '24px',
@@ -282,7 +282,7 @@ const Home = () => {
                     autoplay: true,
                     autoplaySpeed: 4000,
                     arrows: false,
-                    pauseOnHover: false,
+                    pauseOnHover: true,  // Pause on hover!
                     fade: true,
                     cssEase: "ease-in-out"
                   }}
@@ -291,12 +291,13 @@ const Home = () => {
                     <img
                       src={heroMedical}
                       alt="Healthcare Professionals"
-                      className="img-fluid"
+                      className="img-fluid carousel-image"
                       style={{
                         width: '100%',
                         height: '500px',
                         objectFit: 'cover',
-                        borderRadius: '24px'
+                        borderRadius: '24px',
+                        transition: 'transform 0.5s ease'
                       }}
                     />
                   </div>
@@ -304,12 +305,13 @@ const Home = () => {
                     <img
                       src={heroSleep}
                       alt="Sleep Health Analysis"
-                      className="img-fluid"
+                      className="img-fluid carousel-image"
                       style={{
                         width: '100%',
                         height: '500px',
                         objectFit: 'cover',
-                        borderRadius: '24px'
+                        borderRadius: '24px',
+                        transition: 'transform 0.5s ease'
                       }}
                     />
                   </div>
@@ -317,12 +319,13 @@ const Home = () => {
                     <img
                       src={heroNutrition}
                       alt="Nutrition Wellness"
-                      className="img-fluid"
+                      className="img-fluid carousel-image"
                       style={{
                         width: '100%',
                         height: '500px',
                         objectFit: 'cover',
-                        borderRadius: '24px'
+                        borderRadius: '24px',
+                        transition: 'transform 0.5s ease'
                       }}
                     />
                   </div>
@@ -330,44 +333,17 @@ const Home = () => {
                     <img
                       src={heroMental}
                       alt="Mental Health Support"
-                      className="img-fluid"
+                      className="img-fluid carousel-image"
                       style={{
                         width: '100%',
                         height: '500px',
                         objectFit: 'cover',
-                        borderRadius: '24px'
+                        borderRadius: '24px',
+                        transition: 'transform 0.5s ease'
                       }}
                     />
                   </div>
                 </Slider>
-
-                {/* Floating badge */}
-                <motion.div
-                  className="position-absolute"
-                  style={{
-                    bottom: '30px',
-                    right: '30px',
-                    background: 'white',
-                    padding: '1rem 1.5rem',
-                    borderRadius: '16px',
-                    boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
-                    zIndex: 10
-                  }}
-                  animate={{ y: [0, -10, 0] }}
-                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                >
-                  <div className="d-flex align-items-center gap-2">
-                    <div
-                      className="rounded-circle"
-                      style={{
-                        width: '12px',
-                        height: '12px',
-                        background: '#10b981'
-                      }}
-                    ></div>
-                    <span className="fw-bold text-dark">AI Active</span>
-                  </div>
-                </motion.div>
               </div>
             </motion.div>
           </div>

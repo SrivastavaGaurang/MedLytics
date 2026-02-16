@@ -58,33 +58,94 @@ const Chatbot = () => {
 
     return (
         <>
-            {/* Chatbot Button */}
-            <motion.button
-                className="chatbot-button"
-                onClick={() => setIsOpen(!isOpen)}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                style={{
-                    position: 'fixed',
-                    bottom: '24px',
-                    right: '24px',
-                    width: '60px',
-                    height: '60px',
-                    borderRadius: '50%',
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                    border: 'none',
-                    boxShadow: '0 4px 20px rgba(102, 126, 234, 0.4)',
-                    cursor: 'pointer',
-                    zIndex: 1000,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: 'white',
-                    fontSize: '24px'
-                }}
-            >
-                {isOpen ? '✕' : '💬'}
-            </motion.button>
+            {/* Chatbot Button - Super Attractive! */}
+            <div style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 1000 }}>
+                {/* Animated Ring */}
+                <motion.div
+                    style={{
+                        position: 'absolute',
+                        width: '80px',
+                        height: '80px',
+                        borderRadius: '50%',
+                        border: '3px solid #667eea',
+                        top: '-10px',
+                        left: '-10px',
+                        zIndex: 0
+                    }}
+                    animate={{
+                        scale: [1, 1.3, 1],
+                        opacity: [0.6, 0, 0.6]
+                    }}
+                    transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                    }}
+                />
+
+                {/* Main Button */}
+                <motion.button
+                    className="chatbot-button"
+                    onClick={() => setIsOpen(!isOpen)}
+                    whileHover={{ scale: 1.1, rotate: 5 }}
+                    whileTap={{ scale: 0.9 }}
+                    animate={{
+                        y: [0, -10, 0],
+                        boxShadow: [
+                            '0 4px 20px rgba(102, 126, 234, 0.4)',
+                            '0 8px 30px rgba(102, 126, 234, 0.6)',
+                            '0 4px 20px rgba(102, 126, 234, 0.4)'
+                        ]
+                    }}
+                    transition={{
+                        y: { duration: 2, repeat: Infinity, ease: "easeInOut" },
+                        boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+                    }}
+                    style={{
+                        position: 'relative',
+                        width: '60px',
+                        height: '60px',
+                        borderRadius: '50%',
+                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        border: 'none',
+                        cursor: 'pointer',
+                        zIndex: 1,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: 'white',
+                        fontSize: '24px',
+                        boxShadow: '0 4px 20px rgba(102, 126, 234, 0.4)'
+                    }}
+                >
+                    {isOpen ? '✕' : '💬'}
+
+                    {/* Notification Badge */}
+                    {!isOpen && (
+                        <motion.div
+                            animate={{ scale: [1, 1.2, 1] }}
+                            transition={{ duration: 1, repeat: Infinity }}
+                            style={{
+                                position: 'absolute',
+                                top: -5,
+                                right: -5,
+                                width: '20px',
+                                height: '20px',
+                                borderRadius: '50%',
+                                background: '#ef4444',
+                                border: '2px solid white',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: '10px',
+                                fontWeight: 'bold'
+                            }}
+                        >
+                            AI
+                        </motion.div>
+                    )}
+                </motion.button>
+            </div>
 
             {/* Chatbot Window */}
             <AnimatePresence>
