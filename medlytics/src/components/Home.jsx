@@ -547,31 +547,112 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <section className="section-padding-md">
-        <div className="container max-content-width">
+      {/* Testimonials Section - User Success Stories */}
+      <section className="py-5" style={{ background: 'white' }}>
+        <div className="container py-5">
           <div className="text-center mb-5">
+            <span
+              className="badge px-4 py-2 rounded-pill mb-3"
+              style={{
+                background: 'linear-gradient(135deg, rgba(102,126,234,0.1) 0%, rgba(118,75,162,0.1) 100%)',
+                color: '#667eea',
+                fontWeight: 600,
+                fontSize: '0.9rem',
+                border: '1px solid rgba(102,126,234,0.2)'
+              }}
+            >
+              TESTIMONIALS
+            </span>
             <h2 className="display-5 fw-bold">User Success Stories</h2>
+            <p className="lead text-muted mx-auto mt-3" style={{ maxWidth: '700px' }}>
+              Real experiences from people who transformed their health with MedLytics
+            </p>
           </div>
 
           <div className="row g-4">
             {testimonials.map((testimonial) => (
               <div key={testimonial.id} className="col-lg-4 col-md-6">
-                <div className="glass-card h-100 p-4 position-relative">
-                  <i className="bi bi-quote display-1 text-primary opacity-10 position-absolute top-0 start-0 ms-3"></i>
-                  <div className="mb-3 position-relative">
-                    {[...Array(5)].map((_, i) => (
-                      <i key={i} className="bi bi-star-fill text-warning me-1"></i>
-                    ))}
-                  </div>
-                  <p className="card-text mb-4 fst-italic position-relative">&ldquo;{testimonial.text}&rdquo;</p>
-                  <div className="d-flex align-items-center border-top pt-3">
-                    <div className="rounded-circle bg-gradient-medical text-white d-flex align-items-center justify-content-center me-3 shadow-sm" style={{ width: "50px", height: "50px", fontSize: "1.2rem", fontWeight: "bold" }}>
-                      {testimonial.author.charAt(0)}
+                <div
+                  className="card h-100 border-0 shadow-sm"
+                  style={{
+                    borderRadius: '20px',
+                    background: 'white',
+                    transition: 'all 0.3s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-5px)';
+                    e.currentTarget.style.boxShadow = '0 12px 40px rgba(0,0,0,0.12)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 4px 6px rgba(0,0,0,0.07)';
+                  }}
+                >
+                  <div className="card-body p-4 d-flex flex-column">
+                    {/* Quote icon */}
+                    <div
+                      className="mb-3"
+                      style={{
+                        fontSize: '48px',
+                        lineHeight: 1,
+                        color: 'rgba(102, 126, 234, 0.1)'
+                      }}
+                    >
+                      "
                     </div>
-                    <div>
-                      <h6 className="mb-0 fw-bold">{testimonial.author}</h6>
-                      <small className="text-primary">{testimonial.role}</small>
+
+                    {/* Star rating */}
+                    <div className="mb-3">
+                      {[...Array(5)].map((_, i) => (
+                        <i key={i} className="bi bi-star-fill text-warning me-1" style={{ fontSize: '14px' }}></i>
+                      ))}
+                    </div>
+
+                    {/* Testimonial text */}
+                    <p
+                      className="mb-4 flex-grow-1"
+                      style={{
+                        fontSize: '0.95rem',
+                        lineHeight: 1.7,
+                        color: '#475569'
+                      }}
+                    >
+                      "{testimonial.text}"
+                    </p>
+
+                    {/* Author info - FIXED LAYOUT */}
+                    <div
+                      className="d-flex align-items-center gap-3 pt-3"
+                      style={{
+                        borderTop: '1px solid #e2e8f0',
+                        marginTop: 'auto'
+                      }}
+                    >
+                      {/* Avatar */}
+                      <div
+                        className="flex-shrink-0 rounded-circle text-white d-flex align-items-center justify-content-center"
+                        style={{
+                          width: '48px',
+                          height: '48px',
+                          minWidth: '48px',  // Prevent shrinking
+                          fontSize: '18px',
+                          fontWeight: 'bold',
+                          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                          boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)'
+                        }}
+                      >
+                        {testimonial.author.charAt(0)}
+                      </div>
+
+                      {/* Author details */}
+                      <div className="flex-grow-1" style={{ minWidth: 0 }}>  {/* minWidth: 0 allows text truncation */}
+                        <h6 className="mb-0 fw-bold" style={{ fontSize: '0.95rem' }}>
+                          {testimonial.author}
+                        </h6>
+                        <small className="text-muted" style={{ fontSize: '0.85rem' }}>
+                          {testimonial.role}
+                        </small>
+                      </div>
                     </div>
                   </div>
                 </div>
