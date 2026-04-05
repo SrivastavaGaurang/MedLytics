@@ -435,7 +435,7 @@ const SleepDisorder = () => {
               <button type="button" className="btn btn-outline-secondary" onClick={prevStep}>
                 Back
               </button>
-              <button type="submit" className="btn btn-success" disabled={loading || !isAuthenticated}>
+              <button type="submit" className="btn btn-success" disabled={loading}>
                 {loading ? (
                   <>
                     <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>

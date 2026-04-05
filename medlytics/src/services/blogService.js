@@ -13,11 +13,17 @@ export const getAllBlogs = async (pageSize = 20) => {
   const q = query(
     collection(db, BLOGS),
     where('published', '==', true),
-    orderBy('createdAt', 'desc'),
-    limit(pageSize)
+    limit(50) // Allow extra up to 50 for client-side sorting pool
   );
   const snap = await getDocs(q);
-  return snap.docs.map(d => ({ id: d.id, _id: d.id, ...d.data() }));
+  const blogs = snap.docs.map(d => ({ id: d.id, _id: d.id, ...d.data() }));
+  
+  // Sort descending by createdAt to bypass composite index requirement
+  return blogs.sort((a, b) => {
+    const timeA = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
+    const timeB = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
+    return timeB - timeA;
+  }).slice(0, pageSize);
 };
 
 // ─── Get single blog by ID (also increments views) ─────────────────────────
@@ -146,11 +152,16 @@ export const getBlogsByTag = async (tag) => {
   const q = query(
     collection(db, BLOGS),
     where('published', '==', true),
-    where('tags', 'array-contains', tag),
-    orderBy('createdAt', 'desc')
+    where('tags', 'array-contains', tag)
   );
   const snap = await getDocs(q);
-  return snap.docs.map(d => ({ id: d.id, _id: d.id, ...d.data() }));
+  const blogs = snap.docs.map(d => ({ id: d.id, _id: d.id, ...d.data() }));
+  
+  return blogs.sort((a, b) => {
+    const timeA = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
+    const timeB = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
+    return timeB - timeA;
+  });
 };
 
 // ─── Get current user's own blogs ──────────────────────────────────────────
@@ -159,11 +170,16 @@ export const getMyBlogs = async () => {
   if (!user) return [];
   const q = query(
     collection(db, BLOGS),
-    where('authorId', '==', user.uid),
-    orderBy('createdAt', 'desc')
+    where('authorId', '==', user.uid)
   );
   const snap = await getDocs(q);
-  return snap.docs.map(d => ({ id: d.id, _id: d.id, ...d.data() }));
+  const blogs = snap.docs.map(d => ({ id: d.id, _id: d.id, ...d.data() }));
+  
+  return blogs.sort((a, b) => {
+    const timeA = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
+    const timeB = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
+    return timeB - timeA;
+  });
 };
 
 // ─── Search blogs (client-side, Firestore free tier has no full-text search) ─

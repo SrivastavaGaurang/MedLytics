@@ -11,7 +11,7 @@ const Login = () => {
         password: ''
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const { login, error } = useAuth();
+    const { login, loginWithGoogle, error } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -133,7 +133,27 @@ const Login = () => {
                             <span>or</span>
                         </div>
 
-                        <div className="register-prompt">
+                        <motion.button 
+                            type="button" 
+                            className="btn-login"
+                            style={{ backgroundColor: '#fff', color: '#444', border: '1px solid #ccc', marginTop: '15px' }}
+                            onClick={async () => {
+                                setIsSubmitting(true);
+                                const result = await loginWithGoogle();
+                                if (result.success) {
+                                    navigate(from, { replace: true });
+                                }
+                                setIsSubmitting(false);
+                            }}
+                            disabled={isSubmitting}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                        >
+                            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style={{width: '20px', marginRight: '10px'}}/>
+                            Sign in with Google
+                        </motion.button>
+
+                        <div className="register-prompt" style={{marginTop: '20px'}}>
                             <p>Don't have an account?</p>
                             <Link to="/register" className="register-link">
                                 Create Account →

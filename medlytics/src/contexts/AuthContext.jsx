@@ -6,6 +6,8 @@ import {
   signOut,
   onAuthStateChanged,
   updateProfile,
+  GoogleAuthProvider,
+  signInWithPopup
 } from 'firebase/auth';
 import { auth } from '../firebase/firebaseConfig';
 
@@ -86,6 +88,28 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Login with Google
+  const loginWithGoogle = async () => {
+    try {
+      setError(null);
+      const provider = new GoogleAuthProvider();
+      const { user: firebaseUser } = await signInWithPopup(auth, provider);
+      setUser({
+        uid: firebaseUser.uid,
+        _id: firebaseUser.uid,
+        id: firebaseUser.uid,
+        name: firebaseUser.displayName || 'User',
+        email: firebaseUser.email,
+      });
+      setIsAuthenticated(true);
+      return { success: true };
+    } catch (err) {
+      const msg = mapFirebaseError(err.code);
+      setError(msg);
+      return { success: false, error: msg };
+    }
+  };
+
   // Logout
   const logout = async () => {
     await signOut(auth);
@@ -101,6 +125,7 @@ export const AuthProvider = ({ children }) => {
         loading,
         error,
         login,
+        loginWithGoogle,
         register,
         logout,
         // token is no longer used, kept for compatibility

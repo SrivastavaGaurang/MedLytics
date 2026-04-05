@@ -38,6 +38,7 @@ const Navbar = () => {
     {
       name: 'Services',
       dropdown: [
+        { name: 'View All Services', path: '/services' },
         { name: 'Sleep Analysis', path: '/sleep-disorder' },
         { name: 'Anxiety Prediction', path: '/anxiety-prediction' },
         { name: 'Depression Prediction', path: '/depression-prediction' },
