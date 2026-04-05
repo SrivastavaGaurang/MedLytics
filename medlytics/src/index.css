@@ -194,6 +194,14 @@ h6 {
   color: var(--primary) !important;
 }
 
+/* Enable hover dropdown for Services */
+@media (min-width: 992px) {
+  .dropdown:hover .dropdown-menu {
+    display: block;
+    margin-top: 0;
+  }
+}
+
 .nav-link {
   font-weight: 500;
   color: var(--gray-800) !important;

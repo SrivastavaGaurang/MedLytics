@@ -12,16 +12,15 @@ const BLOGS = 'blogs';
 export const getAllBlogs = async (pageSize = 20) => {
   const q = query(
     collection(db, BLOGS),
-    where('published', '==', true),
-    limit(50) // Allow extra up to 50 for client-side sorting pool
+    limit(100) // Allow extra up to 100 for client-side sorting pool
   );
   const snap = await getDocs(q);
   const blogs = snap.docs.map(d => ({ id: d.id, _id: d.id, ...d.data() }));
   
   // Sort descending by createdAt to bypass composite index requirement
-  return blogs.sort((a, b) => {
-    const timeA = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
-    const timeB = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
+  return blogs.filter(b => b.published !== false).sort((a, b) => {
+    const timeA = a.createdAt?.toMillis ? a.createdAt.toMillis() : (new Date(a.createdAt || 0).getTime());
+    const timeB = b.createdAt?.toMillis ? b.createdAt.toMillis() : (new Date(b.createdAt || 0).getTime());
     return timeB - timeA;
   }).slice(0, pageSize);
 };
@@ -151,15 +150,14 @@ export const deleteComment = async (blogId, commentObj) => {
 export const getBlogsByTag = async (tag) => {
   const q = query(
     collection(db, BLOGS),
-    where('published', '==', true),
     where('tags', 'array-contains', tag)
   );
   const snap = await getDocs(q);
   const blogs = snap.docs.map(d => ({ id: d.id, _id: d.id, ...d.data() }));
   
-  return blogs.sort((a, b) => {
-    const timeA = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
-    const timeB = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
+  return blogs.filter(b => b.published !== false).sort((a, b) => {
+    const timeA = a.createdAt?.toMillis ? a.createdAt.toMillis() : (new Date(a.createdAt || 0).getTime());
+    const timeB = b.createdAt?.toMillis ? b.createdAt.toMillis() : (new Date(b.createdAt || 0).getTime());
     return timeB - timeA;
   });
 };
@@ -176,8 +174,8 @@ export const getMyBlogs = async () => {
   const blogs = snap.docs.map(d => ({ id: d.id, _id: d.id, ...d.data() }));
   
   return blogs.sort((a, b) => {
-    const timeA = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
-    const timeB = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
+    const timeA = a.createdAt?.toMillis ? a.createdAt.toMillis() : (new Date(a.createdAt || 0).getTime());
+    const timeB = b.createdAt?.toMillis ? b.createdAt.toMillis() : (new Date(b.createdAt || 0).getTime());
     return timeB - timeA;
   });
 };
