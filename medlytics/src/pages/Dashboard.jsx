@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { getBMIHistory } from '../services/bmiService';
+import { getApiBaseUrl } from '../services/api';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import './Dashboard.css';
@@ -28,7 +29,8 @@ const Dashboard = () => {
         }
 
         // Fetch user profile
-        const userResponse = await fetch('http://localhost:5000/api/auth/me', {
+        const base = getApiBaseUrl();
+        const userResponse = await fetch(`${base}/auth/me`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const userData = await userResponse.json();
@@ -39,7 +41,7 @@ const Dashboard = () => {
 
         // Fetch sleep history - Don't fail on error
         try {
-          const sleepResponse = await fetch('http://localhost:5000/api/sleep/history', {
+          const sleepResponse = await fetch(`${base}/sleep/history`, {
             headers: { 'Authorization': `Bearer ${token}` }
           });
           const sleepData = await sleepResponse.json();
@@ -55,7 +57,7 @@ const Dashboard = () => {
 
         // Fetch anxiety history - Don't fail on error
         try {
-          const anxietyResponse = await fetch('http://localhost:5000/api/anxiety/history', {
+          const anxietyResponse = await fetch(`${base}/anxiety/history`, {
             headers: { 'Authorization': `Bearer ${token}` }
           });
           const anxietyData = await anxietyResponse.json();

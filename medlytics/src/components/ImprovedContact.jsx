@@ -3,10 +3,7 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 import 'react-toastify/dist/ReactToastify.css';
 import './ContactPage.css';
-
-
-
-const SERVER_URL = 'http://localhost:5000';
+import { getApiBaseUrl } from '../services/api';
 
 const ImprovedContact = () => {
   const [formData, setFormData] = useState({
@@ -41,7 +38,7 @@ const ImprovedContact = () => {
 
     setIsSubmitting(true);
     try {
-      const response = await axios.post(`${SERVER_URL}/api/contact`, formData, {
+      const response = await axios.post(`${getApiBaseUrl()}/contact`, formData, {
         timeout: 10000, // Add timeout for better error handling
       });
       if (response.status === 200) {

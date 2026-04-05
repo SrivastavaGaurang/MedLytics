@@ -1,0 +1,15 @@
+{
+  "name": "medlytics",
+  "private": true,
+  "description": "MedLytics — run API + frontend together from the repo root",
+  "scripts": {
+    "dev": "concurrently -n server,client -c cyan,magenta \"npm run server --prefix server\" \"npm run dev --prefix medlytics\"",
+    "dev:server": "npm run server --prefix server",
+    "dev:client": "npm run dev --prefix medlytics",
+    "start": "npm run start --prefix server",
+    "install:all": "npm install --prefix server && npm install --prefix medlytics"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

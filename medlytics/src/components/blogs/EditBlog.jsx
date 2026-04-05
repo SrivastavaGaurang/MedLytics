@@ -204,7 +204,7 @@ const EditBlog = () => {
                 )}
 
                 <div className="text-muted small mb-3">
-                  By {formData.author} • {originalBlog ? new Date(originalBlog.date).toLocaleDateString() : new Date().toLocaleDateString()}
+                  By {formData.author} • {originalBlog ? (originalBlog.createdAt?.toDate ? originalBlog.createdAt.toDate().toLocaleDateString() : new Date(originalBlog.createdAt || originalBlog.date).toLocaleDateString()) : new Date().toLocaleDateString()}
                 </div>
 
                 {formData.image && (

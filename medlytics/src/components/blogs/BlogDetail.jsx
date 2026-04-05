@@ -121,14 +121,15 @@ const BlogDetail = () => {
     }
   };
 
-  const formatDate = (dateString) => {
-    if (!dateString) return 'Unknown date';
+  const formatDate = (dateValue) => {
+    if (!dateValue) return 'Unknown date';
+    const date = dateValue.toDate ? dateValue.toDate() : new Date(dateValue);
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString('en-US', options);
+    return date.toLocaleDateString('en-US', options);
   };
 
   const isAdmin = isAuthenticated && user && (user.email === "admin@medlytics.com" || user.role === 'admin');
-  const isAuthor = isAuthenticated && user && blog && (blog.author === user.id || blog.author === user._id || blog.author?._id === user._id);
+  const isAuthor = isAuthenticated && user && blog && (blog.authorId === user.uid || blog.author === user.id || blog.author === user._id || blog.author?._id === user._id);
 
   if (loading) {
     return (

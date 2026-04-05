@@ -22,22 +22,23 @@ const MedBlog = () => {
   const [showBookmarked, setShowBookmarked] = useState(false);
   const { isAuthenticated, user } = useAuth();
 
-  // Fetch all blogs on component mount and handle query params
+  const tagFromUrl = searchParams.get('tag') || '';
+
+  // Fetch all blogs on mount / when URL tag changes (primitive dep avoids effect loops from searchParams identity)
   useEffect(() => {
-    const tagFromUrl = searchParams.get('tag');
     if (tagFromUrl) {
       setFilterTag(tagFromUrl);
       fetchBlogsByTag(tagFromUrl);
     } else {
+      setFilterTag('');
       fetchBlogs();
     }
 
-    // Load bookmarked blogs from localStorage
     const savedBookmarks = localStorage.getItem('bookmarkedBlogs');
     if (savedBookmarks) {
       setBookmarkedBlogs(JSON.parse(savedBookmarks));
     }
-  }, [searchParams]);
+  }, [tagFromUrl]);
 
   // Function to fetch all blogs
   const fetchBlogs = async () => {
@@ -118,7 +119,6 @@ const MedBlog = () => {
       setSearchParams({ tag });
     } else {
       setSearchParams({});
-      fetchBlogs();
     }
   };
 
@@ -163,10 +163,18 @@ const MedBlog = () => {
     // Sort blogs
     switch (sortBy) {
       case 'newest':
-        filtered.sort((a, b) => new Date(b.createdAt || b.date) - new Date(a.createdAt || a.date));
+        filtered.sort((a, b) => {
+          const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt || a.date);
+          const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt || b.date);
+          return dateB - dateA;
+        });
         break;
       case 'oldest':
-        filtered.sort((a, b) => new Date(a.createdAt || a.date) - new Date(b.createdAt || b.date));
+        filtered.sort((a, b) => {
+          const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt || a.date);
+          const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt || b.date);
+          return dateA - dateB;
+        });
         break;
       case 'popular':
         filtered.sort((a, b) => (b.likes?.length || 0) - (a.likes?.length || 0));
@@ -181,15 +189,16 @@ const MedBlog = () => {
   const filteredBlogs = getFilteredBlogs();
 
   // Format date
-  const formatDate = (dateString) => {
-    if (!dateString) return 'Unknown date';
+  const formatDate = (dateValue) => {
+    if (!dateValue) return 'Unknown date';
+    const date = dateValue.toDate ? dateValue.toDate() : new Date(dateValue);
     const options = { year: 'numeric', month: 'short', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString('en-US', options);
+    return date.toLocaleDateString('en-US', options);
   };
 
   // Check if user is admin or author
   const isAdmin = isAuthenticated && user && (user.email === "admin@medlytics.com" || user.role === 'admin');
-  const isAuthor = (blog) => isAuthenticated && user && (blog.author === user.id || blog.author === user._id || blog.author?._id === user._id);
+  const isAuthor = (blog) => isAuthenticated && user && (blog.authorId === user.uid || blog.author === user.id || blog.author === user._id || blog.author?._id === user._id);
 
   return (
     <div className="medblog-page">
